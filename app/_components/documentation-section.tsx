@@ -30,11 +30,11 @@ export default function DocumentationSection() {
       description: "Transform raw data into actionable insights\nwith powerful analytics tools.",
       image: "/analytics-dashboard.png",
     },
-    {
-      title: "Collaborate seamlessly",
-      description: "Work together in real-time with your team\nand share insights instantly.",
-      image: "/team-collaboration-interface-with-shared-workspace.jpg",
-    },
+    // {
+    //   title: "Collaborate seamlessly",
+    //   description: "Work together in real-time with your team\nand share insights instantly.",
+    //   image: "/team-collaboration-interface-with-shared-workspace.jpg",
+    // },
   ]
 
   useEffect(() => {

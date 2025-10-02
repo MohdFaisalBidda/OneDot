@@ -126,3 +126,17 @@
 .backdrop-blur-custom {
   backdrop-filter: blur(8.25px);
 }
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%) skewX(-45deg);
+  }
+
+  100% {
+    transform: translateX(300%) skewX(-45deg);
+  }
+}
+
+@utility animate-shine {
+  animation: shine 3s linear infinite;
+}

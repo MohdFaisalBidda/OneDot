@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  focuses Focus[]
+  decision Decision[]
+}
+
+model Focus {
+  id     String      @id @default(cuid())
+  title  String
+  status FocusStatus
+  mood   String
+  notes  String
+  image  String?
+  date   DateTime    @default(now())
+
+  userId String
+  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Decision {
+  id     String      @id @default(cuid())
+  title  String
+  reason String
+  date   DateTime    @default(now())
+  image  String?
+  category DecisionCategory
+
+  userId String
+  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum FocusStatus {
+  PENDING
+  ACHIEVED
+  NOT_ACHIEVED
+  PARTIALLY_ACHIEVED
+}
+
+enum DecisionCategory {
+  CAREER
+  HEALTH
+  FINANCE
+  RELATIONSHIPS
+  LIFESTYLE 
+  GENERAL
+  OTHER
+}
