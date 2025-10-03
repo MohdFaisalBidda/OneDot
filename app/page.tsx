@@ -126,9 +126,9 @@ export default function LandingPage() {
                     </div>
                   </div> */}
                   <Button
-                    variant="hero"
+                    variant="heroDark"
                     size="hero"
-                    className="font-medium leading-5 font-sans"
+                    className="font-medium leading-5 font-sans cursor-pointer"
                   >
                     Start for free
                   </Button>

@@ -17,7 +17,9 @@ datasource db {
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
-  name      String?
+  name      String?   
+  password  String? //Only for credentials provider
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

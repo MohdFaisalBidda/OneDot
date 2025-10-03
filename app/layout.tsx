@@ -7,6 +7,7 @@ import {
   Playfair_Display,
 } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -38,7 +39,10 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${instrumentSerif.variable} antialiased`}
     >
-      <body className="font-sans">{children}</body>
+      <body className="font-sans">
+        <Toaster position="top-center"/>
+        {children}
+      </body>
     </html>
   );
 }

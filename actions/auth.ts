@@ -1,0 +1,44 @@
+"use server"
+
+import { CreateUser } from "@/app/validations/auth"
+import prisma from "@/lib/prismaClient"
+import bcrypt from "bcrypt"
+
+export async function registerUser(formData: FormData) {
+  const rawData = {
+    name: formData.get("name") as string,
+    email: formData.get("email") as string,
+    password: formData.get("password") as string,
+  }
+
+  const result = CreateUser.safeParse(rawData)
+
+  if (!result.success) {
+    const fieldErrors: Record<string, string> = {}
+
+    result.error.issues.forEach(issue => {
+      const fieldName = issue.path[0] as string
+      fieldErrors[fieldName] = issue.message
+    })
+    return { error: "Validation failed", fieldErrors }
+  }
+
+  const { name, email, password } = result.data
+
+  const existingUser = await prisma.user.findUnique({ where: { email } })
+  if (existingUser) {
+    return { error: "User already exists" }
+  }
+
+  const passwordHash = await bcrypt.hash(password, 10)
+
+  const newUser = await prisma.user.create({
+    data: {
+      email,
+      name,
+      password: passwordHash,
+    },
+  })
+
+  return { success: true, user: { id: newUser.id, email: newUser.email, name: newUser.name } }
+}

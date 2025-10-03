@@ -63,7 +63,7 @@ export default function FAQSection() {
   }
 
   return (
-    <div className="w-full flex justify-center items-start">
+    <div id="faq" className="w-full flex justify-center items-start">
       <div className="flex-1 px-4 md:px-12 py-16 md:py-20 flex flex-col lg:flex-row justify-start items-start gap-6 lg:gap-12">
         {/* Left Column - Header */}
         <div className="w-full lg:flex-1 flex flex-col justify-center items-start gap-4 lg:py-5">

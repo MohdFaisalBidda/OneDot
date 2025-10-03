@@ -52,7 +52,7 @@ export default function DocumentationSection() {
   }
 
   return (
-    <div className="w-full border-b border-[rgba(55,50,47,0.12)] flex flex-col justify-center items-center">
+    <div id="features" className="w-full border-b border-[rgba(55,50,47,0.12)] flex flex-col justify-center items-center">
       {/* Header Section */}
       <div className="self-stretch px-6 md:px-24 py-12 md:py-16 border-b border-[rgba(55,50,47,0.12)] flex justify-center items-center gap-6">
         <div className="w-full max-w-[586px] px-6 py-5 shadow-[0px_2px_4px_rgba(50,45,43,0.06)] overflow-hidden rounded-lg flex flex-col justify-start items-center gap-4 shadow-none">
@@ -75,7 +75,7 @@ export default function DocumentationSection() {
 
       {/* Content Section */}
       <div className="self-stretch px-4 md:px-9 overflow-hidden flex justify-start items-center">
-        <div className="flex-1 py-8 md:py-11 flex flex-col md:flex-row justify-start items-center gap-6 md:gap-12">
+        <div className="flex-1 py-8 md:py-11 flex flex-col md:flex-row justify-center items-center gap-6 md:gap-12">
           {/* Left Column - Feature Cards */}
           <div className="w-full md:w-auto md:max-w-[400px] flex flex-col justify-center items-center gap-4 order-2 md:order-1">
             {cards.map((card, index) => {
