@@ -33,7 +33,7 @@ export const authOptions: NextAuthOptions = {
                     throw new Error("No user found with this email")
                 }
 
-                const isValid = await bcrypt.compare(credentials.password as string, (user as any).passwordHash)
+                const isValid = await bcrypt.compare(credentials.password as string, (user as any).password)
                 if (!isValid) {
                     throw new Error("Invalid password")
                 }

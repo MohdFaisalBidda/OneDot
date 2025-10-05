@@ -19,6 +19,8 @@ import { registerUser } from "@/actions/auth";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { signIn } from "next-auth/react";
+import { Loader2 } from "lucide-react";
+import Navigation from "@/app/_components/Navigation";
 
 interface FieldErrors {
   name?: string;
@@ -91,7 +93,8 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#F7F5F3] flex items-center justify-center p-4">
+      <Navigation />
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-3 text-center">
           <CardTitle className="font-serif text-4xl md:text-5xl">
@@ -181,7 +184,11 @@ export default function SignupPage() {
               className="w-full h-11 text-base rounded-full"
               disabled={isLoading}
             >
-              {isLoading ? "Creating Account..." : "Create Account"}
+              {isLoading ? (
+                <Loader2 className="animate-spin" size={4} />
+              ) : (
+                "Create Account"
+              )}
             </Button>
 
             <p className="text-center text-sm text-muted-foreground">

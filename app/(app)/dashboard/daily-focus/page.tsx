@@ -1,5 +1,5 @@
 import React from "react";
-import DailyFocusPage from "../../_components/DailyFocus";
+import DailyFocusPage from "../../../_components/DailyFocus";
 
 function page() {
   return <DailyFocusPage />;

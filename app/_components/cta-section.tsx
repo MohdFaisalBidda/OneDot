@@ -1,8 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function CTASection() {
+  const { data: session } = useSession();
+  const router = useRouter();
   return (
     <div className="w-full relative overflow-hidden flex flex-col justify-center items-center gap-2">
       {/* Content */}
@@ -44,11 +48,16 @@ export default function CTASection() {
               </div>
             </div> */}
             <Button
+              onClick={() => {
+                session?.user
+                  ? router.push("/dashboard")
+                  : router.push("/login");
+              }}
               variant={"heroDark"}
               size={"default"}
               className="text-xs cursor-pointer w-44 h-[41px] px-12 py-[6px]"
             >
-              Start for free
+              {session?.user ? "Go to Dashboard" : "Start for free"}
             </Button>
           </div>
         </div>

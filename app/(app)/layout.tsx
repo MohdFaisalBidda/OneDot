@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Instrument_Serif, Playfair_Display } from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  Instrument_Serif,
+  Playfair_Display,
+} from "next/font/google";
 import "../../app/globals.css";
 import { Suspense } from "react";
-import { Navigation } from "@/app/_components/Navigation";
+import Loader from "../_components/Loader";
+import { DashboardLayout } from "../_components/dashboard-layout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,13 +26,12 @@ const instrumentSerif = Instrument_Serif({
   weight: ["400"],
   display: "swap",
   preload: true,
-})
-
+});
 
 export const metadata: Metadata = {
   title: "ClarityLog",
   description: "Track your daily focus and decisions",
-}
+};
 
 export default function RootLayout({
   children,
@@ -38,10 +43,11 @@ export default function RootLayout({
       <body
         className={`font-sans ${geistSans.variable} ${geistSans.variable} ${playfair.variable} antialiased`}
       >
-        <Suspense fallback={null}>
-          <Navigation />
-          <main className="min-h-screen">{children}</main>
-        </Suspense>
+        <DashboardLayout>
+          <Suspense fallback={<Loader />}>
+            <main className="min-h-screen">{children}</main>
+          </Suspense>
+        </DashboardLayout>
       </body>
     </html>
   );

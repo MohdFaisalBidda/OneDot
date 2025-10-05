@@ -15,13 +15,17 @@ import CTASection from "../app/_components/cta-section";
 import FooterSection from "../app/_components/footer-section";
 import SocialProofs from "./_components/social-proofs";
 import BentoGrid from "./_components/bento-grid";
-import HomeNavigation from "./_components/home-navigation";
 import { Button } from "@/components/ui/button";
+import Navigation from "./_components/Navigation";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function LandingPage() {
   const [activeCard, setActiveCard] = useState(0);
   const [progress, setProgress] = useState(0);
   const mountedRef = useRef(true);
+  const router = useRouter();
+  const { data: session } = useSession();
 
   useEffect(() => {
     const progressInterval = setInterval(() => {
@@ -98,7 +102,7 @@ export default function LandingPage() {
 
           <div className="self-stretch pt-[9px] overflow-hidden border-b border-[rgba(55,50,47,0.06)] flex flex-col justify-center items-center gap-4 sm:gap-6 md:gap-8 lg:gap-[66px] relative z-10">
             {/* Navigation */}
-            <HomeNavigation />
+            <Navigation />
 
             {/* Hero Section */}
             <div className="pt-16 sm:pt-20 md:pt-24 lg:pt-[216px] pb-8 sm:pb-12 md:pb-16 flex flex-col justify-start items-center px-2 sm:px-4 md:px-8 lg:px-0 w-full sm:pl-0 sm:pr-0 pl-0 pr-0">
@@ -129,8 +133,13 @@ export default function LandingPage() {
                     variant="heroDark"
                     size="hero"
                     className="font-medium leading-5 font-sans cursor-pointer"
+                    onClick={() =>
+                      session?.user
+                        ? router.push("/dashboard")
+                        : router.push("/login")
+                    }
                   >
-                    Start for free
+                    {session?.user ? "Explore Tools" : "Start for free"}
                   </Button>
                 </div>
               </div>
