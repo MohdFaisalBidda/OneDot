@@ -3,6 +3,7 @@
 import { CreateUser } from "@/app/validations/auth"
 import prisma from "@/lib/prismaClient"
 import bcrypt from "bcrypt"
+import { getServerSession } from "next-auth"
 
 export async function registerUser(formData: FormData) {
   const rawData = {
@@ -41,4 +42,36 @@ export async function registerUser(formData: FormData) {
   })
 
   return { success: true, user: { id: newUser.id, email: newUser.email, name: newUser.name } }
+}
+
+
+export async function getCurrentUser() {
+  try {
+    const session = await getServerSession();
+    
+    if (!session?.user?.email) {
+      return null;
+    }
+
+    const user = await prisma.user.findUnique({
+      where: {
+        email: session.user.email,
+      },
+    });
+
+    return user;
+  } catch (error) {
+    console.error("Error getting current user:", error);
+    return null;
+  }
+}
+
+export async function requireUser() {
+  const user = await getCurrentUser();
+  
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+  
+  return user;
 }
