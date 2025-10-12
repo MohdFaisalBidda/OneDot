@@ -16,12 +16,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AlertCircle, ImageIcon, X } from "lucide-react";
-import { CreateFocusSchema } from "../validations/daily-focus";
 import { CreateFocus } from "@/actions";
 import { Focus, FocusStatus } from "@/lib/generated/prisma";
 import Loader from "./Loader";
 import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { DailyFocusForm } from "./forms/daily-focus-form";
 
 export type FocusEntry = {
   id: string;
@@ -82,9 +82,8 @@ export default function DailyFocusPage({
     setFormError("");
     setErrors({});
 
-    setIsSubmitting(true);
-
     try {
+      setIsSubmitting(true);
       const newEntry: FocusEntry = {
         id: Date.now().toString(),
         focus,
@@ -126,7 +125,7 @@ export default function DailyFocusPage({
   };
 
   return (
-    <div className="mx-auto max-w-5xl px-4 pb-12 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-5xl px-4 pb-12 sm:px-6 lg:px-8 p-6">
       <div className="mb-12 text-center">
         <h1 className="font-serif text-5xl font-normal leading-tight text-balance text-foreground sm:text-6xl">
           Daily Focus Journal
@@ -144,7 +143,8 @@ export default function DailyFocusPage({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <DailyFocusForm />
+            {/* <form onSubmit={handleSubmit} className="space-y-6">
               {formError && (
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
@@ -156,6 +156,7 @@ export default function DailyFocusPage({
                 <Label htmlFor="focus">What's your focus today?</Label>
                 <Input
                   id="focus"
+                  type="text"
                   value={focus}
                   onChange={(e) => {
                     setFocus(e.target.value);
@@ -185,7 +186,7 @@ export default function DailyFocusPage({
                   <SelectContent>
                     {Object.values(FocusStatus).map((status) => (
                       <SelectItem key={status} value={status}>
-                        {status}
+                        {status.replace("_", " ")}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -221,6 +222,7 @@ export default function DailyFocusPage({
                   }}
                   placeholder="Any additional thoughts..."
                   rows={4}
+                  maxLength={500}
                   className="rounded-2xl"
                   disabled={isSubmitting}
                 />
@@ -289,7 +291,7 @@ export default function DailyFocusPage({
               >
                 {isSubmitting ? <Loader /> : "Add Focus"}
               </Button>
-            </form>
+            </form> */}
           </CardContent>
         </Card>
 
@@ -298,7 +300,7 @@ export default function DailyFocusPage({
           <div className="space-y-4">
             {recentFocus?.map((entry) => (
               <Card key={entry.id} className="shadow-sm">
-                <CardContent className="pt-6">
+                <CardContent className="">
                   <div className="space-y-3">
                     <div className="flex items-start justify-between gap-4">
                       <h3 className="font-medium leading-relaxed">
@@ -314,36 +316,40 @@ export default function DailyFocusPage({
                         }`}
                       >
                         {entry.status === "ACHIEVED"
-                          ? "status"
+                          ? "Achieved"
                           : entry.status === "PARTIALLY_ACHIEVED"
-                          ? "Partial"
+                          ? "Partial Achieved"
                           : entry.status === "NOT_ACHIEVED"
-                          ? "Not status"
+                          ? "Not Achieved"
                           : "Pending"}
                       </span>
                     </div>
-                    {entry.mood && (
-                      <p className="text-sm text-muted-foreground">
-                        Mood: {entry.mood}
-                      </p>
-                    )}
-                    {entry.notes && (
-                      <p className="text-sm leading-relaxed text-muted-foreground">
-                        {entry.notes}
-                      </p>
-                    )}
-                    {entry.image && (
-                      <div className="pt-2">
-                        <img
-                          src={entry.image || "/placeholder.svg"}
-                          alt="Entry"
-                          className="h-20 w-20 rounded-xl object-cover shadow-sm"
-                        />
+                    <div className="flex justify-between items-center">
+                      <div className="flex flex-col space-y-1">
+                        {entry.mood && (
+                          <p className="text-sm text-muted-foreground">
+                            Mood: {entry.mood}
+                          </p>
+                        )}
+                        {entry.notes && (
+                          <p className="text-sm leading-relaxed text-muted-foreground">
+                            {entry.notes}
+                          </p>
+                        )}
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(entry.date).toLocaleDateString()}
+                        </p>
                       </div>
-                    )}
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(entry.date).toLocaleDateString()}
-                    </p>
+                      {entry.image && (
+                        <div className="pt-2">
+                          <img
+                            src={entry.image || "/placeholder.svg"}
+                            alt="Entry"
+                            className="h-20 w-20 rounded-xl object-cover shadow-sm hover:scale-200 transition-all ease-in-out duration-500"
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>

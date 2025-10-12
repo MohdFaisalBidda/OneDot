@@ -1,3 +1,4 @@
+// components/custom/controlled-hover-popover.tsx
 "use client";
 
 import * as React from "react";
@@ -10,25 +11,43 @@ import {
 interface HoverPopoverProps {
   trigger: React.ReactNode;
   content: React.ReactNode;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-export function HoverPopover({ trigger, content }: HoverPopoverProps) {
-  const [open, setOpen] = React.useState(false);
+export function HoverPopover({
+  trigger,
+  content,
+  open,
+  onOpenChange,
+}: HoverPopoverProps) {
   const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const popoverRef = React.useRef<HTMLDivElement>(null);
 
   const handleOpen = () => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-    setOpen(true);
+    onOpenChange(true);
   };
 
   const handleClose = () => {
     timeoutRef.current = setTimeout(() => {
-      setOpen(false);
-    }, 150); // Small delay to allow moving to popover content
+      onOpenChange(false);
+    }, 200);
+  };
+
+  const handleContentMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+  };
+
+  const handleContentMouseLeave = (e: React.MouseEvent) => {
+    const relatedTarget = e.relatedTarget as Node;
+    if (popoverRef.current && !popoverRef.current.contains(relatedTarget)) {
+      handleClose();
+    }
   };
 
   React.useEffect(() => {
@@ -40,19 +59,24 @@ export function HoverPopover({ trigger, content }: HoverPopoverProps) {
   }, []);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>
-        <div onMouseEnter={handleOpen} onMouseLeave={handleClose}>
+        <div
+          onMouseEnter={handleOpen}
+          onMouseLeave={handleClose}
+          className="inline-flex"
+        >
           {trigger}
         </div>
       </PopoverTrigger>
       <PopoverContent
+        ref={popoverRef}
         side="bottom"
         align="end"
         className="w-56 rounded-xl mt-2"
         sideOffset={5}
-        onMouseEnter={handleOpen}
-        onMouseLeave={handleClose}
+        onMouseEnter={handleContentMouseEnter}
+        onMouseLeave={handleContentMouseLeave}
       >
         {content}
       </PopoverContent>

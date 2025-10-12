@@ -30,7 +30,7 @@ import Navigation from "./_components/Navigation";
 // });
 
 export const metadata: Metadata = {
-  title: "ClarityLog",
+  title: "OneDot",
   description: "Track your daily focus and decisions",
 };
 

@@ -30,7 +30,7 @@ export default function TestimonialsSection() {
     },
     {
       quote:
-        "ClarityLog has revolutionized how we handle custom contracts. The automation saves us hours every week and eliminates errors completely.",
+        "OneDot has revolutionized how we handle custom contracts. The automation saves us hours every week and eliminates errors completely.",
       name: "Sarah Chen",
       company: "VP Operations, TechFlow",
       image:

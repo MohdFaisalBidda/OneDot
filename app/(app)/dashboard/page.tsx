@@ -37,7 +37,7 @@ function page() {
       : "Good evening";
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
+    <div className="mx-auto max-w-6xl space-y-8 p-6">
       {/* Welcome Section */}
       <div className="space-y-2">
         <h1 className="font-serif text-4xl font-semibold text-foreground">

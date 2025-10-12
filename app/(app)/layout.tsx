@@ -29,7 +29,7 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "ClarityLog",
+  title: "OneDot",
   description: "Track your daily focus and decisions",
 };
 
@@ -45,7 +45,7 @@ export default function RootLayout({
       >
         <DashboardLayout>
           <Suspense fallback={<Loader />}>
-            <main className="min-h-screen">{children}</main>
+            <main className="">{children}</main>
           </Suspense>
         </DashboardLayout>
       </body>

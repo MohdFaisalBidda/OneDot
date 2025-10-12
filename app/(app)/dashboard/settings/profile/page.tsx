@@ -20,7 +20,7 @@ function ProfilePage() {
   };
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-2xl py-6">
       <Card className="shadow-sm">
         <CardHeader>
           <CardTitle className="font-serif text-2xl font-normal">

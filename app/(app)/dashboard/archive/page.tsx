@@ -130,7 +130,7 @@ export default function ArchivePage() {
   const paginatedDecisions = allDecisions.slice((decisionsPage - 1) * ITEMS_PER_PAGE, decisionsPage * ITEMS_PER_PAGE)
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-6xl px-4 p-6 sm:px-6 lg:px-8">
       <div className="mb-12 text-center">
         <h1 className="font-serif text-5xl font-normal leading-tight text-balance text-foreground sm:text-6xl">
           Complete Archive

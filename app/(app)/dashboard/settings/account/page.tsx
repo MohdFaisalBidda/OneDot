@@ -32,7 +32,7 @@ function AccountPage() {
   }
 
   return (
-      <div className="mx-auto max-w-2xl space-y-6">
+      <div className="mx-auto max-w-2xl space-y-6 py-6">
         <Card className="shadow-sm">
           <CardHeader>
             <CardTitle className="font-serif text-2xl font-normal">Change Password</CardTitle>

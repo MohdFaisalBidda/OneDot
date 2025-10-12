@@ -4,8 +4,9 @@ import { FocusEntry } from "@/app/_components/DailyFocus";
 import { CreateFocusSchema } from "@/app/validations/daily-focus";
 import prisma from "@/lib/prismaClient";
 import { getCurrentUser } from "./auth";
-import { FocusStatus } from "@/lib/generated/prisma";
 import { revalidatePath } from "next/cache";
+import { DecisionEntry } from "@/app/_components/DecisionTracker";
+import { CreateDecisionSchema } from "@/app/validations/decision-tracker";
 
 export const CreateFocus = async (data: FocusEntry) => {
     try {
@@ -82,5 +83,83 @@ export const getRecentFocus = async () => {
             error: "Failed to fetch recent focus entries. Please try again."
         };
     }
+}
 
+
+export const CreateDecision = async (data: DecisionEntry) => {
+    try {
+        const { data: resData, error } = CreateDecisionSchema.safeParse(data);
+        console.log(data,"data in decision");
+        
+
+        if (error) {
+            const fieldErrors: Record<string, string> = {}
+
+            error.issues.forEach(issue => {
+                const fieldName = issue.path[0] as string
+                fieldErrors[fieldName] = issue.message
+            })
+            return { error: "Validation failed", fieldErrors }
+        }
+
+        const user = await getCurrentUser()
+
+        if (!user) {
+            return { error: "Unauthorized" }
+        }
+
+        const { title, reason, category, image } = resData
+
+        await prisma.decision.create({
+            data: {
+                userId: user?.id,
+                title: title,
+                category,
+                reason: reason,
+                image,
+            },
+        })
+
+        revalidatePath("/decisions");
+
+        return {
+            success: true,
+        }
+    } catch (error) {
+        console.error("Error creating decision:", error);
+        return {
+            error: "Failed to create decision entry. Please try again."
+        };
+    }
+}
+
+export const getRecentDecisions = async () => {
+ const user = await getCurrentUser()
+
+    if (!user) {
+        return { error: "Unauthorized" }
+    }
+
+    try {
+        const recentDecision = await prisma.decision.findMany({
+            where: {
+                userId: user.id,
+            },
+            orderBy: {
+                date: "asc",
+            },
+            take: 3,
+        })
+
+        return {
+            status: 200,
+            data: recentDecision
+        }
+    } catch (error) {
+        console.log("Error getting recent decision:", error);
+        return {
+            status: 500,
+            error: "Failed to fetch recent decision entries. Please try again."
+        };
+    }
 }

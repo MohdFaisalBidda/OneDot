@@ -1,1 +1,1 @@
-export const APP_NAME="ClarityLog"
+export const APP_NAME="OneDot"

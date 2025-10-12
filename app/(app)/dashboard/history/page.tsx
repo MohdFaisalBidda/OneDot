@@ -36,7 +36,7 @@ export default function HistoryPage() {
   const monthlyCompletion = Math.round((20 / 28) * 100)
 
   return (
-    <div className="mx-auto max-w-5xl px-4 pb-12 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-5xl px-4 pb-12 sm:px-6 lg:px-8 p-6">
       <div className="mb-12 text-center">
         <h1 className="font-serif text-5xl font-normal leading-tight text-balance text-foreground sm:text-6xl">
           History & Reflection
@@ -45,8 +45,8 @@ export default function HistoryPage() {
           Review your progress and patterns over time
         </p>
         <div className="mt-6">
-          <Link href="/archive">
-            <Button variant="outline" className="rounded-full bg-transparent">
+          <Link href="/dashboard/archive">
+            <Button variant="outline" className="rounded-full">
               <Archive className="mr-2 h-4 w-4" />
               View Complete Archive
             </Button>

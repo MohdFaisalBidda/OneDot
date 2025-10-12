@@ -1,33 +1,37 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import type React from "react"
+import { useState, useEffect } from "react";
+import type React from "react";
 
 // Badge component for consistency
 function Badge({ icon, text }: { icon: React.ReactNode; text: string }) {
   return (
     <div className="px-[14px] py-[6px] bg-white shadow-[0px_0px_0px_4px_rgba(55,50,47,0.05)] overflow-hidden rounded-[90px] flex justify-start items-center gap-[8px] border border-[rgba(2,6,23,0.08)] shadow-xs">
-      <div className="w-[14px] h-[14px] relative overflow-hidden flex items-center justify-center">{icon}</div>
+      <div className="w-[14px] h-[14px] relative overflow-hidden flex items-center justify-center">
+        {icon}
+      </div>
       <div className="text-center flex justify-center flex-col text-[#37322F] text-xs font-medium leading-3 font-sans">
         {text}
       </div>
     </div>
-  )
+  );
 }
 
 export default function DocumentationSection() {
-  const [activeCard, setActiveCard] = useState(0)
-  const [animationKey, setAnimationKey] = useState(0)
+  const [activeCard, setActiveCard] = useState(0);
+  const [animationKey, setAnimationKey] = useState(0);
 
   const cards = [
     {
-      title: "Plan your schedules",
-      description: "Explore your data, build your dashboard,\nbring your team together.",
+      title: "Stay consistent with your daily focus",
+      description:
+        "Plan your goals, mark achievements, and reflect on your progress — all in one simple flow.",
       image: "/modern-dashboard-interface-with-data-visualization.jpg",
     },
     {
-      title: "Data to insights in minutes",
-      description: "Transform raw data into actionable insights\nwith powerful analytics tools.",
+      title: "Make and review decisions effortlessly",
+      description:
+        "Document what you decided, why, and what followed — turn reflection into growth.",
       image: "/analytics-dashboard.png",
     },
     // {
@@ -35,24 +39,27 @@ export default function DocumentationSection() {
     //   description: "Work together in real-time with your team\nand share insights instantly.",
     //   image: "/team-collaboration-interface-with-shared-workspace.jpg",
     // },
-  ]
+  ];
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveCard((prev) => (prev + 1) % cards.length)
-      setAnimationKey((prev) => prev + 1)
-    }, 5000)
+      setActiveCard((prev) => (prev + 1) % cards.length);
+      setAnimationKey((prev) => prev + 1);
+    }, 5000);
 
-    return () => clearInterval(interval)
-  }, [cards.length])
+    return () => clearInterval(interval);
+  }, [cards.length]);
 
   const handleCardClick = (index: number) => {
-    setActiveCard(index)
-    setAnimationKey((prev) => prev + 1)
-  }
+    setActiveCard(index);
+    setAnimationKey((prev) => prev + 1);
+  };
 
   return (
-    <div id="features" className="w-full border-b border-[rgba(55,50,47,0.12)] flex flex-col justify-center items-center">
+    <div
+      id="features"
+      className="w-full border-b border-[rgba(55,50,47,0.12)] flex flex-col justify-center items-center"
+    >
       {/* Header Section */}
       <div className="self-stretch px-6 md:px-24 py-12 md:py-16 border-b border-[rgba(55,50,47,0.12)] flex justify-center items-center gap-6">
         <div className="w-full max-w-[586px] px-6 py-5 shadow-[0px_2px_4px_rgba(50,45,43,0.06)] overflow-hidden rounded-lg flex flex-col justify-start items-center gap-4 shadow-none">
@@ -63,12 +70,12 @@ export default function DocumentationSection() {
             text="Platform Features"
           />
           <div className="self-stretch text-center flex justify-center flex-col text-[#49423D] text-3xl md:text-5xl font-semibold leading-tight md:leading-[60px] font-sans tracking-tight">
-            Streamline your business operations
+            Streamline your productivity workflow
           </div>
           <div className="self-stretch text-center text-[#605A57] text-base font-normal leading-7 font-sans">
-            Manage schedules, analyze data, and collaborate with your team
-            <br />
-            all in one powerful platform.
+            Manage focus, decisions, and insights in a minimal, distraction-free
+            environment
+            designed for clarity.
           </div>
         </div>
       </div>
@@ -79,7 +86,7 @@ export default function DocumentationSection() {
           {/* Left Column - Feature Cards */}
           <div className="w-full md:w-auto md:max-w-[400px] flex flex-col justify-center items-center gap-4 order-2 md:order-1">
             {cards.map((card, index) => {
-              const isActive = index === activeCard
+              const isActive = index === activeCard;
 
               return (
                 <div
@@ -92,7 +99,9 @@ export default function DocumentationSection() {
                   }`}
                 >
                   <div
-                    className={`w-full h-0.5 bg-[rgba(50,45,43,0.08)] overflow-hidden ${isActive ? "opacity-100" : "opacity-0"}`}
+                    className={`w-full h-0.5 bg-[rgba(50,45,43,0.08)] overflow-hidden ${
+                      isActive ? "opacity-100" : "opacity-0"
+                    }`}
                   >
                     <div
                       key={animationKey}
@@ -108,7 +117,7 @@ export default function DocumentationSection() {
                     </div>
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
 
@@ -120,8 +129,8 @@ export default function DocumentationSection() {
                   activeCard === 0
                     ? "bg-gradient-to-br from-blue-50 to-blue-100"
                     : activeCard === 1
-                      ? "bg-gradient-to-br from-purple-50 to-purple-100"
-                      : "bg-gradient-to-br from-green-50 to-green-100"
+                    ? "bg-gradient-to-br from-purple-50 to-purple-100"
+                    : "bg-gradient-to-br from-green-50 to-green-100"
                 }`}
               />
             </div>
@@ -140,5 +149,5 @@ export default function DocumentationSection() {
         }
       `}</style>
     </div>
-  )
+  );
 }

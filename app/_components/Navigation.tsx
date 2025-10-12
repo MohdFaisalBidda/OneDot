@@ -5,15 +5,59 @@ import { cn } from "@/lib/utils";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
-import { User, LogIn, UserPlus, Settings, LogOut } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import {
+  User,
+  LogIn,
+  UserPlus,
+  Settings,
+  LogOut,
+  Fingerprint,
+} from "lucide-react";
 import { HoverPopover } from "@/components/custom/hover-popover";
 import { navItems } from "@/consts/routesData";
 import { APP_NAME } from "@/consts";
+import { ReusableDialog } from "@/components/custom/DialogWithForm";
+import SignupForm from "./forms/signup-form";
+import LoginForm from "./forms/login-form";
 
 function Navigation() {
+  const [signupDialogOpen, setSignupDialogOpen] = useState(false);
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState(false);
   const pathname = usePathname();
   const { data: session } = useSession();
+
+  useEffect(() => {
+    if (signupDialogOpen || loginDialogOpen) {
+      setPopoverOpen(false);
+    }
+  }, [signupDialogOpen, loginDialogOpen]);
+
+  const handleSignupDialogOpenChange = (open: boolean) => {
+    setSignupDialogOpen(open);
+    if (open) {
+      setPopoverOpen(false);
+    }
+  };
+
+  const handleLoginDialogOpenChange = (open: boolean) => {
+    setLoginDialogOpen(open);
+    if (open) {
+      setPopoverOpen(false);
+    }
+  };
+
+  const handleSignUpClick = () => {
+    setPopoverOpen(false);
+    setSignupDialogOpen(true);
+  };
+
+  const handleLoginClick = () => {
+    setPopoverOpen(false);
+    setLoginDialogOpen(true);
+  };
 
   return (
     <div className="w-full h-12 sm:h-14 md:h-16 lg:h-[84px] absolute left-0 top-0 flex justify-center items-center z-20 px-6 sm:px-8 md:px-12 lg:px-0">
@@ -71,6 +115,8 @@ function Navigation() {
                 </Button>
               </Link>
               <HoverPopover
+                open={popoverOpen}
+                onOpenChange={setPopoverOpen}
                 trigger={
                   <Button
                     variant="ghost"
@@ -135,38 +181,76 @@ function Navigation() {
               />
             </>
           ) : (
-            <HoverPopover
-              trigger={
-                <Button
-                  variant="ghost"
-                  className="flex items-center gap-2 rounded-full p-2 hover:bg-accent"
-                >
-                  <User className="h-5 w-5" />
-                </Button>
-              }
-              content={
-                <div className="flex flex-col space-y-2">
-                  <Link href={"/login"}>
+            <>
+              <ReusableDialog
+                trigger={
+                  <Button
+                    variant={"ghost"}
+                    className="hidden w-full justify-start gap-4 font-medium border-none"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                    Sign up
+                  </Button>
+                }
+                title="Create Account"
+                description="Start your journey to better focus and decisions"
+                open={signupDialogOpen}
+                onOpenChange={handleSignupDialogOpenChange}
+              >
+                <SignupForm onSubmitSuccess={() => setDialogOpen(false)} />
+              </ReusableDialog>
+
+              <ReusableDialog
+                trigger={
+                  <Button
+                    variant={"ghost"}
+                    className="hidden w-full justify-start gap-4 font-medium border-none"
+                  >
+                    <Fingerprint className="h-4 w-4" />
+                    Log in
+                  </Button>
+                }
+                title="Welcome Back"
+                description="Enter your credentials to access your account"
+                open={loginDialogOpen}
+                onOpenChange={handleLoginDialogOpenChange}
+              >
+                <LoginForm onSubmitSuccess={() => setDialogOpen(false)} />
+              </ReusableDialog>
+
+              <HoverPopover
+                open={popoverOpen}
+                onOpenChange={setPopoverOpen}
+                trigger={
+                  <Button
+                    variant="ghost"
+                    className="flex items-center gap-2 rounded-full p-2 hover:bg-accent"
+                  >
+                    <User className="h-5 w-5" />
+                  </Button>
+                }
+                content={
+                  <div className="flex flex-col space-y-1">
                     <Button
+                      onClick={handleSignUpClick}
                       variant={"ghost"}
-                      className="w-full justify-start gap-2 font-medium hover:bg-accent"
-                    >
-                      <LogIn className="h-4 w-4" />
-                      Log in
-                    </Button>
-                  </Link>
-                  <Link href={"/signup"}>
-                    <Button
-                      variant={"default"}
-                      className="w-full justify-start gap-2 font-medium"
+                      className="w-full justify-start gap-4 font-medium border-none"
                     >
                       <UserPlus className="h-4 w-4" />
                       Sign up
                     </Button>
-                  </Link>
-                </div>
-              }
-            />
+                    <Button
+                      onClick={handleLoginClick}
+                      variant={"ghost"}
+                      className="w-full justify-start gap-4 font-medium border-none"
+                    >
+                      <Fingerprint className="h-4 w-4" />
+                      Log in
+                    </Button>
+                  </div>
+                }
+              />
+            </>
           )}
         </div>
       </div>

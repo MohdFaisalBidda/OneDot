@@ -14,6 +14,7 @@ import { HoverPopover } from "@/components/custom/hover-popover";
 import { Button } from "@/components/ui/button";
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const [popoverOpen, setPopoverOpen] = useState(false);
   const pathname = usePathname();
   const [settingsExpanded, setSettingsExpanded] = useState(
     pathname.startsWith("/settings")
@@ -24,12 +25,12 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const userInitials = getUserInitials(session?.user?.name as string);
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-[#F7F5F3]">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-border bg-card transition-transform">
+      <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-border bg-card/95 transition-transform">
         <div className="flex h-full flex-col">
           {/* Logo */}
-          <div className="flex h-16 items-center border-b border-border px-6">
+          <div className="flex justify-center h-16 items-center border-b border-border px-6">
             <Link
               href={"/"}
               className="flex flex-col justify-center text-[#2F3037] text-sm sm:text-base md:text-lg lg:text-xl font-bold leading-5 font-serif"
@@ -138,6 +139,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         <header className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
           <div className="flex justify-end">
             <HoverPopover
+              onOpenChange={setPopoverOpen}
+              open={popoverOpen}
               trigger={
                 <div className="flex h-16 items-center justify-end px-6">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
@@ -166,7 +169,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </div>
         </header>
         {/* Page content */}
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1">{children}</main>
       </div>
     </div>
   );
