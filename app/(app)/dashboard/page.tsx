@@ -17,17 +17,32 @@ import {
   TrendingUp,
   CheckCircle2,
   Clock,
+  ArrowUp,
+  ArrowDown,
 } from "lucide-react";
 import { homeDashboardQuickLinks } from "@/consts/routesData";
 import { announcements } from "@/consts/dashboard";
 import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { getDashboardStats } from "@/actions/dashboard";
+import type { DashboardStats } from "@/actions/dashboard";
 
 function page() {
-  // In a real app, this would come from user data and API
   const { data: session } = useSession();
-  const todaysFocus = "Complete project proposal";
-  const recentDecisionsCount = 3;
-  const focusCompletionRate = 85;
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchStats = async () => {
+      const result = await getDashboardStats();
+      if (result.data) {
+        setStats(result.data);
+      }
+      setLoading(false);
+    };
+    fetchStats();
+  }, []);
+
   const currentTime = new Date().getHours();
   const greeting =
     currentTime < 12
@@ -59,11 +74,11 @@ function page() {
           </CardHeader>
           <CardContent>
             <div className="text-xl font-semibold text-foreground">
-              {todaysFocus}
+              {loading ? "Loading..." : stats?.todaysFocus || "No focus set today"}
             </div>
             <p className="mt-1 flex items-center text-xs text-muted-foreground">
               <Clock className="mr-1 h-3 w-3" />
-              Set this morning
+              {stats?.todaysFocus ? "Set today" : "Add a focus for today"}
             </p>
           </CardContent>
         </Card>
@@ -77,7 +92,7 @@ function page() {
           </CardHeader>
           <CardContent>
             <div className="text-xl font-semibold text-foreground">
-              {recentDecisionsCount}
+              {loading ? "..." : stats?.recentDecisionsCount ?? 0}
             </div>
             <p className="mt-1 text-xs text-muted-foreground">Made this week</p>
           </CardContent>
@@ -92,11 +107,17 @@ function page() {
           </CardHeader>
           <CardContent>
             <div className="text-xl font-semibold text-foreground">
-              {focusCompletionRate}%
+              {loading ? "..." : `${stats?.focusCompletionRate ?? 0}%`}
             </div>
-            <p className="mt-1 flex items-center text-xs text-green-600">
-              <CheckCircle2 className="mr-1 h-3 w-3" />
-              +5% from last week
+            <p className={`mt-1 flex items-center text-xs ${
+              (stats?.weeklyTrend ?? 0) >= 0 ? "text-green-600" : "text-red-600"
+            }`}>
+              {(stats?.weeklyTrend ?? 0) >= 0 ? (
+                <ArrowUp className="mr-1 h-3 w-3" />
+              ) : (
+                <ArrowDown className="mr-1 h-3 w-3" />
+              )}
+              {loading ? "..." : `${Math.abs(stats?.weeklyTrend ?? 0)}% from last week`}
             </p>
           </CardContent>
         </Card>
@@ -177,33 +198,39 @@ function page() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-start gap-4 rounded-lg border border-border p-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 text-blue-600">
-              <BookOpen className="h-5 w-5" />
+          {loading ? (
+            <div className="text-center text-muted-foreground py-4">Loading activities...</div>
+          ) : stats?.recentActivities && stats.recentActivities.length > 0 ? (
+            stats.recentActivities.slice(0, 2).map((activity) => (
+              <div key={activity.id} className="flex items-start gap-4 rounded-lg border border-border p-4">
+                <div className={`flex h-10 w-10 items-center justify-center rounded-full ${
+                  activity.type === 'focus' 
+                    ? 'bg-blue-100 text-blue-600' 
+                    : 'bg-purple-100 text-purple-600'
+                }`}>
+                  {activity.type === 'focus' ? (
+                    <BookOpen className="h-5 w-5" />
+                  ) : (
+                    <GitBranch className="h-5 w-5" />
+                  )}
+                </div>
+                <div className="flex-1 space-y-1">
+                  <p className="text-sm font-medium text-foreground">
+                    {activity.type === 'focus' ? 'Daily Focus' : 'Decision Made'}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {activity.title} • {new Date(activity.timestamp).toLocaleDateString()}
+                    {activity.status && ` • ${activity.status}`}
+                    {activity.category && ` • ${activity.category}`}
+                  </p>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center text-muted-foreground py-4">
+              No recent activity. Start by adding a focus or decision!
             </div>
-            <div className="flex-1 space-y-1">
-              <p className="text-sm font-medium text-foreground">
-                Completed daily focus
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Complete project proposal • Today at 3:45 PM
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-4 rounded-lg border border-border p-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 text-purple-600">
-              <GitBranch className="h-5 w-5" />
-            </div>
-            <div className="flex-1 space-y-1">
-              <p className="text-sm font-medium text-foreground">
-                Made a decision
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Switch to new project management tool • Yesterday
-              </p>
-            </div>
-          </div>
+          )}
 
           <div className="pt-2">
             <Link href="/dashboard/archive">

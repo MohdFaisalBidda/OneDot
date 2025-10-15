@@ -1,23 +1,17 @@
-"use client";
-
 import type React from "react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import { getUserProfile } from "@/actions/settings";
+import { redirect } from "next/navigation";
+import { ProfileForm } from "./ProfileForm";
 
-function ProfilePage() {
-  const [name, setName] = useState("John Doe");
-  const [email, setEmail] = useState("john@example.com");
-  const [bio, setBio] = useState("Focused on personal growth and productivity");
+export default async function ProfilePage() {
+  // Get user profile data server-side
+  const profile = await getUserProfile();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert("Profile updated successfully!");
-  };
+  if (!profile) {
+    redirect("/auth/signin");
+  }
 
   return (
     <div className="mx-auto max-w-2xl py-6">
@@ -31,50 +25,9 @@ function ProfilePage() {
           </p>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Enter your name"
-                className="rounded-full"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email">Email Address</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="rounded-full"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="bio">Bio</Label>
-              <Textarea
-                id="bio"
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                placeholder="Tell us about yourself"
-                rows={4}
-                className="rounded-2xl"
-              />
-            </div>
-
-            <Button type="submit" className="w-full rounded-full" size="lg">
-              Save Changes
-            </Button>
-          </form>
+          <ProfileForm profile={profile} />
         </CardContent>
       </Card>
     </div>
   );
 }
-
-export default ProfilePage;

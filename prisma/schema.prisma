@@ -17,8 +17,14 @@ datasource db {
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
-  name      String?   
+  name      String?
   password  String? //Only for credentials provider
+
+  // Profile fields
+  bio       String?
+
+  // Preferences fields
+  theme           UserTheme @default(LIGHT)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -73,4 +79,10 @@ enum DecisionCategory {
   LIFESTYLE 
   GENERAL
   OTHER
+}
+
+enum UserTheme {
+  LIGHT
+  DARK
+  SYSTEM
 }
