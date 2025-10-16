@@ -13,6 +13,11 @@ import AuthProvider from "./context/AuthProvider";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import Navigation from "./_components/Navigation";
+import {
+  generatePageMetadata,
+  generateOrganizationSchema,
+  generateWebApplicationSchema,
+} from "@/lib/metadata";
 
 // const inter = Inter({
 //   subsets: ["latin"],
@@ -29,10 +34,7 @@ import Navigation from "./_components/Navigation";
 //   preload: true,
 // });
 
-export const metadata: Metadata = {
-  title: "OneDot",
-  description: "Track your daily focus and decisions",
-};
+export const metadata: Metadata = generatePageMetadata();
 
 export default async function RootLayout({
   children,
@@ -40,8 +42,28 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSession(authOptions);
+  
+  // Generate JSON-LD structured data
+  const organizationSchema = generateOrganizationSchema();
+  const webApplicationSchema = generateWebApplicationSchema();
+
   return (
     <html lang="en">
+      <head>
+        {/* JSON-LD Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(organizationSchema),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(webApplicationSchema),
+          }}
+        />
+      </head>
       <body className="font-sans">
         <AuthProvider session={session}>
           <Toaster position="top-center" />

@@ -9,6 +9,7 @@ import "../../app/globals.css";
 import { Suspense } from "react";
 import Loader from "../_components/Loader";
 import { DashboardLayout } from "../_components/dashboard-layout";
+import { generatePageMetadata } from "@/lib/metadata";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,10 +29,13 @@ const instrumentSerif = Instrument_Serif({
   preload: true,
 });
 
-export const metadata: Metadata = {
-  title: "OneDot",
-  description: "Track your daily focus and decisions",
-};
+export const metadata: Metadata = generatePageMetadata({
+  title: "Dashboard",
+  description: "Your personal dashboard for tracking daily focus, decisions, and progress. View insights and manage your productivity journey.",
+  keywords: ["dashboard", "overview", "productivity dashboard", "focus tracker", "decision tracker"],
+  canonicalUrl: "/dashboard",
+  noIndex: true,
+});
 
 export default function RootLayout({
   children,

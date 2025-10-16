@@ -27,7 +27,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen bg-[#F7F5F3]">
       {/* Sidebar */}
-      <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-border bg-card/95 transition-transform">
+      <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r border-border bg-[#F7F5F3] transition-transform">
         <div className="flex h-full flex-col">
           {/* Logo */}
           <div className="flex justify-center h-16 items-center border-b border-border px-6">
@@ -136,7 +136,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       {/* Main content */}
       <div className="flex flex-1 flex-col pl-64">
         {/* Header */}
-        <header className="sticky top-0 z-30 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
+        <header className="sticky top-0 z-30 border-b border-border bg-[#F7F5F3] backdrop-blur supports-[backdrop-filter]:bg-[#F7F5F3]">
           <div className="flex justify-end">
             <HoverPopover
               onOpenChange={setPopoverOpen}

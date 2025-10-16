@@ -1,9 +1,19 @@
+import type { Metadata } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getArchivedFocusEntries, getArchivedDecisions } from "@/actions/archive"
 import FocusTable from "./FocusTable"
 import DecisionTable from "./DecisionTable"
 import { FocusStatus, DecisionCategory } from "@/lib/generated/prisma"
 import { redirect } from "next/navigation"
+import { generatePageMetadata } from "@/lib/metadata";
+
+export const metadata: Metadata = generatePageMetadata({
+  title: "Complete Archive",
+  description: "Access all your daily focus entries and decisions in one place. Search, filter, and review your complete productivity history.",
+  keywords: ["archive", "history", "all entries", "complete records", "search", "filter"],
+  canonicalUrl: "/dashboard/archive",
+  noIndex: true,
+});
 
 interface SearchParams {
   // Focus params

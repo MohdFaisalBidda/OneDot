@@ -1,9 +1,19 @@
+import type { Metadata } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Archive } from "lucide-react"
 import Link from "next/link"
 import { getHistoryData } from "@/actions/history"
 import HistoryCharts from "./HistoryCharts"
+import { generatePageMetadata } from "@/lib/metadata";
+
+export const metadata: Metadata = generatePageMetadata({
+  title: "History & Reflection",
+  description: "Review your progress and patterns over time. Analyze your focus entries and decisions with insightful visualizations.",
+  keywords: ["history", "reflection", "progress tracking", "analytics", "insights", "patterns"],
+  canonicalUrl: "/dashboard/history",
+  noIndex: true,
+});
 
 export default async function HistoryPage() {
   const result = await getHistoryData()

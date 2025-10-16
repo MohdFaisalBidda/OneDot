@@ -3,6 +3,7 @@
 import type React from "react";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import SmartSimpleBrilliant from "../app/_components/smart-simple-brilliant";
 import YourWorkInSync from "../app/_components/your-work-in-sync";
 import EffortlessIntegration from "../app/_components/effortless-integration-updated";
@@ -143,9 +144,12 @@ export default function LandingPage() {
               </div>
 
               <div className="absolute top-[232px] sm:top-[248px] md:top-[264px] lg:top-[320px] left-1/2 transform -translate-x-1/2 z-0 pointer-events-none">
-                <img
+                <Image
                   src="/mask-group-pattern.svg"
-                  alt=""
+                  alt="Background pattern"
+                  width={2808}
+                  height={1000}
+                  priority
                   className="w-[936px] sm:w-[1404px] md:w-[2106px] lg:w-[2808px] h-auto opacity-30 sm:opacity-40 md:opacity-50 mix-blend-multiply"
                   style={{
                     filter: "hue-rotate(15deg) saturate(0.7) brightness(1.2)",
@@ -168,10 +172,13 @@ export default function LandingPage() {
                               : "opacity-0 scale-95 blur-sm"
                           }`}
                         >
-                          <img
+                          <Image
                             src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/dsadsadsa.jpg-xTHS4hGwCWp2H5bTj8np6DXZUyrxX7.jpeg"
-                            alt="Schedules Dashboard - Customer Subscription Management"
-                            className="w-full h-full object-cover"
+                            alt="Daily focus and priority tracking dashboard showing customer subscription management interface"
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 960px"
+                            className="object-cover"
+                            priority={activeCard === 0}
                           />
                         </div>
 
@@ -183,10 +190,13 @@ export default function LandingPage() {
                               : "opacity-0 scale-95 blur-sm"
                           }`}
                         >
-                          <img
+                          <Image
                             src="/analytics-dashboard-with-charts-graphs-and-data-vi.jpg"
-                            alt="Analytics Dashboard"
-                            className="w-full h-full object-cover"
+                            alt="Analytics dashboard with real-time insights, charts, graphs, and data visualization"
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 960px"
+                            className="object-cover"
+                            priority={activeCard === 1}
                           />
                         </div>
 
@@ -198,10 +208,13 @@ export default function LandingPage() {
                               : "opacity-0 scale-95 blur-sm"
                           }`}
                         >
-                          <img
+                          <Image
                             src="/data-visualization-dashboard-with-interactive-char.jpg"
-                            alt="Data Visualization Dashboard"
-                            className="w-full h-full object-contain" // Changed from object-cover to object-contain to preserve landscape aspect ratio
+                            alt="Interactive data visualization dashboard with charts, metrics, and decision tracking"
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 960px"
+                            className="object-contain"
+                            priority={activeCard === 2}
                           />
                         </div>
                       </div>

@@ -21,6 +21,7 @@ import { FocusStatus } from "@/lib/generated/prisma";
 import { CreateFocus } from "@/actions";
 import { toast } from "sonner";
 import Loader from "../Loader";
+import { R2FileUploader } from "@/components/custom/r2-file-uploader";
 
 interface DailyFocusFormProps {
   onSubmitSuccess?: () => void;
@@ -220,7 +221,7 @@ export function DailyFocusForm({
 
       <div className="space-y-2">
         <Label htmlFor="image">Attach Image (optional)</Label>
-        {!image ? (
+        {/* {!image ? (
           <div className="flex items-center gap-2">
             <Input
               id="image"
@@ -262,7 +263,8 @@ export function DailyFocusForm({
         )}
         {errors.image && (
           <p className="text-sm text-destructive">{errors.image}</p>
-        )}
+        )} */}
+        <R2FileUploader/>
       </div>
 
       <Button

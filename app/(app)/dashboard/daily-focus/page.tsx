@@ -1,6 +1,16 @@
 import React from "react";
+import type { Metadata } from "next";
 import DailyFocusPage from "../../../_components/DailyFocus";
 import { getRecentFocus } from "@/actions";
+import { generatePageMetadata } from "@/lib/metadata";
+
+export const metadata: Metadata = generatePageMetadata({
+  title: "Daily Focus",
+  description: "Define your daily priorities, track progress, and stay aligned with what truly matters each day. Manage your focus with intention.",
+  keywords: ["daily focus", "daily priorities", "focus tracking", "productivity", "daily goals"],
+  canonicalUrl: "/dashboard/daily-focus",
+  noIndex: true, // Dashboard pages typically shouldn't be indexed
+});
 
 async function page() {
   const { data, error } = await getRecentFocus();

@@ -1,4 +1,5 @@
 import type React from "react";
+import type { Metadata } from "next";
 import {
   Card,
   CardContent,
@@ -8,6 +9,15 @@ import {
 } from "@/components/ui/card";
 import Navigation from "@/app/_components/Navigation";
 import LoginForm from "@/app/_components/forms/login-form";
+import { generatePageMetadata } from "@/lib/metadata";
+
+export const metadata: Metadata = generatePageMetadata({
+  title: "Login",
+  description: "Sign in to your ClarityLog account to track your daily focus, decisions, and maintain clarity in your work.",
+  keywords: ["login", "sign in", "account access", "user authentication"],
+  canonicalUrl: "/login",
+  noIndex: true, // Prevent indexing of login pages
+});
 
 export default function LoginPage() {
   return (

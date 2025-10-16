@@ -1,9 +1,18 @@
 import type React from "react";
-
+import type { Metadata } from "next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getUserProfile } from "@/actions/settings";
 import { redirect } from "next/navigation";
 import { ProfileForm } from "./ProfileForm";
+import { generatePageMetadata } from "@/lib/metadata";
+
+export const metadata: Metadata = generatePageMetadata({
+  title: "Profile",
+  description: "Update your personal details and profile information.",
+  keywords: ["profile", "personal information", "user settings"],
+  canonicalUrl: "/dashboard/settings/profile",
+  noIndex: true,
+});
 
 export default async function ProfilePage() {
   // Get user profile data server-side
