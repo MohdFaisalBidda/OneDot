@@ -102,24 +102,24 @@ export async function updatePreferences(formData: FormData) {
     const user = await requireUser()
 
     const theme = formData.get("theme") as string
-    const pushNotifications = formData.get("pushNotifications") === "on"
-    const emailDigest = formData.get("emailDigest") === "on"
-    const weeklyReports = formData.get("weeklyReports") === "on"
+    // const pushNotifications = formData.get("pushNotifications") === "on"
+    // const emailDigest = formData.get("emailDigest") === "on"
+    // const weeklyReports = formData.get("weeklyReports") === "on"
 
     const updatedUser = await prisma.user.update({
       where: { id: user.id },
       data: {
         theme: theme as "LIGHT" | "DARK" | "SYSTEM",
-        pushNotifications,
-        emailDigest,
-        weeklyReports,
+        // pushNotifications,
+        // emailDigest,
+        // weeklyReports,
       },
       select: {
         id: true,
         theme: true,
-        pushNotifications: true,
-        emailDigest: true,
-        weeklyReports: true,
+        // pushNotifications: true,
+        // emailDigest: true,
+        // weeklyReports: true,
       },
     })
 

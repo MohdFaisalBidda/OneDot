@@ -13,16 +13,16 @@ function PreferencesForm({ initialPreferences }: { initialPreferences: any }) {
   const [isPending, startTransition] = useTransition();
 
   const [theme, setTheme] = useState(initialPreferences?.theme || "LIGHT");
-  const [notifications, setNotifications] = useState(initialPreferences?.pushNotifications || true);
-  const [emailDigest, setEmailDigest] = useState(initialPreferences?.emailDigest || true);
-  const [weeklyReports, setWeeklyReports] = useState(initialPreferences?.weeklyReports || false);
+  // const [notifications, setNotifications] = useState(initialPreferences?.pushNotifications || true);
+  // const [emailDigest, setEmailDigest] = useState(initialPreferences?.emailDigest || true);
+  // const [weeklyReports, setWeeklyReports] = useState(initialPreferences?.weeklyReports || false);
 
   const handleSubmit = async (formData: FormData) => {
     // Update form data with current state
     formData.set("theme", theme);
-    formData.set("pushNotifications", notifications ? "on" : "off");
-    formData.set("emailDigest", emailDigest ? "on" : "off");
-    formData.set("weeklyReports", weeklyReports ? "on" : "off");
+    // formData.set("pushNotifications", notifications ? "on" : "off");
+    // formData.set("emailDigest", emailDigest ? "on" : "off");
+    // formData.set("weeklyReports", weeklyReports ? "on" : "off");
 
     startTransition(async () => {
       const result = await updatePreferences(formData);
@@ -65,7 +65,7 @@ function PreferencesForm({ initialPreferences }: { initialPreferences: any }) {
             </div>
           </div>
 
-          <div className="space-y-4">
+          {/* <div className="space-y-4">
             <h3 className="font-medium">Notifications</h3>
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
@@ -102,7 +102,7 @@ function PreferencesForm({ initialPreferences }: { initialPreferences: any }) {
                 onCheckedChange={setWeeklyReports}
               />
             </div>
-          </div>
+          </div> */}
 
           <div className="pt-4">
             <Button type="submit" className="w-full rounded-full" size="lg" disabled={isPending}>
