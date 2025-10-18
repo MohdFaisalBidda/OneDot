@@ -137,9 +137,9 @@ export async function getUserPreferences() {
 
     return {
       theme: user.theme,
-      pushNotifications: user.pushNotifications,
-      emailDigest: user.emailDigest,
-      weeklyReports: user.weeklyReports,
+      // pushNotifications: user.pushNotifications,
+      // emailDigest: user.emailDigest,
+      // weeklyReports: user.weeklyReports,
     }
   } catch (error) {
     console.error("Error getting user preferences:", error)
