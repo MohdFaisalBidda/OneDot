@@ -6,6 +6,8 @@ import { redirect } from "next/navigation";
 import { ProfileForm } from "./ProfileForm";
 import { generatePageMetadata } from "@/lib/metadata";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = generatePageMetadata({
   title: "Profile",
   description: "Update your personal details and profile information.",

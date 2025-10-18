@@ -7,6 +7,8 @@ import { getHistoryData } from "@/actions/history"
 import HistoryCharts from "./HistoryCharts"
 import { generatePageMetadata } from "@/lib/metadata";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = generatePageMetadata({
   title: "History & Reflection",
   description: "Review your progress and patterns over time. Analyze your focus entries and decisions with insightful visualizations.",

@@ -4,6 +4,8 @@ import DailyFocusPage from "../../../_components/DailyFocus";
 import { getRecentFocus } from "@/actions";
 import { generatePageMetadata } from "@/lib/metadata";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = generatePageMetadata({
   title: "Daily Focus",
   description: "Define your daily priorities, track progress, and stay aligned with what truly matters each day. Manage your focus with intention.",

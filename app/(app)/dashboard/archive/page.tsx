@@ -7,6 +7,8 @@ import { FocusStatus, DecisionCategory } from "@/lib/generated/prisma"
 import { redirect } from "next/navigation"
 import { generatePageMetadata } from "@/lib/metadata";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = generatePageMetadata({
   title: "Complete Archive",
   description: "Access all your daily focus entries and decisions in one place. Search, filter, and review your complete productivity history.",

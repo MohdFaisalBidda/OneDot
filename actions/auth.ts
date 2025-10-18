@@ -4,6 +4,7 @@ import { CreateUser } from "@/app/validations/auth"
 import prisma from "@/lib/prismaClient"
 import bcrypt from "bcrypt"
 import { getServerSession } from "next-auth"
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"
 
 export async function registerUser(formData: FormData) {
   const rawData = {
@@ -47,7 +48,7 @@ export async function registerUser(formData: FormData) {
 
 export async function getCurrentUser() {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     
     if (!session?.user?.email) {
       return null;

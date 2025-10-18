@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { PreferencesContent } from "./PreferencesContent";
 import { generatePageMetadata } from "@/lib/metadata";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = generatePageMetadata({
   title: "Preferences",
   description: "Customize your ClarityLog experience. Manage your settings and preferences.",
