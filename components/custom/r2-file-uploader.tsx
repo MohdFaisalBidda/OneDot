@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback, type DragEvent, type ChangeEvent } from 'react';
+import { useState, useRef, useCallback, forwardRef, useImperativeHandle, type DragEvent, type ChangeEvent } from 'react';
 import { useR2Upload } from '@/hooks/use-r2-upload';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -30,20 +30,30 @@ interface R2FileUploaderProps {
   multiple?: boolean;
   maxFileSize?: number;
   acceptedTypes?: string[];
+  autoUpload?: boolean; // If false, parent must handle upload
   onUploadComplete?: (files: Array<{ key?: string; url?: string }>) => void;
   onFilesChange?: (files: FileWithPreview[]) => void;
+  onFilesSelected?: (files: File[]) => void; // Called when files selected (for manual upload mode)
   className?: string;
 }
 
-export function R2FileUploader({
-  prefix = 'uploads',
-  multiple = false,
-  maxFileSize = MAX_FILE_SIZE,
-  acceptedTypes = ACCEPTED_IMAGE_TYPES,
-  onUploadComplete,
-  onFilesChange,
-  className,
-}: R2FileUploaderProps) {
+export interface R2FileUploaderRef {
+  resetFiles: () => void;
+}
+
+export const R2FileUploader = forwardRef<R2FileUploaderRef, R2FileUploaderProps>(
+  (props, ref) => {
+  const {
+    prefix = 'uploads',
+    multiple = false,
+    maxFileSize = MAX_FILE_SIZE,
+    acceptedTypes = ACCEPTED_IMAGE_TYPES,
+    autoUpload = true,
+    onUploadComplete,
+    onFilesChange,
+    onFilesSelected,
+    className,
+  } = props;
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState<string>('');
@@ -57,6 +67,22 @@ export function R2FileUploader({
       onUploadComplete?.([result]);
     },
   });
+
+  // Reset files method
+  const resetFiles = useCallback(() => {
+    files.forEach(f => URL.revokeObjectURL(f.preview));
+    setFiles([]);
+    setError('');
+    onFilesChange?.([]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }, [files, onFilesChange]);
+
+  // Expose resetFiles method to parent via ref
+  useImperativeHandle(ref, () => ({
+    resetFiles,
+  }), [resetFiles]);
 
   // Validate file size and type
   const validateFile = useCallback((file: File): string | null => {
@@ -129,8 +155,13 @@ export function R2FileUploader({
       const newFiles = multiple ? [...files, ...validFiles] : validFiles;
       setFiles(newFiles);
       onFilesChange?.(newFiles);
+      
+      // If not auto-uploading, notify parent of selected files
+      if (!autoUpload) {
+        onFilesSelected?.(newFiles.map(f => f.file));
+      }
     }
-  }, [files, multiple, validateFile, isDuplicate, onFilesChange]);
+  }, [files, multiple, validateFile, isDuplicate, onFilesChange, autoUpload, onFilesSelected]);
 
   // Handle file input change
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -434,29 +465,33 @@ export function R2FileUploader({
             </Button>
           )}
 
-          {/* Upload button */}
-          <Button
-            type="button"
-            onClick={handleUpload}
-            disabled={files.length === 0 || isUploading}
-            className="w-full rounded-full gap-2"
-            size="lg"
-            aria-label="Upload files"
-          >
-            {isUploading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Uploading...
-              </>
-            ) : (
-              <>
-                <Upload className="h-4 w-4" />
-                Upload {files.length > 1 ? `${files.length} Files` : 'File'}
-              </>
-            )}
-          </Button>
+          {/* Upload button - only show if autoUpload is enabled */}
+          {autoUpload && (
+            <Button
+              type="button"
+              onClick={handleUpload}
+              disabled={files.length === 0 || isUploading}
+              className="w-full rounded-full gap-2"
+              size="lg"
+              aria-label="Upload files"
+            >
+              {isUploading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <Upload className="h-4 w-4" />
+                  Upload {files.length > 1 ? `${files.length} Files` : 'File'}
+                </>
+              )}
+            </Button>
+          )}
         </div>
       )}
     </div>
   );
-}
+});
+
+R2FileUploader.displayName = 'R2FileUploader';

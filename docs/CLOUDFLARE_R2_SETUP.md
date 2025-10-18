@@ -47,10 +47,17 @@ CLOUDFLARE_R2_PUBLIC_URL=https://your-bucket.your-domain.com
    - Go to R2 → Overview
    - Click "Create bucket" or use an existing bucket name
 
-4. **Public URL** (Optional):
-   - Go to your bucket settings
-   - If you want public access, enable it and configure a custom domain
-   - Use that domain as your CLOUDFLARE_R2_PUBLIC_URL
+4. **Public URL** (REQUIRED for public access):
+   - Go to R2 → Your Bucket → Settings
+   - Scroll to "Public Access"
+   - Click "Allow Access" to enable public access
+   - Copy the provided Public Bucket URL (looks like: `https://pub-xxxxx.r2.dev`)
+   - Use this URL as your `CLOUDFLARE_R2_PUBLIC_URL`
+   - Alternatively, you can connect a custom domain:
+     - Go to "Custom Domains" section
+     - Click "Connect Domain"
+     - Follow the instructions to connect your domain
+     - Use your custom domain URL as `CLOUDFLARE_R2_PUBLIC_URL`
 
 ## Usage Examples
 
@@ -373,6 +380,17 @@ List files in R2 bucket.
 - Check that your API token has the correct permissions (Read & Write)
 - Verify your bucket name is correct
 
-### Files upload but can't be accessed
-- Check your R2 bucket's public access settings
-- Configure a custom domain for public access or use signed URLs
+### Files upload but can't be accessed (Authorization Error)
+- **Enable public access on your R2 bucket:**
+  1. Go to Cloudflare Dashboard → R2 → Your Bucket
+  2. Click on "Settings" tab
+  3. Scroll to "Public Access" section
+  4. Click "Allow Access" button
+  5. Copy the Public Bucket URL (e.g., `https://pub-xxxxxxxxxxxxx.r2.dev`)
+  6. Add this URL to your `.env.local` as `CLOUDFLARE_R2_PUBLIC_URL`
+  7. Restart your development server
+- **Alternative: Use a custom domain:**
+  1. Go to your bucket's "Custom Domains" section
+  2. Click "Connect Domain" and follow the setup
+  3. Use your custom domain as `CLOUDFLARE_R2_PUBLIC_URL`
+- **Important:** Without public access enabled, files can only be accessed via presigned URLs

@@ -11,6 +11,7 @@ import {
   type DeleteFileResult,
   type ListFilesResult,
 } from '@/lib/r2';
+import { getCurrentUser } from './auth';
 
 export interface UploadFileActionOptions {
   fileBuffer: ArrayBuffer;
@@ -29,8 +30,20 @@ export async function uploadFileAction(
   try {
     const { fileBuffer, filename, contentType, prefix, metadata } = options;
 
+    // Get current user for user-specific folder structure
+    const user = await getCurrentUser();
+    if (!user?.email) {
+      return {
+        success: false,
+        error: 'User not authenticated',
+      };
+    }
+
+    // Create user-specific prefix: userEmail/prefix (or just userEmail if no prefix)
+    const userPrefix = prefix ? `${user.email}/${prefix}` : user.email;
+
     // Generate a unique key
-    const key = generateFileKey(filename, prefix);
+    const key = generateFileKey(filename, userPrefix);
 
     // Convert ArrayBuffer to Buffer
     const buffer = Buffer.from(fileBuffer);
@@ -96,7 +109,19 @@ export async function listFilesAction(
   maxKeys?: number
 ): Promise<ListFilesResult> {
   try {
-    const result = await listFilesInR2({ prefix, maxKeys });
+    // Get current user for user-specific folder structure
+    const user = await getCurrentUser();
+    if (!user?.email) {
+      return {
+        success: false,
+        error: 'User not authenticated',
+      };
+    }
+
+    // Create user-specific prefix
+    const userPrefix = prefix ? `${user.email}/${prefix}` : user.email;
+
+    const result = await listFilesInR2({ prefix: userPrefix, maxKeys });
     return result;
   } catch (error) {
     console.error('Error in listFilesAction:', error);

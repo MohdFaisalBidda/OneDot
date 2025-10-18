@@ -104,7 +104,18 @@ export async function uploadToR2(options: UploadOptions): Promise<UploadResult> 
 
     await client.send(command);
 
-    // Generate public URL (if your R2 bucket has public access configured)
+    // Generate public URL (requires R2 bucket with public access enabled)
+    if (!process.env.CLOUDFLARE_R2_PUBLIC_URL) {
+      console.warn(
+        '⚠️  CLOUDFLARE_R2_PUBLIC_URL is not configured. Files uploaded but will not be publicly accessible.\n' +
+        'To fix this:\n' +
+        '1. Go to Cloudflare Dashboard → R2 → Your Bucket → Settings\n' +
+        '2. Enable "Public Access" and copy the Public Bucket URL\n' +
+        '3. Add CLOUDFLARE_R2_PUBLIC_URL=<your-public-url> to your .env file\n' +
+        '4. Restart your server'
+      );
+    }
+
     const publicUrl = process.env.CLOUDFLARE_R2_PUBLIC_URL 
       ? `${process.env.CLOUDFLARE_R2_PUBLIC_URL}/${key}`
       : undefined;

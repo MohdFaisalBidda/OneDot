@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,12 +15,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AlertCircle, ImageIcon, X } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Decision, DecisionCategory } from "@/lib/generated/prisma";
 import Loader from "./Loader";
-import { CreateDecision } from "@/actions";
+import { CreateDecision, UpdateDecisionImage } from "@/actions";
 import { toast } from "sonner";
+import { R2FileUploader, type R2FileUploaderRef } from "@/components/custom/r2-file-uploader";
+import { useR2Upload } from "@/hooks/use-r2-upload";
+import { ImageLightbox } from "@/components/custom/image-lightbox";
 
 export type DecisionEntry = {
   id: string;
@@ -63,24 +66,30 @@ export default function DecisionsTrackerPage({
   const [title, setTitle] = useState("");
   const [reason, setReason] = useState("");
   const [category, setCategory] = useState<DecisionCategory>("CAREER");
-  const [image, setImage] = useState<string>("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string>("");
+  const uploaderRef = useRef<R2FileUploaderRef>(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxImages, setLightboxImages] = useState<string[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  
+  const { uploadFile } = useR2Upload({
+    prefix: 'decisions',
+    showToast: false,
+  });
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+  const handleFilesSelected = (files: File[]) => {
+    if (files && files.length > 0) {
+      setSelectedFile(files[0]);
     }
   };
 
-  const removeImage = () => {
-    setImage("");
+  const openLightbox = (imageUrl: string) => {
+    setLightboxImages([imageUrl]);
+    setLightboxIndex(0);
+    setLightboxOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -90,13 +99,36 @@ export default function DecisionsTrackerPage({
 
     try {
       setIsSubmitting(true);
+      
+      // Step 1: Client-side validation
+      const validationErrors: Record<string, string> = {};
+      
+      if (!title.trim()) {
+        validationErrors.title = "Title is required";
+      } else if (title.length > 100) {
+        validationErrors.title = "Title must be less than 100 characters";
+      }
+      
+      if (!reason.trim()) {
+        validationErrors.reason = "Reason is required";
+      } else if (reason.length > 500) {
+        validationErrors.reason = "Reason must be less than 500 characters";
+      }
+      
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Step 2: Create decision entry first (without image)
       const newDecision: DecisionEntry = {
         id: Date.now().toString(),
         title,
         reason,
         category: category,
         date: new Date().toISOString().split("T")[0],
-        image: image || undefined,
+        image: undefined, // No image yet
       };
 
       const res = await CreateDecision(newDecision);
@@ -107,15 +139,37 @@ export default function DecisionsTrackerPage({
         } else {
           setFormError(res.error);
         }
+        setIsSubmitting(false);
         return;
+      }
+
+      // Step 3: Upload file if selected (only after DB entry succeeds)
+      if (selectedFile && res.id) {
+        const uploadResult = await uploadFile(selectedFile);
+        
+        if (!uploadResult.success) {
+          // DB entry created but upload failed - show warning
+          toast.warning("Decision created, but image upload failed. You can try uploading again later.");
+          console.error("Upload error:", uploadResult.error);
+        } else if (uploadResult.url) {
+          // Step 4: Update decision with image URL (only if upload succeeds)
+          const updateRes = await UpdateDecisionImage(res.id, uploadResult.url);
+          
+          if (updateRes?.error) {
+            toast.warning("Decision created, but failed to attach image.");
+            console.error("Update error:", updateRes.error);
+          }
+        }
       }
 
       toast.success("Decision has been added!");
 
+      // Reset form
       setTitle("");
       setReason("");
       setCategory("CAREER");
-      setImage("");
+      setSelectedFile(null);
+      uploaderRef.current?.resetFiles();
     } catch (error) {
       setFormError("An unexpected error occurred. Please try again.");
       console.log("Error creating decision entry:", error);
@@ -129,7 +183,7 @@ export default function DecisionsTrackerPage({
   };
 
   return (
-    <div className="mx-auto max-w-5xl px-4 pb-12 sm:px-6 lg:px-8 p-6">
+    <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8 p-6">
       <div className="mb-12 text-center">
         <h1 className="font-serif text-5xl font-normal leading-tight text-balance text-foreground sm:text-6xl">
           Decision Tracker
@@ -155,7 +209,7 @@ export default function DecisionsTrackerPage({
                 </Alert>
               )}
               <div className="space-y-2">
-                <Label htmlFor="title">Decision Title</Label>
+                <Label aria-required htmlFor="title">Decision Title</Label>
                 <Input
                   id="title"
                   value={title}
@@ -173,7 +227,7 @@ export default function DecisionsTrackerPage({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="reason">Reason</Label>
+                <Label aria-required htmlFor="reason">Reason</Label>
                 <Textarea
                   id="reason"
                   value={reason}
@@ -198,7 +252,7 @@ export default function DecisionsTrackerPage({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
+                <Label aria-required htmlFor="category">Category</Label>
                 <Select
                   value={category}
                   onValueChange={(val: string) =>
@@ -223,48 +277,13 @@ export default function DecisionsTrackerPage({
                 <Label htmlFor="decision-image">
                   Reference Image (optional)
                 </Label>
-                {!image ? (
-                  <div className="flex items-center gap-2">
-                    <Input
-                      id="decision-image"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                      disabled={isSubmitting}
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      disabled={isSubmitting}
-                      onClick={() =>
-                        document.getElementById("decision-image")?.click()
-                      }
-                      className="rounded-full"
-                    >
-                      <ImageIcon className="mr-2 h-4 w-4" />
-                      Upload Image
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="relative inline-block">
-                    <img
-                      src={image || "/placeholder.svg"}
-                      alt="Preview"
-                      className="h-24 w-24 rounded-2xl object-cover shadow-sm"
-                    />
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      onClick={removeImage}
-                      disabled={isSubmitting}
-                      className="absolute -right-2 -top-2 h-6 w-6 rounded-full"
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </div>
-                )}
+                <R2FileUploader
+                  ref={uploaderRef}
+                  prefix="decisions"
+                  multiple={false}
+                  autoUpload={false}
+                  onFilesSelected={handleFilesSelected}
+                />
                 {errors.image && (
                   <p className="text-sm text-destructive">{errors.image}</p>
                 )}
@@ -306,7 +325,9 @@ export default function DecisionsTrackerPage({
                           {decision.category}
                         </span>
                       </div>
-                      <p className="text-sm leading-relaxed text-muted-foreground">
+                      <div className="flex items-start justify-between gap-4">
+
+                      <p className="text-sm leading-relaxed text-muted-foreground max-w-md w-full">
                         {decision.reason}
                       </p>
                       {decision.image && (
@@ -314,10 +335,13 @@ export default function DecisionsTrackerPage({
                           <img
                             src={decision.image || "/placeholder.svg"}
                             alt="Decision reference"
-                            className="h-20 w-20 rounded-xl object-cover shadow-sm"
+                            className="rounded-xl h-24 object-cover shadow-sm hover:scale-110 transition-all ease-in-out duration-500 cursor-pointer"
+                            onClick={() => openLightbox(decision.image!)}
                           />
                         </div>
                       )}
+                      </div>
+
                       <p className="text-xs text-muted-foreground">
                         {new Date(decision.date).toLocaleString()}
                       </p>
@@ -329,6 +353,14 @@ export default function DecisionsTrackerPage({
           </div>
         </div>
       </div>
+
+      <ImageLightbox
+        images={lightboxImages}
+        initialIndex={lightboxIndex}
+        isOpen={lightboxOpen}
+        onClose={() => setLightboxOpen(false)}
+        alt="Decision reference"
+      />
     </div>
   );
 }

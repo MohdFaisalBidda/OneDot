@@ -30,7 +30,7 @@ export const CreateFocus = async (data: FocusEntry) => {
 
         const { focus, status, mood, notes, image } = resData
 
-        await prisma.focus.create({
+        const focusEntry = await prisma.focus.create({
             data: {
                 userId: user?.id,
                 title: focus,
@@ -45,6 +45,7 @@ export const CreateFocus = async (data: FocusEntry) => {
 
         return {
             success: true,
+            id: focusEntry.id,
         }
     } catch (error) {
         console.error("Error creating focus:", error);
@@ -110,7 +111,7 @@ export const CreateDecision = async (data: DecisionEntry) => {
 
         const { title, reason, category, image } = resData
 
-        await prisma.decision.create({
+        const decision = await prisma.decision.create({
             data: {
                 userId: user?.id,
                 title: title,
@@ -124,6 +125,7 @@ export const CreateDecision = async (data: DecisionEntry) => {
 
         return {
             success: true,
+            id: decision.id,
         }
     } catch (error) {
         console.error("Error creating decision:", error);
@@ -163,3 +165,65 @@ export const getRecentDecisions = async () => {
         };
     }
 }
+
+export const UpdateDecisionImage = async (decisionId: string, imageUrl: string) => {
+    try {
+        const user = await getCurrentUser();
+
+        if (!user) {
+            return { error: "Unauthorized" };
+        }
+
+        await prisma.decision.update({
+            where: {
+                id: decisionId,
+                userId: user.id,
+            },
+            data: {
+                image: imageUrl,
+            },
+        });
+
+        revalidatePath("/decisions");
+
+        return {
+            success: true,
+        };
+    } catch (error) {
+        console.error("Error updating decision image:", error);
+        return {
+            error: "Failed to update decision image. Please try again.",
+        };
+    }
+};
+
+export const UpdateFocusImage = async (focusId: string, imageUrl: string) => {
+    try {
+        const user = await getCurrentUser();
+
+        if (!user) {
+            return { error: "Unauthorized" };
+        }
+
+        await prisma.focus.update({
+            where: {
+                id: focusId,
+                userId: user.id,
+            },
+            data: {
+                image: imageUrl,
+            },
+        });
+
+        revalidatePath("/daily-focus");
+
+        return {
+            success: true,
+        };
+    } catch (error) {
+        console.error("Error updating focus image:", error);
+        return {
+            error: "Failed to update focus image. Please try again.",
+        };
+    }
+};

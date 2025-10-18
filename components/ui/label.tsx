@@ -10,6 +10,7 @@ function Label({
   ...props
 }: React.ComponentProps<typeof LabelPrimitive.Root>) {
   return (
+    <div className="flex gap-x-1">
     <LabelPrimitive.Root
       data-slot="label"
       className={cn(
@@ -17,7 +18,9 @@ function Label({
         className
       )}
       {...props}
-    />
+      />
+      {props["aria-required"] && <span className="text-red-500">*</span>}
+      </div>
   )
 }
 

@@ -2,7 +2,7 @@
 "use client";
 
 import type React from "react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,13 +15,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AlertCircle, ImageIcon, X } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { FocusStatus } from "@/lib/generated/prisma";
-import { CreateFocus } from "@/actions";
+import { CreateFocus, UpdateFocusImage } from "@/actions";
 import { toast } from "sonner";
 import Loader from "../Loader";
-import { R2FileUploader } from "@/components/custom/r2-file-uploader";
+import { R2FileUploader, type R2FileUploaderRef } from "@/components/custom/r2-file-uploader";
+import { useR2Upload } from "@/hooks/use-r2-upload";
 
 interface DailyFocusFormProps {
   onSubmitSuccess?: () => void;
@@ -44,39 +45,21 @@ export function DailyFocusForm({
   );
   const [mood, setMood] = useState(defaultValues?.mood || "");
   const [notes, setNotes] = useState(defaultValues?.notes || "");
-  const [image, setImage] = useState<string>(defaultValues?.image || "");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string>("");
+  const uploaderRef = useRef<R2FileUploaderRef>(null);
+  
+  const { uploadFile } = useR2Upload({
+    prefix: 'focus',
+    showToast: false,
+  });
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (!file.type.startsWith("image/")) {
-        setErrors((prev) => ({
-          ...prev,
-          image: "Please upload an image file",
-        }));
-        return;
-      }
-
-      if (file.size > 5 * 1024 * 1024) {
-        setErrors((prev) => ({
-          ...prev,
-          image: "Image size should be less than 5MB",
-        }));
-      }
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+  const handleFilesSelected = (files: File[]) => {
+    if (files && files.length > 0) {
+      setSelectedFile(files[0]);
     }
-  };
-
-  const removeImage = () => {
-    setImage("");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -86,6 +69,33 @@ export function DailyFocusForm({
 
     try {
       setIsSubmitting(true);
+      
+      // Step 1: Client-side validation
+      const validationErrors: Record<string, string> = {};
+      
+      if (!focus.trim()) {
+        validationErrors.focus = "Focus is required";
+      } else if (focus.length > 100) {
+        validationErrors.focus = "Focus must be less than 100 characters";
+      }
+      
+      if (!mood.trim()) {
+        validationErrors.mood = "Mood is required";
+      } else if (mood.length > 50) {
+        validationErrors.mood = "Mood must be less than 50 characters";
+      }
+      
+      if (notes.length > 500) {
+        validationErrors.notes = "Notes must be less than 500 characters";
+      }
+      
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Step 2: Create focus entry first (without image)
       const newEntry = {
         id: Date.now().toString(),
         focus,
@@ -93,7 +103,7 @@ export function DailyFocusForm({
         mood,
         notes,
         date: new Date().toISOString().split("T")[0],
-        image: image || undefined,
+        image: undefined, // No image yet
       };
 
       const res = await CreateFocus(newEntry);
@@ -104,7 +114,27 @@ export function DailyFocusForm({
         } else {
           setFormError(res.error);
         }
+        setIsSubmitting(false);
         return;
+      }
+
+      // Step 3: Upload file if selected (only after DB entry succeeds)
+      if (selectedFile && res.id) {
+        const uploadResult = await uploadFile(selectedFile);
+        
+        if (!uploadResult.success) {
+          // DB entry created but upload failed - show warning
+          toast.warning("Focus created, but image upload failed. You can try uploading again later.");
+          console.error("Upload error:", uploadResult.error);
+        } else if (uploadResult.url) {
+          // Step 4: Update focus with image URL (only if upload succeeds)
+          const updateRes = await UpdateFocusImage(res.id, uploadResult.url);
+          
+          if (updateRes?.error) {
+            toast.warning("Focus created, but failed to attach image.");
+            console.error("Update error:", updateRes.error);
+          }
+        }
       }
 
       toast.success("Focus has been added!");
@@ -115,7 +145,8 @@ export function DailyFocusForm({
       setStatus("PENDING");
       setMood("");
       setNotes("");
-      setImage("");
+      setSelectedFile(null);
+      uploaderRef.current?.resetFiles();
     } catch (error) {
       setFormError("An unexpected error occurred. Please try again.");
       console.log("Error creating focus entry:", error);
@@ -138,7 +169,7 @@ export function DailyFocusForm({
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="focus">What's your focus today?</Label>
+        <Label aria-required htmlFor="focus">What's your focus today?</Label>
         <Input
           id="focus"
           type="text"
@@ -157,7 +188,7 @@ export function DailyFocusForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="status">Status</Label>
+        <Label aria-required htmlFor="status">Status</Label>
         <Select
           value={status}
           onValueChange={(value: string) => setStatus(value as FocusStatus)}
@@ -177,7 +208,7 @@ export function DailyFocusForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="mood">Mood</Label>
+        <Label aria-required htmlFor="mood">Mood</Label>
         <Input
           id="mood"
           value={mood}
@@ -220,51 +251,17 @@ export function DailyFocusForm({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="image">Attach Image (optional)</Label>
-        {/* {!image ? (
-          <div className="flex items-center gap-2">
-            <Input
-              id="image"
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="hidden"
-              disabled={isSubmitting}
-            />
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => document.getElementById("image")?.click()}
-              className="rounded-full"
-              disabled={isSubmitting}
-            >
-              <ImageIcon className="mr-2 h-4 w-4" />
-              Upload Image
-            </Button>
-          </div>
-        ) : (
-          <div className="relative inline-block">
-            <img
-              src={image || "/placeholder.svg"}
-              alt="Preview"
-              className="h-24 w-24 rounded-2xl object-cover shadow-sm"
-            />
-            <Button
-              type="button"
-              variant="destructive"
-              size="icon"
-              onClick={removeImage}
-              className="absolute -right-2 -top-2 h-6 w-6 rounded-full"
-              disabled={isSubmitting}
-            >
-              <X className="h-3 w-3" />
-            </Button>
-          </div>
-        )}
+        <Label htmlFor="image">Attach Image</Label>
+        <R2FileUploader
+          ref={uploaderRef}
+          prefix="focus"
+          multiple={false}
+          autoUpload={false}
+          onFilesSelected={handleFilesSelected}
+        />
         {errors.image && (
           <p className="text-sm text-destructive">{errors.image}</p>
-        )} */}
-        <R2FileUploader/>
+        )}
       </div>
 
       <Button
