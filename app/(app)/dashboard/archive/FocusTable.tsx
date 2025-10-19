@@ -14,6 +14,7 @@ import {
 import { ChevronLeft, ChevronRight, ArrowUpDown, Search, X } from "lucide-react"
 import { FocusStatus } from "@/lib/generated/prisma"
 import { format } from "date-fns"
+import { getStatusBadgeStyle, getStatusText } from "@/lib/status-colors"
 
 interface Focus {
   id: string
@@ -37,19 +38,7 @@ interface FocusTableProps {
   }
 }
 
-const statusColors = {
-  ACHIEVED: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
-  PARTIALLY_ACHIEVED: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
-  NOT_ACHIEVED: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
-  PENDING: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
-}
-
-const statusLabels = {
-  ACHIEVED: "Achieved",
-  PARTIALLY_ACHIEVED: "Partially",
-  NOT_ACHIEVED: "Not Achieved",
-  PENDING: "Pending",
-}
+// Status colors and labels are now handled by utility functions
 
 export default function FocusTable({ data, pagination }: FocusTableProps) {
   const router = useRouter()
@@ -152,7 +141,7 @@ export default function FocusTable({ data, pagination }: FocusTableProps) {
             <SelectItem value="all">All Status</SelectItem>
             {Object.values(FocusStatus).map((status) => (
               <SelectItem key={status} value={status}>
-                {statusLabels[status]}
+                {getStatusText(status)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -219,8 +208,8 @@ export default function FocusTable({ data, pagination }: FocusTableProps) {
                   </td>
                   <td className="p-3 text-sm font-medium">{entry.title}</td>
                   <td className="p-3 text-sm">
-                    <span className={`inline-flex rounded-full px-2 py-1 text-xs ${statusColors[entry.status]}`}>
-                      {statusLabels[entry.status]}
+                    <span className={`inline-flex rounded-full border px-2 py-1 text-xs ${getStatusBadgeStyle(entry.status)}`}>
+                      {getStatusText(entry.status)}
                     </span>
                   </td>
                   <td className="p-3 text-sm">{entry.mood}</td>

@@ -14,6 +14,7 @@ import {
 import { ChevronLeft, ChevronRight, ArrowUpDown, Search, X } from "lucide-react"
 import { DecisionCategory } from "@/lib/generated/prisma"
 import { format } from "date-fns"
+import { getCategoryColor, getCategoryIcon } from "@/lib/status-colors"
 
 interface Decision {
   id: string
@@ -36,15 +37,10 @@ interface DecisionTableProps {
   }
 }
 
-const categoryLabels = {
-  CAREER: "Career",
-  HEALTH: "Health",
-  FINANCE: "Finance",
-  RELATIONSHIPS: "Relationships",
-  LIFESTYLE: "Lifestyle",
-  GENERAL: "General",
-  OTHER: "Other",
-}
+// Helper function to format category labels
+const formatCategoryLabel = (category: string) => {
+  return category.charAt(0) + category.slice(1).toLowerCase();
+};
 
 export default function DecisionTable({ data, pagination }: DecisionTableProps) {
   const router = useRouter()
@@ -145,7 +141,7 @@ export default function DecisionTable({ data, pagination }: DecisionTableProps) 
             <SelectItem value="all">All Categories</SelectItem>
             {Object.values(DecisionCategory).map((category) => (
               <SelectItem key={category} value={category}>
-                {categoryLabels[category]}
+                {getCategoryIcon(category)} {formatCategoryLabel(category)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -206,8 +202,9 @@ export default function DecisionTable({ data, pagination }: DecisionTableProps) 
                     {decision.reason}
                   </td>
                   <td className="p-3 text-sm">
-                    <span className="inline-flex rounded-full bg-primary/10 px-2 py-1 text-xs text-primary">
-                      {categoryLabels[decision.category]}
+                    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs border ${getCategoryColor(decision.category)} border-transparent`}>
+                      <span>{getCategoryIcon(decision.category)}</span>
+                      <span>{formatCategoryLabel(decision.category)}</span>
                     </span>
                   </td>
                   <td className="p-3">

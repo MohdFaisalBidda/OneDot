@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Focus, FocusStatus } from "@/lib/generated/prisma";
 import { DailyFocusForm } from "./forms/daily-focus-form";
 import { ImageLightbox } from "@/components/custom/image-lightbox";
+import { getStatusBadgeStyle, getStatusText } from "@/lib/status-colors";
 
 export type FocusEntry = {
   id: string;
@@ -67,21 +68,9 @@ export default function DailyFocusPage({
                         {entry.title}
                       </h3>
                       <span
-                        className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${
-                          entry.status === "ACHIEVED"
-                            ? "bg-primary text-primary-foreground"
-                            : entry.status === "PARTIALLY_ACHIEVED"
-                            ? "bg-muted text-foreground"
-                            : "bg-secondary text-secondary-foreground"
-                        }`}
+                        className={`shrink-0 rounded-full border px-3 py-1 text-xs font-medium ${getStatusBadgeStyle(entry.status)}`}
                       >
-                        {entry.status === "ACHIEVED"
-                          ? "Achieved"
-                          : entry.status === "PARTIALLY_ACHIEVED"
-                          ? "Partial Achieved"
-                          : entry.status === "NOT_ACHIEVED"
-                          ? "Not Achieved"
-                          : "Pending"}
+                        {getStatusText(entry.status)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center gap-x-10">

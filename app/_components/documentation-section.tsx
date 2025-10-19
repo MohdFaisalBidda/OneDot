@@ -34,11 +34,6 @@ export default function DocumentationSection() {
         "Document what you decided, why, and what followed — turn reflection into growth.",
       image: "/analytics-dashboard.png",
     },
-    // {
-    //   title: "Collaborate seamlessly",
-    //   description: "Work together in real-time with your team\nand share insights instantly.",
-    //   image: "/team-collaboration-interface-with-shared-workspace.jpg",
-    // },
   ];
 
   useEffect(() => {

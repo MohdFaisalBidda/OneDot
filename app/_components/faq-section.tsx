@@ -11,27 +11,27 @@ const faqData: FAQItem[] = [
   {
     question: "What is OneDot and who is it for?",
     answer:
-      "OneDot is a comprehensive billing automation platform designed for businesses that need custom contract management. It's perfect for SaaS companies, service providers, and enterprises looking to streamline their billing processes.",
+      "OneDot is a mindful productivity platform designed for individuals who want to build clarity and intention into their daily routines. It's perfect for professionals, students, and anyone seeking to track their focus, document decisions, and reflect on progress in a calm, distraction-free environment.",
   },
   {
     question: "How do focus logs and decisions work together?",
     answer:
-      "Our platform automatically processes your custom contracts, calculates billing amounts based on your specific terms, and generates invoices. You can set up complex pricing structures, usage-based billing, and custom billing cycles.",
+      "Focus logs help you set daily intentions and track what you accomplish, while decision tracking lets you document important choices, your reasoning, and their outcomes. Together, they create a complete picture of your journey — showing not just what you did, but why you did it and what you learned.",
   },
   {
     question: "Can I export my daily reflections?",
     answer:
-      "Yes! OneDot integrates seamlessly with popular CRM systems, accounting software, and payment processors. We support APIs and webhooks for custom integrations with your existing workflow.",
+      "Yes! OneDot allows you to export your focus logs, decisions, and reflections in multiple formats including PDF and CSV. This makes it easy to review your progress over time, share insights, or archive your personal growth journey.",
   },
   {
     question: "Is my data private and secure?",
     answer:
-      "We offer 24/7 customer support, dedicated account managers for enterprise clients, comprehensive documentation, and onboarding assistance to help you get started quickly.",
+      "Absolutely. We use enterprise-grade security measures including end-to-end encryption and secure cloud storage. Your personal reflections, decisions, and focus logs are completely private — only you have access to your data. We never share or sell your information.",
   },
   {
     question: "Do you offer AI-powered insights?",
     answer:
-      "Absolutely. We use enterprise-grade security measures including end-to-end encryption, SOC 2 compliance, and regular security audits. Your data is stored in secure, redundant data centers.",
+      "Yes! Our Professional plan includes AI-powered features that analyze your patterns, generate summaries of your progress, and provide personalized insights to help you identify trends in your focus and decision-making. The AI helps you understand yourself better without overwhelming you with data.",
   },
 ]
 

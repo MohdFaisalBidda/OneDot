@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { R2FileUploader, type R2FileUploaderRef } from "@/components/custom/r2-file-uploader";
 import { useR2Upload } from "@/hooks/use-r2-upload";
 import { ImageLightbox } from "@/components/custom/image-lightbox";
+import { getCategoryColor, getCategoryIcon } from "@/lib/status-colors";
 
 export type DecisionEntry = {
   id: string;
@@ -321,8 +322,9 @@ export default function DecisionsTrackerPage({
                         <h3 className="font-medium leading-relaxed">
                           {decision.title}
                         </h3>
-                        <span className="shrink-0 rounded-full bg-muted px-3 py-1 text-xs font-medium text-foreground">
-                          {decision.category}
+                        <span className={`shrink-0 inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium ${getCategoryColor(decision.category)}`}>
+                          <span>{getCategoryIcon(decision.category)}</span>
+                          <span>{decision.category}</span>
                         </span>
                       </div>
                       <div className="flex items-start justify-between gap-4">

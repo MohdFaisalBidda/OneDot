@@ -24,20 +24,14 @@ import { useRouter } from "next/navigation";
 export default function LandingPage() {
   const [activeCard, setActiveCard] = useState(0);
   const [progress, setProgress] = useState(0);
-  const mountedRef = useRef(true);
   const router = useRouter();
   const { data: session } = useSession();
 
   useEffect(() => {
     const progressInterval = setInterval(() => {
-      if (!mountedRef.current) return;
-
       setProgress((prev) => {
-        if (prev >= 100) {
-          if (mountedRef.current) {
-            setActiveCard((current) => (current + 1) % 3);
-          }
-          return 0;
+        if (prev >= 98) { // Trigger slightly before 100 to avoid timing issues
+          return 100;
         }
         return prev + 2; // 2% every 100ms = 5 seconds total
       });
@@ -45,50 +39,30 @@ export default function LandingPage() {
 
     return () => {
       clearInterval(progressInterval);
-      mountedRef.current = false;
     };
   }, []);
 
+  // Separate effect to handle card transitions
   useEffect(() => {
-    return () => {
-      mountedRef.current = false;
-    };
-  }, []);
+    if (progress >= 100) {
+      const timer = setTimeout(() => {
+        setActiveCard((current) => {
+          const nextCard = (current + 1) % 3;
+          console.log(`Card transition: ${current} -> ${nextCard}`);
+          return nextCard;
+        });
+        setProgress(0);
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [progress]);
 
   const handleCardClick = (index: number) => {
-    if (!mountedRef.current) return;
     setActiveCard(index);
     setProgress(0);
   };
 
-  const getDashboardContent = () => {
-    switch (activeCard) {
-      case 0:
-        return (
-          <div className="text-[#828387] text-sm">
-            Customer Subscription Status and Details
-          </div>
-        );
-      case 1:
-        return (
-          <div className="text-[#828387] text-sm">
-            Analytics Dashboard - Real-time Insights
-          </div>
-        );
-      case 2:
-        return (
-          <div className="text-[#828387] text-sm">
-            Data Visualization - Charts and Metrics
-          </div>
-        );
-      default:
-        return (
-          <div className="text-[#828387] text-sm">
-            Customer Subscription Status and Details
-          </div>
-        );
-    }
-  };
 
   return (
     <div className="w-full min-h-screen relative bg-[#F7F5F3] overflow-x-hidden flex flex-col justify-start items-center">
@@ -173,11 +147,11 @@ export default function LandingPage() {
                           }`}
                         >
                           <Image
-                            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/dsadsadsa.jpg-xTHS4hGwCWp2H5bTj8np6DXZUyrxX7.jpeg"
+                            src="/mask-group-pattern.svg"
                             alt="Daily focus and priority tracking dashboard showing customer subscription management interface"
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 960px"
-                            className="object-cover"
+                            className="object-contain"
                             priority={activeCard === 0}
                           />
                         </div>
@@ -191,7 +165,7 @@ export default function LandingPage() {
                           }`}
                         >
                           <Image
-                            src="/analytics-dashboard-with-charts-graphs-and-data-vi.jpg"
+                            src="/mask-group-pattern.svg"
                             alt="Analytics dashboard with real-time insights, charts, graphs, and data visualization"
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 960px"
@@ -209,7 +183,7 @@ export default function LandingPage() {
                           }`}
                         >
                           <Image
-                            src="/data-visualization-dashboard-with-interactive-char.jpg"
+                            src="/mask-group-pattern.svg"
                             alt="Interactive data visualization dashboard with charts, metrics, and decision tracking"
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 960px"
@@ -252,13 +226,13 @@ export default function LandingPage() {
                     progress={activeCard === 1 ? progress : 0}
                     onClick={() => handleCardClick(1)}
                   />
-                  {/* <FeatureCard
-                    title="Collaborate seamlessly"
-                    description="Keep your team aligned with shared dashboards and collaborative workflows."
+                  <FeatureCard
+                    title="Track insights with clarity"
+                    description="Visualize patterns, analyze trends, and discover what drives your best decisions."
                     isActive={activeCard === 2}
                     progress={activeCard === 2 ? progress : 0}
                     onClick={() => handleCardClick(2)}
-                  /> */}
+                  />
                 </div>
 
                 <div className="w-4 sm:w-6 md:w-8 lg:w-12 self-stretch relative overflow-hidden">

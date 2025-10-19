@@ -17,6 +17,26 @@ export interface DashboardStats {
     status?: string
     category?: string
   }>
+  totalFocusEntries: number
+  totalDecisions: number
+  currentStreak: number
+  longestStreak: number
+  categoryBreakdown: Array<{
+    category: string
+    count: number
+  }>
+  moodDistribution: Array<{
+    mood: string
+    count: number
+  }>
+  weeklyActivity: Array<{
+    date: string
+    focusCount: number
+    decisionCount: number
+  }>
+  monthlyCompletion: number
+  achievedThisWeek: number
+  pendingFocuses: number
 }
 
 export const getDashboardStats = async (): Promise<{ data?: DashboardStats, error?: string }> => {
@@ -159,13 +179,162 @@ export const getDashboardStats = async (): Promise<{ data?: DashboardStats, erro
     .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
     .slice(0, 5)
 
+    // Calculate total entries
+    const totalFocusEntries = await prisma.focus.count({
+      where: { userId: user.id }
+    })
+
+    const totalDecisions = await prisma.decision.count({
+      where: { userId: user.id }
+    })
+
+    // Calculate streaks (consecutive days with at least one entry)
+    const allFocuses = await prisma.focus.findMany({
+      where: { userId: user.id },
+      orderBy: { date: 'desc' },
+      select: { date: true }
+    })
+
+    let currentStreak = 0
+    let longestStreak = 0
+    let tempStreak = 0
+    let lastDate: Date | null = null
+
+    const uniqueDates = [...new Set(allFocuses.map(f => f.date.toDateString()))]
+    
+    for (let i = 0; i < uniqueDates.length; i++) {
+      const currentDate = new Date(uniqueDates[i])
+      
+      if (i === 0) {
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+        const yesterday = new Date(today)
+        yesterday.setDate(today.getDate() - 1)
+        
+        if (currentDate.toDateString() === today.toDateString() || 
+            currentDate.toDateString() === yesterday.toDateString()) {
+          currentStreak = 1
+          tempStreak = 1
+        }
+      } else {
+        const prevDate = new Date(uniqueDates[i - 1])
+        const diffDays = Math.floor((prevDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24))
+        
+        if (diffDays === 1) {
+          tempStreak++
+          if (i === 1 || (i > 1 && currentStreak > 0)) {
+            currentStreak = tempStreak
+          }
+        } else {
+          tempStreak = 1
+        }
+      }
+      
+      longestStreak = Math.max(longestStreak, tempStreak)
+    }
+
+    // Category breakdown for decisions
+    const decisions = await prisma.decision.groupBy({
+      by: ['category'],
+      where: { userId: user.id },
+      _count: { category: true }
+    })
+
+    const categoryBreakdown = decisions.map(d => ({
+      category: d.category,
+      count: d._count.category
+    }))
+
+    // Mood distribution
+    const moods = await prisma.focus.groupBy({
+      by: ['mood'],
+      where: { userId: user.id },
+      _count: { mood: true }
+    })
+
+    const moodDistribution = moods.map(m => ({
+      mood: m.mood,
+      count: m._count.mood
+    }))
+
+    // Weekly activity (last 7 days)
+    const weeklyActivity = []
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(now)
+      date.setDate(now.getDate() - i)
+      date.setHours(0, 0, 0, 0)
+      const nextDate = new Date(date)
+      nextDate.setDate(date.getDate() + 1)
+
+      const [focusCount, decisionCount] = await Promise.all([
+        prisma.focus.count({
+          where: {
+            userId: user.id,
+            date: { gte: date, lt: nextDate }
+          }
+        }),
+        prisma.decision.count({
+          where: {
+            userId: user.id,
+            date: { gte: date, lt: nextDate }
+          }
+        })
+      ])
+
+      weeklyActivity.push({
+        date: date.toISOString().split('T')[0],
+        focusCount,
+        decisionCount
+      })
+    }
+
+    // Monthly completion rate
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const [monthlyTotal, monthlyAchieved] = await Promise.all([
+      prisma.focus.count({
+        where: {
+          userId: user.id,
+          date: { gte: startOfMonth }
+        }
+      }),
+      prisma.focus.count({
+        where: {
+          userId: user.id,
+          date: { gte: startOfMonth },
+          status: FocusStatus.ACHIEVED
+        }
+      })
+    ])
+
+    const monthlyCompletion = monthlyTotal > 0 
+      ? Math.round((monthlyAchieved / monthlyTotal) * 100) 
+      : 0
+
+    // Pending focuses
+    const pendingFocuses = await prisma.focus.count({
+      where: {
+        userId: user.id,
+        status: FocusStatus.PENDING
+      }
+    })
+
     return {
       data: {
         todaysFocus: todaysFocus?.title || null,
         recentDecisionsCount,
         focusCompletionRate,
         weeklyTrend,
-        recentActivities
+        recentActivities,
+        totalFocusEntries,
+        totalDecisions,
+        currentStreak,
+        longestStreak,
+        categoryBreakdown,
+        moodDistribution,
+        weeklyActivity,
+        monthlyCompletion,
+        achievedThisWeek: thisWeekAchieved,
+        pendingFocuses
       }
     }
   } catch (error) {

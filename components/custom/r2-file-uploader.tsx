@@ -17,7 +17,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Configuration constants
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB in bytes
-const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp','image/avif'];
 
 export interface FileWithPreview {
   file: File;
