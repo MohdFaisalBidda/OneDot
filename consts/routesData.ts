@@ -12,18 +12,19 @@ export const navItems = [
 export const settingsItems = [
   { href: "/dashboard/settings/profile", label: "Profile", icon: User },
   { href: "/dashboard/settings/account", label: "Account", icon: CreditCard },
-  { href: "/dashboard/settings/preferences", label: "Preferences", icon: Sliders },
+  // { href: "/dashboard/settings/preferences", label: "Preferences", icon: Sliders },
 ]
 
 export const pageTitles: Record<string, string> = {
-  "/dashboard/daily-focus": "Daily Focus Journal",
-  "/dashboard/decisions": "Decision Tracker",
+  "/dashboard": "Dashboard",
+  "/dashboard/daily-focus": "Daily Focus",
+  "/dashboard/decisions": "Decisions",
   "/dashboard/history": "History & Reflection",
   "/dashboard/export": "Export Data",
-  "/dashboard/archive": "Complete Archive",
-  "/dashboard/settings/profile": "Profile Settings",
-  "/dashboard/settings/account": "Account Settings",
-  "/dashboard/settings/preferences": "Preferences",
+  "/dashboard/archive": "Archives",
+  "/dashboard/settings/profile": "Profile",
+  "/dashboard/settings/account": "Account",
+  // "/dashboard/settings/preferences": "Preferences",
 }
 
 export const homeDashboardQuickLinks = [

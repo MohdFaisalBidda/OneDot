@@ -39,7 +39,7 @@ export interface DashboardStats {
   pendingFocuses: number
 }
 
-export const getDashboardStats = async (): Promise<{ data?: DashboardStats, error?: string }> => {
+export const getDashboardStats = async (): Promise<{ data?: DashboardStats, userData?: { isLifetimeFree: boolean, userNumber: number | null }, error?: string }> => {
   const user = await getCurrentUser()
 
   if (!user) {
@@ -335,6 +335,10 @@ export const getDashboardStats = async (): Promise<{ data?: DashboardStats, erro
         monthlyCompletion,
         achievedThisWeek: thisWeekAchieved,
         pendingFocuses
+      },
+      userData: {
+        isLifetimeFree: user.isLifetimeFree,
+        userNumber: user.userNumber
       }
     }
   } catch (error) {

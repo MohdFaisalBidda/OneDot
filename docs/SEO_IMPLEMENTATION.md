@@ -17,7 +17,7 @@ The application now includes:
 ## Files Structure
 
 ```
-clarity-log/
+oneDot/
 ├── lib/
 │   └── metadata.ts              # Central SEO utility with reusable functions
 ├── app/

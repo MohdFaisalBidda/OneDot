@@ -150,10 +150,10 @@ export default function DecisionTable({ data, pagination }: DecisionTableProps) 
 
       {/* Table */}
       <div className="overflow-x-auto rounded-lg border">
-        <table className="w-full">
+        <table className="w-full min-w-[800px]">
           <thead>
             <tr className="border-b border-border bg-muted/50">
-              <th className="p-3 text-left text-sm font-medium text-muted-foreground">
+              <th className="p-2 md:p-3 text-left text-xs md:text-sm font-medium text-muted-foreground whitespace-nowrap">
                 <button
                   onClick={() => handleSort("date")}
                   className="flex items-center gap-1 hover:text-foreground"
@@ -162,7 +162,7 @@ export default function DecisionTable({ data, pagination }: DecisionTableProps) 
                   <ArrowUpDown className="h-3 w-3" />
                 </button>
               </th>
-              <th className="p-3 text-left text-sm font-medium text-muted-foreground">
+              <th className="p-2 md:p-3 text-left text-xs md:text-sm font-medium text-muted-foreground">
                 <button
                   onClick={() => handleSort("title")}
                   className="flex items-center gap-1 hover:text-foreground"
@@ -171,8 +171,8 @@ export default function DecisionTable({ data, pagination }: DecisionTableProps) 
                   <ArrowUpDown className="h-3 w-3" />
                 </button>
               </th>
-              <th className="p-3 text-left text-sm font-medium text-muted-foreground">Reason</th>
-              <th className="p-3 text-left text-sm font-medium text-muted-foreground">
+              <th className="p-2 md:p-3 text-left text-xs md:text-sm font-medium text-muted-foreground">Reason</th>
+              <th className="p-2 md:p-3 text-left text-xs md:text-sm font-medium text-muted-foreground whitespace-nowrap">
                 <button
                   onClick={() => handleSort("category")}
                   className="flex items-center gap-1 hover:text-foreground"
@@ -181,7 +181,7 @@ export default function DecisionTable({ data, pagination }: DecisionTableProps) 
                   <ArrowUpDown className="h-3 w-3" />
                 </button>
               </th>
-              <th className="p-3 text-left text-sm font-medium text-muted-foreground">Image</th>
+              <th className="p-2 md:p-3 text-left text-xs md:text-sm font-medium text-muted-foreground">Image</th>
             </tr>
           </thead>
           <tbody>
@@ -194,25 +194,25 @@ export default function DecisionTable({ data, pagination }: DecisionTableProps) 
             ) : (
               data.map((decision) => (
                 <tr key={decision.id} className="border-b border-border/50 last:border-0 hover:bg-muted/30">
-                  <td className="p-3 text-sm">
+                  <td className="p-2 md:p-3 text-xs md:text-sm whitespace-nowrap">
                     {format(new Date(decision.date), "MMM dd, yyyy")}
                   </td>
-                  <td className="p-3 text-sm font-medium">{decision.title}</td>
-                  <td className="p-3 text-sm text-muted-foreground max-w-xs truncate">
+                  <td className="p-2 md:p-3 text-xs md:text-sm font-medium max-w-[200px] truncate">{decision.title}</td>
+                  <td className="p-2 md:p-3 text-xs md:text-sm text-muted-foreground max-w-[200px] truncate">
                     {decision.reason}
                   </td>
-                  <td className="p-3 text-sm">
-                    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs border ${getCategoryColor(decision.category)} border-transparent`}>
+                  <td className="p-2 md:p-3 text-xs md:text-sm">
+                    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] md:text-xs border whitespace-nowrap ${getCategoryColor(decision.category)} border-transparent`}>
                       <span>{getCategoryIcon(decision.category)}</span>
                       <span>{formatCategoryLabel(decision.category)}</span>
                     </span>
                   </td>
-                  <td className="p-3">
+                  <td className="p-2 md:p-3">
                     {decision.image ? (
                       <img
                         src={decision.image}
                         alt="Decision reference"
-                        className="h-12 w-12 rounded-lg object-cover shadow-sm"
+                        className="h-10 w-10 md:h-12 md:w-12 rounded-lg object-cover shadow-sm"
                       />
                     ) : (
                       <span className="text-xs text-muted-foreground">—</span>
@@ -226,8 +226,8 @@ export default function DecisionTable({ data, pagination }: DecisionTableProps) 
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="text-xs md:text-sm text-muted-foreground">
           Showing {data.length > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0}-
           {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} decisions
         </div>
@@ -239,10 +239,11 @@ export default function DecisionTable({ data, pagination }: DecisionTableProps) 
             disabled={!pagination.hasPrev}
             className="rounded-full"
           >
-            <ChevronLeft className="mr-1 h-4 w-4" />
-            Previous
+            <ChevronLeft className="mr-1 h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">Previous</span>
+            <span className="sm:hidden">Prev</span>
           </Button>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-xs md:text-sm text-muted-foreground whitespace-nowrap">
             Page {pagination.page} of {pagination.totalPages}
           </span>
           <Button
@@ -252,8 +253,9 @@ export default function DecisionTable({ data, pagination }: DecisionTableProps) 
             disabled={!pagination.hasNext}
             className="rounded-full"
           >
-            Next
-            <ChevronRight className="ml-1 h-4 w-4" />
+            <span className="sm:hidden">Next</span>
+            <span className="hidden sm:inline">Next</span>
+            <ChevronRight className="ml-1 h-3 w-3 md:h-4 md:w-4" />
           </Button>
         </div>
       </div>

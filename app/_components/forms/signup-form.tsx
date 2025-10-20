@@ -78,14 +78,25 @@ export default function SignupForm({
       return;
     }
 
-    toast.success("Account created successfully");
+    // Show success message with lifetime free status
+    if (result?.user?.isLifetimeFree) {
+      toast.success(
+        `🎉 Congratulations! You're user #${result.user.userNumber} with LIFETIME FREE ACCESS!`,
+        {
+          duration: 6000,
+        }
+      );
+    } else {
+      toast.success("Account created successfully");
+    }
+    
     onSubmitSuccess?.();
     signIn("credentials", {
       email: formData.email,
       password: formData.password,
       redirect: false,
     });
-    router.push("/daily-focus");
+    router.push("/dashboard");
     setIsLoading(false);
   };
 

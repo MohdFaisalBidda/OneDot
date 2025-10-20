@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 function PreferencesForm({ initialPreferences }: { initialPreferences: any }) {
   const [message, setMessage] = useState<{ text: string; success: boolean } | null>(null);
@@ -35,35 +34,30 @@ function PreferencesForm({ initialPreferences }: { initialPreferences: any }) {
   };
 
   return (
-    <Card className="shadow-sm">
-      <CardHeader>
-        <CardTitle className="font-serif text-2xl font-normal">Preferences</CardTitle>
-        <p className="text-sm text-muted-foreground">Customize your experience</p>
-      </CardHeader>
-      <CardContent className="space-y-8">
-        {message && (
-          <div className={`p-4 rounded-lg ${message.success ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-            {message.text}
-          </div>
-        )}
+    <div className="bg-card p-6 md:p-8 rounded-2xl border border-border shadow-sm">
+      {message && (
+        <div className={`mb-6 p-4 rounded-lg ${message.success ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100'}`}>
+          {message.text}
+        </div>
+      )}
 
-        <form action={handleSubmit}>
-          <div className="space-y-4">
-            <h3 className="font-medium">Appearance</h3>
-            <div className="space-y-2">
-              <Label htmlFor="theme">Theme</Label>
-              <Select value={theme} onValueChange={setTheme}>
-                <SelectTrigger id="theme" className="rounded-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="LIGHT">Light</SelectItem>
-                  <SelectItem value="DARK">Dark</SelectItem>
-                  <SelectItem value="SYSTEM">System</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+      <form action={handleSubmit} className="space-y-8">
+        <div className="space-y-4">
+          <h3 className="font-semibold text-lg">Appearance</h3>
+          <div className="space-y-2">
+            <Label htmlFor="theme" className="text-sm font-medium">Theme</Label>
+            <Select value={theme} onValueChange={setTheme}>
+              <SelectTrigger id="theme" className="rounded-full h-11">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="LIGHT">Light</SelectItem>
+                <SelectItem value="DARK">Dark</SelectItem>
+                <SelectItem value="SYSTEM">System</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
+        </div>
 
           {/* <div className="space-y-4">
             <h3 className="font-medium">Notifications</h3>
@@ -104,26 +98,33 @@ function PreferencesForm({ initialPreferences }: { initialPreferences: any }) {
             </div>
           </div> */}
 
-          <div className="pt-4">
-            <Button type="submit" className="w-full rounded-full" size="lg" disabled={isPending}>
-              {isPending ? "Saving..." : "Save Preferences"}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+        <div className="pt-4">
+          <Button type="submit" className="w-full rounded-full h-11" size="lg" disabled={isPending}>
+            {isPending ? "Saving..." : "Save Preferences"}
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 }
 
-export async function PreferencesContent() {
-  const preferences = await getUserPreferences();
-
-  if (!preferences) {
-    return <div>Error loading preferences</div>;
+export async function PreferencesContent({
+  preferences,
+}: {
+  preferences: {
+    theme: string;
   }
-
+}) {
   return (
-    <div className="mx-auto max-w-2xl py-6">
+    <div className="mx-auto max-w-2xl px-4 py-6 md:py-8 w-full">
+      <div className="mb-8">
+        <h1 className="font-serif text-3xl md:text-4xl font-normal text-foreground">
+          Preferences
+        </h1>
+        <p className="mt-2 text-sm md:text-base text-muted-foreground">
+          Customize your ClarityLog experience
+        </p>
+      </div>
       <PreferencesForm initialPreferences={preferences} />
     </div>
   );

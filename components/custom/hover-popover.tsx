@@ -73,7 +73,7 @@ export function HoverPopover({
         ref={popoverRef}
         side="bottom"
         align="end"
-        className="w-56 rounded-xl mt-2"
+        className="w-56 rounded-xl mt-2 mr-4"
         sideOffset={5}
         onMouseEnter={handleContentMouseEnter}
         onMouseLeave={handleContentMouseLeave}

@@ -28,11 +28,11 @@ const faqData: FAQItem[] = [
     answer:
       "Absolutely. We use enterprise-grade security measures including end-to-end encryption and secure cloud storage. Your personal reflections, decisions, and focus logs are completely private — only you have access to your data. We never share or sell your information.",
   },
-  {
-    question: "Do you offer AI-powered insights?",
-    answer:
-      "Yes! Our Professional plan includes AI-powered features that analyze your patterns, generate summaries of your progress, and provide personalized insights to help you identify trends in your focus and decision-making. The AI helps you understand yourself better without overwhelming you with data.",
-  },
+  // {
+  //   question: "Do you offer AI-powered insights?",
+  //   answer:
+  //     "Yes! Our Professional plan includes AI-powered features that analyze your patterns, generate summaries of your progress, and provide personalized insights to help you identify trends in your focus and decision-making. The AI helps you understand yourself better without overwhelming you with data.",
+  // },
 ]
 
 function ChevronDownIcon({ className }: { className?: string }) {

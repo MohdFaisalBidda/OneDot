@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PreferencesContent } from "./PreferencesContent";
 import { generatePageMetadata } from "@/lib/metadata";
+import { getUserPreferences } from "@/actions/settings";
 
 export const dynamic = 'force-dynamic';
 
@@ -12,6 +13,12 @@ export const metadata: Metadata = generatePageMetadata({
   noIndex: true,
 });
 
-export default function PreferencesPage() {
-  return <PreferencesContent />;
+export default async function PreferencesPage() {
+  const preferences = await getUserPreferences();
+
+  if (!preferences) {
+    return <div>Error loading preferences</div>;
+  }
+
+  return <PreferencesContent preferences={preferences} />;
 }

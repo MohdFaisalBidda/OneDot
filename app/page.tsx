@@ -16,6 +16,7 @@ import CTASection from "../app/_components/cta-section";
 import FooterSection from "../app/_components/footer-section";
 import SocialProofs from "./_components/social-proofs";
 import BentoGrid from "./_components/bento-grid";
+import First100Offer from "./_components/first-100-offer";
 import { Button } from "@/components/ui/button";
 import Navigation from "./_components/Navigation";
 import { useSession } from "next-auth/react";
@@ -66,9 +67,9 @@ export default function LandingPage() {
 
   return (
     <div className="w-full min-h-screen relative bg-[#F7F5F3] overflow-x-hidden flex flex-col justify-start items-center">
-      <div className="relative flex flex-col justify-start items-center w-full">
+      <div className="relative flex flex-col justify-start items-center w-full overflow-x-hidden">
         {/* Main container with proper margins */}
-        <div className="w-full max-w-none px-4 sm:px-6 md:px-8 lg:px-0 lg:w-7xl relative flex flex-col justify-start items-start min-h-screen">
+        <div className="w-full max-w-none px-4 sm:px-6 md:px-8 lg:px-0 lg:max-w-7xl relative flex flex-col justify-start items-start min-h-screen overflow-x-hidden">
           {/* Left vertical line */}
           <div className="w-[1px] h-full absolute left-4 sm:left-6 md:left-8 lg:left-0 top-0 bg-[rgba(55,50,47,0.12)] shadow-[1px_0px_0px_white] z-0"></div>
 
@@ -83,10 +84,10 @@ export default function LandingPage() {
             <div className="pt-16 sm:pt-20 md:pt-24 lg:pt-[216px] pb-8 sm:pb-12 md:pb-16 flex flex-col justify-start items-center px-2 sm:px-4 md:px-8 lg:px-0 w-full sm:pl-0 sm:pr-0 pl-0 pr-0">
               <div className="w-full max-w-[937px] lg:w-[937px] flex flex-col justify-center items-center gap-3 sm:gap-4 md:gap-5 lg:gap-6">
                 <div className="self-stretch rounded-[3px] flex flex-col justify-center items-center gap-4 sm:gap-5 md:gap-6 lg:gap-8">
-                  <div className="w-full max-w-[748.71px] lg:w-[748.71px] text-center flex justify-center flex-col text-[#37322F] text-[24px] xs:text-[28px] sm:text-[36px] md:text-[52px] lg:text-[80px] font-normal leading-[1.1] sm:leading-[1.15] md:leading-[1.2] lg:leading-24 font-serif px-2 sm:px-4 md:px-0">
+                  <div className="w-full max-w-[748.71px] lg:w-[748.71px] text-center flex justify-center flex-col text-[#37322F] text-[28px] xs:text-[32px] sm:text-[36px] md:text-[52px] lg:text-[80px] font-normal leading-[1.1] sm:leading-[1.15] md:leading-[1.2] lg:leading-24 font-serif px-2 sm:px-4 md:px-0">
                     Your Single Point of Focus & Clarity. 
                   </div>
-                  <div className="w-full max-w-[506.08px] lg:w-[506.08px] text-center flex justify-center flex-col text-[rgba(55,50,47,0.80)] sm:text-lg md:text-xl leading-[1.4] sm:leading-[1.45] md:leading-[1.5] lg:leading-7 font-sans px-2 sm:px-4 md:px-0 lg:text-lg font-medium text-sm">
+                  <div className="w-full max-w-[506.08px] lg:w-[506.08px] text-center flex justify-center flex-col text-[rgba(55,50,47,0.80)] text-sm sm:text-base md:text-lg lg:text-xl leading-[1.4] sm:leading-[1.45] md:leading-[1.5] lg:leading-7 font-sans px-2 sm:px-4 md:px-0 font-medium">
                     Streamline your day with mindful journaling that connects focus, progress, and decisions
                     <br className="hidden sm:block" />
                     — all in one calm dashboard.
@@ -94,37 +95,43 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="w-full max-w-[497px] lg:w-[497px] flex flex-col justify-center items-center gap-6 sm:gap-8 md:gap-10 lg:gap-12 relative z-10 mt-6 sm:mt-8 md:mt-10 lg:mt-12">
-                <div className="backdrop-blur-[8.25px] flex justify-start items-center gap-4">
-                  {/* <div className="h-10 sm:h-11 md:h-12 px-6 sm:px-8 md:px-10 lg:px-12 py-2 sm:py-[6px] relative bg-[#37322F] shadow-[0px_0px_0px_2.5px_rgba(255,255,255,0.08)_inset] overflow-hidden rounded-full flex justify-center items-center">
-                    <div className="w-20 sm:w-24 md:w-28 lg:w-44 h-[41px] absolute left-0 top-[-0.5px] bg-gradient-to-b from-[rgba(255,255,255,0)] to-[rgba(0,0,0,0.10)] mix-blend-multiply"></div>
-                    <div className="flex flex-col justify-center text-white text-sm sm:text-base md:text-[15px] font-medium leading-5 font-sans">
-                      Start for free
-                    </div>
-                  </div> */}
+              <div className="w-full max-w-[497px] lg:w-[497px] flex flex-col justify-center items-center gap-6 sm:gap-8 md:gap-10 lg:gap-12 relative z-10 mt-6 sm:mt-8 md:mt-10 lg:mt-12 px-4">
+                {/* Limited Offer Badge */}
+                <Button className="px-4 py-2.5 rounded-full bg-white border-2 border-[#37322F] shadow-[0px_4px_12px_rgba(55,50,47,0.15)] w-full sm:w-auto">
+                  <p className="text-xs sm:text-sm font-bold text-center text-[#37322F]">
+                    ✨ First 100 Users Get Lifetime Free Access
+                  </p>
+                </Button>
+                
+                <div className="backdrop-blur-[8.25px] flex flex-col sm:flex-row justify-start items-center gap-4 w-full sm:w-auto">
                   <Button
                     variant="heroDark"
                     size="hero"
-                    className="font-medium leading-5 font-sans cursor-pointer"
+                    className="font-medium leading-5 font-sans cursor-pointer w-full sm:w-auto"
                     onClick={() =>
                       session?.user
                         ? router.push("/dashboard")
-                        : router.push("/login")
+                        : router.push("/signup")
                     }
                   >
-                    {session?.user ? "Explore Tools" : "Start for free"}
+                    {session?.user ? "Explore Tools" : "Claim Your Free Spot"}
                   </Button>
+                  {!session?.user && (
+                    <p className="text-xs text-[#605A57] text-center sm:text-left">
+                      No credit card required
+                    </p>
+                  )}
                 </div>
               </div>
 
-              <div className="absolute top-[232px] sm:top-[248px] md:top-[264px] lg:top-[320px] left-1/2 transform -translate-x-1/2 z-0 pointer-events-none">
+              <div className="absolute top-[180px] sm:top-[200px] md:top-[240px] lg:top-[280px] left-1/2 transform -translate-x-1/2 z-0 pointer-events-none overflow-hidden w-full">
                 <Image
                   src="/mask-group-pattern.svg"
                   alt="Background pattern"
                   width={2808}
                   height={1000}
                   priority
-                  className="w-[936px] sm:w-[1404px] md:w-[2106px] lg:w-[2808px] h-auto opacity-30 sm:opacity-40 md:opacity-50 mix-blend-multiply"
+                  className="w-full max-w-[1200px] sm:max-w-[1600px] md:max-w-[2000px] lg:max-w-[2400px] h-auto opacity-20 sm:opacity-25 md:opacity-30 mix-blend-multiply"
                   style={{
                     filter: "hue-rotate(15deg) saturate(0.7) brightness(1.2)",
                   }}
@@ -169,7 +176,7 @@ export default function LandingPage() {
                             alt="Analytics dashboard with real-time insights, charts, graphs, and data visualization"
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 960px"
-                            className="object-cover"
+                            className="object-contain"
                             priority={activeCard === 1}
                           />
                         </div>
@@ -197,8 +204,8 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="self-stretch border-t border-[#E0DEDB] border-b border-[#E0DEDB] flex justify-center items-start">
-                <div className="w-4 sm:w-6 md:w-8 lg:w-12 self-stretch relative overflow-hidden">
+              <div className="self-stretch border-t border-[#E0DEDB] border-b border-[#E0DEDB] flex justify-center items-start overflow-hidden">
+                <div className="w-4 sm:w-6 md:w-8 lg:w-12 self-stretch relative overflow-hidden hidden md:block">
                   {/* Left decorative pattern */}
                   <div className="w-[120px] sm:w-[140px] md:w-[162px] left-[-40px] sm:left-[-50px] md:left-[-58px] top-[-120px] absolute flex flex-col justify-start items-start">
                     {Array.from({ length: 50 }).map((_, i) => (
@@ -210,7 +217,7 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                <div className="flex-1 px-0 sm:px-2 md:px-0 flex flex-col md:flex-row justify-center items-stretch gap-0">
+                <div className="flex-1 px-0 sm:px-2 md:px-0 flex flex-col md:flex-row justify-center items-stretch gap-0 overflow-x-hidden">
                   {/* Feature Cards */}
                   <FeatureCard
                     title="Plan your focus with intention"
@@ -235,7 +242,7 @@ export default function LandingPage() {
                   />
                 </div>
 
-                <div className="w-4 sm:w-6 md:w-8 lg:w-12 self-stretch relative overflow-hidden">
+                <div className="w-4 sm:w-6 md:w-8 lg:w-12 self-stretch relative overflow-hidden hidden md:block">
                   {/* Right decorative pattern */}
                   <div className="w-[120px] sm:w-[140px] md:w-[162px] left-[-40px] sm:left-[-50px] md:left-[-58px] top-[-120px] absolute flex flex-col justify-start items-start">
                     {Array.from({ length: 50 }).map((_, i) => (
@@ -257,11 +264,14 @@ export default function LandingPage() {
               {/* Documentation Section */}
               <DocumentationSection />
 
+              {/* First 100 Lifetime Free Offer */}
+              <First100Offer />
+
               {/* Testimonials Section */}
               {/* <TestimonialsSection /> */}
 
               {/* Pricing Section */}
-              <PricingSection />
+              {/* <PricingSection /> */}
 
               {/* FAQ Section */}
               <FAQSection />
@@ -295,7 +305,7 @@ function FeatureCard({
 }) {
   return (
     <div
-      className={`w-full md:flex-1 self-stretch px-6 py-5 overflow-hidden flex flex-col justify-start items-start gap-2 cursor-pointer relative border-b md:border-b-0 last:border-b-0 ${
+      className={`w-full md:flex-1 self-stretch px-4 md:px-6 py-4 md:py-5 overflow-hidden flex flex-col justify-start items-start gap-2 cursor-pointer relative border-b md:border-b-0 last:border-b-0 ${
         isActive
           ? "bg-white shadow-[0px_0px_0px_0.75px_#E0DEDB_inset]"
           : "border-l-0 border-r-0 md:border border-[#E0DEDB]/80"
@@ -311,10 +321,10 @@ function FeatureCard({
         </div>
       )}
 
-      <div className="self-stretch flex justify-center flex-col text-[#49423D] text-sm md:text-sm font-semibold leading-6 md:leading-6 font-sans">
+      <div className="self-stretch flex justify-center flex-col text-[#49423D] text-sm md:text-sm font-semibold leading-5 md:leading-6 font-sans">
         {title}
       </div>
-      <div className="self-stretch text-[#605A57] text-[13px] md:text-[13px] font-normal leading-[22px] md:leading-[22px] font-sans">
+      <div className="self-stretch text-[#605A57] text-xs md:text-[13px] font-normal leading-[18px] md:leading-[22px] font-sans">
         {description}
       </div>
     </div>

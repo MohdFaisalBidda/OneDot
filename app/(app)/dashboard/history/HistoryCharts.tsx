@@ -1,7 +1,7 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, Cell, Pie, PieChart, XAxis, YAxis } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import type { HistoryData } from "@/actions/history"
 
@@ -35,14 +35,12 @@ export default function HistoryCharts({ historyData }: HistoryChartsProps) {
                 }}
                 className="h-[200px]"
               >
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={historyData.weeklyData}>
-                    <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="completed" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+                <BarChart data={historyData.weeklyData}>
+                  <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar dataKey="completed" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
+                </BarChart>
               </ChartContainer>
             ) : (
               <div className="h-[200px] flex items-center justify-center">
@@ -70,14 +68,12 @@ export default function HistoryCharts({ historyData }: HistoryChartsProps) {
                 }}
                 className="h-[200px]"
               >
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={historyData.monthlyData}>
-                    <XAxis dataKey="week" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="completed" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+                <BarChart data={historyData.monthlyData}>
+                  <XAxis dataKey="week" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar dataKey="completed" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
+                </BarChart>
               </ChartContainer>
             ) : (
               <div className="h-[200px] flex items-center justify-center">
@@ -105,23 +101,21 @@ export default function HistoryCharts({ historyData }: HistoryChartsProps) {
                 }}
                 className="h-[250px]"
               >
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Pie 
-                      data={historyData.decisionCategories} 
-                      dataKey="value" 
-                      nameKey="name" 
-                      cx="50%" 
-                      cy="50%" 
-                      outerRadius={80}
-                    >
-                      {historyData.decisionCategories.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
+                <PieChart>
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Pie 
+                    data={historyData.decisionCategories} 
+                    dataKey="value" 
+                    nameKey="name" 
+                    cx="50%" 
+                    cy="50%" 
+                    outerRadius={80}
+                  >
+                    {historyData.decisionCategories.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                </PieChart>
               </ChartContainer>
 
               <div className="flex flex-col justify-center space-y-4">

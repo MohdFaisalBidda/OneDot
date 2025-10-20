@@ -102,23 +102,23 @@ export default async function ArchivePage({
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-4 p-6 sm:px-6 lg:px-8">
-      <div className="mb-12 text-center">
-        <h1 className="font-serif text-5xl font-normal leading-tight text-balance text-foreground sm:text-6xl">
+    <div className="mx-auto max-w-7xl px-4 pb-4 md:p-6 sm:px-6 lg:px-8 overflow-x-hidden w-full">
+      <div className="mb-6 md:mb-12 text-center">
+        <h1 className="font-serif text-3xl md:text-5xl font-normal leading-tight text-balance text-foreground sm:text-6xl">
           Complete Archive
         </h1>
-        <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
+        <p className="mt-2 md:mt-4 text-sm md:text-lg text-muted-foreground leading-relaxed">
           All your daily focus entries and decisions in one place
         </p>
       </div>
 
-      <div className="space-y-12">
+      <div className="space-y-6 md:space-y-12 w-auto max-w-full">
         {/* Daily Focus Archive */}
-        <Card className="shadow-sm">
+        <Card className="shadow-sm overflow-hidden w-auto max-w-full">
           <CardHeader>
-            <CardTitle className="font-serif text-3xl font-normal">Daily Focus Entries</CardTitle>
+            <CardTitle className="font-serif text-2xl md:text-3xl font-normal">Daily Focus Entries</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="overflow-x-auto w-auto max-w-full">
             {focusResult.data && focusResult.pagination ? (
               <FocusTable data={focusResult.data} pagination={focusResult.pagination} />
             ) : (
@@ -130,11 +130,11 @@ export default async function ArchivePage({
         </Card>
 
         {/* Decisions Archive */}
-        <Card className="shadow-sm">
+        <Card className="shadow-sm overflow-hidden w-auto max-w-full">
           <CardHeader>
-            <CardTitle className="font-serif text-3xl font-normal">Decision History</CardTitle>
+            <CardTitle className="font-serif text-2xl md:text-3xl font-normal">Decision History</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="overflow-x-auto w-auto max-w-full">
             {decisionsResult.data && decisionsResult.pagination ? (
               <DecisionTable data={decisionsResult.data} pagination={decisionsResult.pagination} />
             ) : (

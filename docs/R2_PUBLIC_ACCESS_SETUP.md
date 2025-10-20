@@ -20,7 +20,7 @@ This happens because R2 buckets are **private by default**. To display images di
    - Click on **R2** in the left sidebar
 
 2. **Select Your Bucket**
-   - Click on your bucket name (e.g., `clarity-log-bucket`)
+   - Click on your bucket name (e.g., `one-dot-bucket`)
 
 3. **Go to Settings**
    - Click on the **Settings** tab at the top

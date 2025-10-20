@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { cn, getUserInitials } from "@/lib/utils";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -20,6 +20,7 @@ import { APP_NAME } from "@/consts";
 import { ReusableDialog } from "@/components/custom/DialogWithForm";
 import SignupForm from "./forms/signup-form";
 import LoginForm from "./forms/login-form";
+import { Logo } from "@/components/custom/Logo";
 
 function Navigation() {
   const [signupDialogOpen, setSignupDialogOpen] = useState(false);
@@ -28,6 +29,7 @@ function Navigation() {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const pathname = usePathname();
   const { data: session } = useSession();
+    const userInitials = getUserInitials(session?.user?.name as string);
 
   useEffect(() => {
     if (signupDialogOpen || loginDialogOpen) {
@@ -60,19 +62,12 @@ function Navigation() {
   };
 
   return (
-    <div className="w-full h-12 sm:h-14 md:h-16 lg:h-[84px] absolute left-0 top-0 flex justify-center items-center z-20 px-6 sm:px-8 md:px-12 lg:px-0">
+    <div className="w-full h-12 sm:h-14 md:h-16 lg:h-[84px] absolute left-0 top-0 flex justify-center items-center z-20 px-4 sm:px-6 md:px-8 lg:px-0">
       <div className="w-full h-0 absolute left-0 top-6 sm:top-7 md:top-8 lg:top-[42px] border-t border-[rgba(55,50,47,0.12)] shadow-[0px_1px_0px_white]"></div>
 
-      <div className="w-full max-w-[calc(100%-32px)] sm:max-w-[calc(100%-48px)] md:max-w-[calc(100%-64px)] lg:max-w-7xl lg:w-5xl h-10 sm:h-11 md:h-12 py-1.5 sm:py-2 px-3 sm:px-4 md:px-4 pr-2 sm:pr-3 bg-[#F7F5F3] backdrop-blur-sm shadow-lg overflow-hidden rounded-[50px] flex justify-between items-center relative z-30">
+      <div className="w-full max-w-[calc(100%-16px)] sm:max-w-[calc(100%-48px)] md:max-w-[calc(100%-64px)] lg:max-w-7xl lg:w-5xl h-10 sm:h-11 md:h-12 py-1.5 sm:py-2 px-2 sm:px-3 md:px-4 pr-1.5 sm:pr-2 md:pr-3 bg-[#F7F5F3] backdrop-blur-sm shadow-lg overflow-hidden rounded-[50px] flex justify-between items-center relative z-30">
         <div className="flex justify-center items-center">
-          <div className="flex justify-start items-center">
-            <Link
-              href={"/"}
-              className="flex flex-col justify-center text-[#2F3037] text-sm sm:text-base md:text-lg lg:text-xl font-bold leading-5 font-serif"
-            >
-              {APP_NAME}
-            </Link>
-          </div>
+       <Logo/>
           <div className="pl-3 sm:pl-4 md:pl-5 lg:pl-5 flex justify-start items-start hidden sm:flex flex-row gap-2 sm:gap-3 md:gap-4 lg:gap-4">
             <div className="flex justify-start items-center">
               <Link
@@ -101,7 +96,7 @@ function Navigation() {
           </div>
         </div>
 
-        <div className="h-6 sm:h-7 md:h-8 flex justify-start items-start gap-2 sm:gap-3">
+        <div className="flex justify-start items-center gap-2 sm:gap-0">
           {session?.user ? (
             <>
               {/* User Popover */}
@@ -118,15 +113,11 @@ function Navigation() {
                 open={popoverOpen}
                 onOpenChange={setPopoverOpen}
                 trigger={
-                  <Button
-                    variant="ghost"
-                    className="flex items-center gap-2 rounded-full p-2 hover:bg-accent cursor-pointer"
-                  >
-                    <User className="h-5 w-5" />
-                    <span className="hidden sm:inline text-sm font-medium">
-                      {session.user.name || session.user.email}
-                    </span>
-                  </Button>
+                  <div className="flex h-12 items-center justify-end px-6 cursor-pointer">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
+                    {userInitials}
+                  </div>
+                </div>
                 }
                 content={
                   <div className="flex flex-col space-y-1">

@@ -1,6 +1,5 @@
 import type React from "react";
 import type { Metadata } from "next";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getUserProfile } from "@/actions/settings";
 import { redirect } from "next/navigation";
 import { ProfileForm } from "./ProfileForm";
@@ -25,20 +24,16 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl py-6">
-      <Card className="shadow-sm">
-        <CardHeader>
-          <CardTitle className="font-serif text-2xl font-normal">
-            Profile Information
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Update your personal details and preferences
-          </p>
-        </CardHeader>
-        <CardContent>
-          <ProfileForm profile={profile} />
-        </CardContent>
-      </Card>
+    <div className="mx-auto max-w-2xl px-4 py-6 md:py-8 w-full">
+      <div className="mb-8">
+        <h1 className="font-serif text-3xl md:text-4xl font-normal text-foreground">
+          Profile Information
+        </h1>
+        <p className="mt-2 text-sm md:text-base text-muted-foreground">
+          Update your personal details and preferences
+        </p>
+      </div>
+      <ProfileForm profile={profile} />
     </div>
   );
 }

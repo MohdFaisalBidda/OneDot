@@ -32,7 +32,9 @@ import {
   TrendingDown,
   Brain,
   Sparkles,
+  Crown,
 } from "lucide-react";
+import SmartInsights from "@/app/_components/SmartInsights";
 import { homeDashboardQuickLinks } from "@/consts/routesData";
 import { announcements } from "@/consts/dashboard";
 import { useSession } from "next-auth/react";
@@ -50,12 +52,14 @@ function page() {
   const { data: session } = useSession();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState<any>(null);
 
   useEffect(() => {
     const fetchStats = async () => {
       const result = await getDashboardStats();
       if (result.data) {
         setStats(result.data);
+        setUserData(result.userData);
       }
       setLoading(false);
     };
@@ -71,36 +75,44 @@ function page() {
         : "Good evening";
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 p-6 bg-[#F7F5F3]/30">
+    <div className="mx-auto max-w-7xl space-y-4 md:space-y-6 p-4 md:p-6 bg-[#F7F5F3]/30 overflow-x-hidden w-full">
       {/* Welcome Section with Quick Actions */}
-      <div className="flex items-start justify-between gap-4 flex-wrap">
+      <div className="flex flex-col md:flex-row items-start justify-between gap-4 flex-wrap">
         <div className="space-y-2">
-          <h1 className="font-serif text-4xl font-semibold text-[#37322F]">
-            {greeting}, {session?.user?.name}
-          </h1>
-          <p className="text-lg text-[#605A57]">
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="font-serif text-2xl md:text-4xl font-semibold text-[#37322F]">
+              {greeting}, {session?.user?.name}
+            </h1>
+            {userData?.isLifetimeFree && (
+              <Badge className="bg-[#37322F] text-[#F7F5F3] border border-[#E0DEDB] px-3 py-1 shadow-sm">
+                <Crown className="h-3 w-3 mr-1" />
+                Lifetime Free #{userData.userNumber}
+              </Badge>
+            )}
+          </div>
+          <p className="text-sm md:text-lg text-[#605A57]">
             Here's your complete overview and insights
           </p>
         </div>
-        <div className="flex gap-2">
-          <Link href="/dashboard/daily-focus">
-            <Button className="bg-[#37322F] hover:bg-[#49423D] text-white rounded-full shadow-sm">
+        {/* <div className="flex gap-2 w-full md:w-auto">
+          <Link href="/dashboard/daily-focus" className="flex-1 md:flex-initial">
+            <Button className="bg-[#37322F] hover:bg-[#49423D] text-white rounded-full shadow-sm w-full md:w-auto text-sm">
               <PlusCircle className="mr-2 h-4 w-4" />
               Add Focus
             </Button>
           </Link>
-          <Link href="/dashboard/decisions">
-            <Button variant="outline" className="rounded-full border-[#E0DEDB]">
+          <Link href="/dashboard/decisions" className="flex-1 md:flex-initial">
+            <Button variant="outline" className="rounded-full border-[#E0DEDB] w-full md:w-auto text-sm">
               <PlusCircle className="mr-2 h-4 w-4" />
               Add Decision
             </Button>
           </Link>
-        </div>
+        </div> */}
       </div>
 
       {/* Hero Stats - Streak & Overview */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card className="border-[#E0DEDB] bg-gradient-to-br from-orange-50 to-orange-100/50 shadow-md">
+      <div className="grid gap-4 md:grid-cols-2 w-auto max-w-full">
+        <Card className="border-[#E0DEDB] bg-gradient-to-br from-orange-50 to-orange-100/50 shadow-md w-auto max-w-full">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -125,7 +137,7 @@ function page() {
           </CardContent>
         </Card>
 
-        <Card className="border-[#E0DEDB] bg-gradient-to-br from-blue-50 to-blue-100/50 shadow-md">
+        <Card className="border-[#E0DEDB] bg-gradient-to-br from-blue-50 to-blue-100/50 shadow-md w-auto max-w-full">
           <CardHeader>
             <CardTitle className="text-sm font-medium text-[#605A57] flex items-center gap-2">
               <Target className="h-4 w-4 text-blue-600" />
@@ -156,8 +168,8 @@ function page() {
       </div>
 
       {/* Key Metrics - 4 Column Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="border-[#E0DEDB] bg-card shadow-sm hover:shadow-md transition-all">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 w-auto max-w-full">
+        <Card className="border-[#E0DEDB] bg-card shadow-sm hover:shadow-md transition-all w-auto max-w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-[#605A57]">
               Monthly Progress
@@ -175,7 +187,7 @@ function page() {
           </CardContent>
         </Card>
 
-        <Card className="border-[#E0DEDB] bg-card shadow-sm hover:shadow-md transition-all">
+        <Card className="border-[#E0DEDB] bg-card shadow-sm hover:shadow-md transition-all w-auto max-w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-[#605A57]">
               Total Entries
@@ -192,7 +204,7 @@ function page() {
           </CardContent>
         </Card>
 
-        <Card className="border-[#E0DEDB] bg-card shadow-sm hover:shadow-md transition-all">
+        <Card className="border-[#E0DEDB] bg-card shadow-sm hover:shadow-md transition-all w-auto max-w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-[#605A57]">
               Decisions Made
@@ -209,7 +221,7 @@ function page() {
           </CardContent>
         </Card>
 
-        <Card className="border-[#E0DEDB] bg-card shadow-sm hover:shadow-md transition-all">
+        <Card className="border-[#E0DEDB] bg-card shadow-sm hover:shadow-md transition-all w-auto max-w-full">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-[#605A57]">
               Pending Tasks
@@ -227,10 +239,13 @@ function page() {
         </Card>
       </div>
 
+      {/* Smart Insights - AI Powered Feature */}
+      {/* <SmartInsights /> */}
+
       {/* Analytics Row - Weekly Activity & Insights */}
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-4 md:gap-6 lg:grid-cols-3 w-auto max-w-full">
         {/* Weekly Activity Chart */}
-        <Card className="lg:col-span-2 border-[#E0DEDB] bg-card shadow-sm">
+        <Card className="lg:col-span-2 border-[#E0DEDB] bg-card shadow-sm overflow-hidden w-auto max-w-full">
           <CardHeader>
             <CardTitle className="font-serif text-xl font-semibold text-[#37322F] flex items-center gap-2">
               <Activity className="h-5 w-5 text-blue-600" />
@@ -249,11 +264,11 @@ function page() {
               <div className="space-y-4">
                 {stats?.weeklyActivity?.map((day, index) => (
                   <div key={day.date} className="space-y-2">
-                    <div className="flex items-center justify-between text-xs text-[#605A57]">
-                      <span className="font-medium">
+                    <div className="flex items-center justify-between text-xs text-[#605A57] gap-2">
+                      <span className="font-medium truncate">
                         {new Date(day.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                       </span>
-                      <span>
+                      <span className="shrink-0">
                         {day.focusCount + day.decisionCount} {day.focusCount + day.decisionCount === 1 ? 'entry' : 'entries'}
                       </span>
                     </div>
@@ -298,7 +313,7 @@ function page() {
         </Card>
 
         {/* Performance Insights */}
-        <Card className="border-[#E0DEDB] bg-card shadow-sm">
+        <Card className="border-[#E0DEDB] bg-card shadow-sm w-auto max-w-full">
           <CardHeader>
             <CardTitle className="font-serif text-xl font-semibold text-[#37322F] flex items-center gap-2">
               <Brain className="h-5 w-5 text-green-600" />
@@ -361,9 +376,9 @@ function page() {
       </div>
 
       {/* Category & Mood Breakdown */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 md:gap-6 lg:grid-cols-2 w-auto max-w-full">
         {/* Decision Categories */}
-        <Card className="border-[#E0DEDB] bg-card shadow-sm">
+        <Card className="border-[#E0DEDB] bg-card shadow-sm w-auto max-w-full">
           <CardHeader>
             <CardTitle className="font-serif text-xl font-semibold text-[#37322F]">
               Decision Categories
@@ -414,7 +429,7 @@ function page() {
         </Card>
 
         {/* Mood Distribution */}
-        <Card className="border-[#E0DEDB] bg-card shadow-sm">
+        <Card className="border-[#E0DEDB] bg-card shadow-sm w-auto max-w-full">
           <CardHeader>
             <CardTitle className="font-serif text-xl font-semibold text-[#37322F]">
               Mood Tracker
@@ -499,76 +514,74 @@ function page() {
       </div> */}
 
       <div className="space-y-4">
-
-        <h2 className="font-serif text-2xl font-semibold text-[#37322F]">
+        <h2 className="font-serif text-xl md:text-2xl font-semibold text-[#37322F]">
           Recent Activity
         </h2>
-        {/* Recent Activity Timeline */}
-        <Card className="border-[#E0DEDB] bg-card shadow-sm">
+        <Card className="border-[#E0DEDB] bg-card shadow-sm overflow-hidden w-auto max-w-full">
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="font-serif text-xl font-semibold text-[#37322F]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="min-w-0">
+                <CardTitle className="font-serif text-lg md:text-xl font-semibold text-[#37322F]">
                   Most Recent
                 </CardTitle>
-                <CardDescription className="text-sm text-[#605A57]">
+                <CardDescription className="text-xs md:text-sm text-[#605A57]">
                   Your latest journal entries and decisions
                 </CardDescription>
               </div>
-              <Link href="/dashboard/archive">
-                <Button variant="outline" size="sm" className="rounded-full">
+              <Link href="/dashboard/archive" className="shrink-0">
+                <Button variant="outline" size="sm" className="rounded-full w-full sm:w-auto">
                   View All
                 </Button>
               </Link>
             </div>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3 overflow-x-auto w-auto max-w-full">
             {loading ? (
               <div className="text-center text-[#605A57] py-8">Loading activities...</div>
-            ) : stats?.recentActivities && stats.recentActivities.length > 0 ? (
+            ) : stats?.recentActivities && stats.recentActivities.length > 0 && (
               <div className="space-y-3">
                 {stats.recentActivities.map((activity, index) => (
                   <div
                     key={activity.id}
-                    className="flex items-start gap-4 rounded-lg border border-[#E0DEDB] p-4 hover:bg-[#F7F5F3]/50 transition-colors"
+                    className="flex items-start gap-3 md:gap-4 rounded-lg border border-[#E0DEDB] p-3 md:p-4 hover:bg-[#F7F5F3]/50 transition-colors overflow-hidden"
                   >
-                    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${activity.type === 'focus'
+                    <div className={`flex h-8 w-8 md:h-10 md:w-10 shrink-0 items-center justify-center rounded-full ${activity.type === 'focus'
                         ? 'bg-blue-100 text-blue-600'
                         : 'bg-purple-100 text-purple-600'
                       }`}>
                       {activity.type === 'focus' ? (
-                        <BookOpen className="h-5 w-5" />
+                        <BookOpen className="h-4 w-4 md:h-5 md:w-5" />
                       ) : (
-                        <GitBranch className="h-5 w-5" />
+                        <GitBranch className="h-4 w-4 md:h-5 md:w-5" />
                       )}
                     </div>
-                    <div className="flex-1 space-y-1.5 min-w-0">
+                    <div className="flex-1 space-y-1.5 min-w-0 overflow-hidden">
                       <div className="flex items-start justify-between gap-2">
                         <div className="space-y-0.5 flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-[#37322F] truncate">
+                          <p className="text-xs md:text-sm font-semibold text-[#37322F] truncate">
                             {activity.title}
                           </p>
-                          <p className="text-xs text-[#605A57]">
+                          <p className="text-[10px] md:text-xs text-[#605A57]">
                             {activity.type === 'focus' ? 'Daily Focus' : 'Decision Made'}
                           </p>
                         </div>
-                        <div className="text-xs text-[#605A57] shrink-0">
+                        <div className="text-[10px] md:text-xs text-[#605A57] shrink-0">
                           {new Date(activity.timestamp).toLocaleDateString('en-US', {
                             month: 'short',
                             day: 'numeric'
                           })}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 md:gap-2 flex-wrap">
                         {activity.status && (
                           <Badge
-                            className={`text-xs rounded-full border ${getStatusBadgeStyle(activity.status)}`}
+                            className={`text-[10px] md:text-xs rounded-full border ${getStatusBadgeStyle(activity.status)}`}
                           >
                             {getStatusText(activity.status)}
                           </Badge>
                         )}
                         {activity.category && (
-                          <Badge className="text-xs rounded-full bg-[#F7F5F3] text-[#605A57] border border-[#E0DEDB]">
+                          <Badge className="text-[10px] md:text-xs rounded-full bg-[#F7F5F3] text-[#605A57] border border-[#E0DEDB] truncate md:max-w-[120px]">
                             {activity.category}
                           </Badge>
                         )}
@@ -577,24 +590,26 @@ function page() {
                   </div>
                 ))}
               </div>
-            ) : (
-              <div className="text-center text-[#605A57] py-8 space-y-3">
-                <Zap className="h-12 w-12 mx-auto text-[#E0DEDB]" />
-                <p>No recent activity. Start by adding a focus or decision!</p>
-                <div className="flex gap-2 justify-center pt-2">
-                  <Link href="/dashboard/daily-focus">
-                    <Button size="sm" className="rounded-full bg-[#37322F] hover:bg-[#49423D]">
-                      Add Focus
-                    </Button>
-                  </Link>
-                  <Link href="/dashboard/decisions">
-                    <Button variant="outline" size="sm" className="rounded-full">
-                      Add Decision
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            )}
+            ) 
+            // : (
+            //   <div className="text-center text-[#605A57] py-8 space-y-3">
+            //     <Zap className="h-12 w-12 mx-auto text-[#E0DEDB]" />
+            //     <p>No recent activity. Start by adding a focus or decision!</p>
+            //     <div className="flex gap-2 justify-center pt-2">
+            //       <Link href="/dashboard/daily-focus">
+            //         <Button size="sm" className="rounded-full bg-[#37322F] hover:bg-[#49423D]">
+            //           Add Focus
+            //         </Button>
+            //       </Link>
+            //       <Link href="/dashboard/decisions">
+            //         <Button variant="outline" size="sm" className="rounded-full">
+            //           Add Decision
+            //         </Button>
+            //       </Link>
+            //     </div>
+            //   </div>
+            // )
+            }
 
             {stats?.recentActivities && stats.recentActivities.length > 0 && (
               <div className="pt-3 border-t border-[#E0DEDB]">

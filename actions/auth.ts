@@ -32,17 +32,41 @@ export async function registerUser(formData: FormData) {
     return { error: "User already exists" }
   }
 
+  // Check total user count - lock after first 100 users
+  const userCount = await prisma.user.count()
+  if (userCount >= 100) {
+    return { 
+      error: "We've reached our initial capacity of 100 users. Join our waitlist to be notified when we open up!", 
+      isWaitlist: true 
+    }
+  }
+
   const passwordHash = await bcrypt.hash(password, 10)
+
+  // Calculate user number and lifetime free status
+  const userNumber = userCount + 1
+  const isLifetimeFree = userNumber <= 100
 
   const newUser = await prisma.user.create({
     data: {
       email,
       name,
       password: passwordHash,
+      userNumber,
+      isLifetimeFree,
     },
   })
 
-  return { success: true, user: { id: newUser.id, email: newUser.email, name: newUser.name } }
+  return { 
+    success: true, 
+    user: { 
+      id: newUser.id, 
+      email: newUser.email, 
+      name: newUser.name,
+      userNumber: newUser.userNumber,
+      isLifetimeFree: newUser.isLifetimeFree 
+    } 
+  }
 }
 
 
@@ -75,4 +99,16 @@ export async function requireUser() {
   }
   
   return user;
+}
+
+export async function getRemainingSlots() {
+  try {
+    const userCount = await prisma.user.count();
+    const remaining = Math.max(0, 100 - userCount);
+    
+    return { remaining, total: 100, claimed: userCount };
+  } catch (error) {
+    console.error("Error getting remaining slots:", error);
+    return { remaining: 0, total: 100, claimed: 100 };
+  }
 }

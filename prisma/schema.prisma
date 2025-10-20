@@ -25,6 +25,10 @@ model User {
 
   // Preferences fields
   theme           UserTheme @default(LIGHT)
+  
+  // Membership tracking
+  isLifetimeFree  Boolean @default(false)
+  userNumber      Int?    @unique // Position in signup queue (1-100 are lifetime free)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

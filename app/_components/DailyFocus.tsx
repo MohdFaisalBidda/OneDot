@@ -34,12 +34,12 @@ export default function DailyFocusPage({
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8 p-6">
-      <div className="mb-12 text-center">
-        <h1 className="font-serif text-5xl font-normal leading-tight text-balance text-foreground sm:text-6xl">
+    <div className="mx-auto max-w-7xl px-4 pb-4 sm:px-6 lg:px-8 md:p-6">
+      <div className="mb-6 md:mb-12 text-center">
+        <h1 className="font-serif text-3xl md:text-5xl font-normal leading-tight text-balance text-foreground sm:text-6xl">
           Daily Focus Journal
         </h1>
-        <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
+        <p className="mt-2 md:mt-4 text-sm md:text-lg text-muted-foreground leading-relaxed">
           Track your daily intentions and achievements
         </p>
       </div>
