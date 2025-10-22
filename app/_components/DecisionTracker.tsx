@@ -15,16 +15,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Pencil, Trash2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Decision, DecisionCategory } from "@/lib/generated/prisma";
 import Loader from "./Loader";
-import { CreateDecision, UpdateDecisionImage } from "@/actions";
+import { CreateDecision, UpdateDecisionImage, UpdateDecision, DeleteDecision } from "@/actions";
 import { toast } from "sonner";
 import { R2FileUploader, type R2FileUploaderRef } from "@/components/custom/r2-file-uploader";
 import { useR2Upload } from "@/hooks/use-r2-upload";
 import { ImageLightbox } from "@/components/custom/image-lightbox";
 import { getCategoryColor, getCategoryIcon } from "@/lib/status-colors";
+import { ReusableModal, ConfirmModal } from "@/components/custom/reusable-modal";
 
 export type DecisionEntry = {
   id: string;
@@ -75,7 +76,17 @@ export default function DecisionsTrackerPage({
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState(0);
-  
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedDecision, setSelectedDecision] = useState<Decision | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editReason, setEditReason] = useState("");
+  const [editCategory, setEditCategory] = useState<DecisionCategory>("CAREER");
+  const [editSelectedFile, setEditSelectedFile] = useState<File | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const editUploaderRef = useRef<R2FileUploaderRef>(null);
+
   const { uploadFile } = useR2Upload({
     prefix: 'decisions',
     showToast: false,
@@ -93,6 +104,123 @@ export default function DecisionsTrackerPage({
     setLightboxOpen(true);
   };
 
+  const openEditModal = (decision: Decision) => {
+    setSelectedDecision(decision);
+    setEditTitle(decision.title);
+    setEditReason(decision.reason);
+    setEditCategory(decision.category);
+    setEditModalOpen(true);
+  };
+
+  const openDeleteModal = (decision: Decision) => {
+    setSelectedDecision(decision);
+    setDeleteModalOpen(true);
+  };
+
+  const handleEditFilesSelected = (files: File[]) => {
+    if (files && files.length > 0) {
+      setEditSelectedFile(files[0]);
+    }
+  };
+
+  const handleUpdate = async () => {
+    if (!selectedDecision) return;
+
+    try {
+      setIsUpdating(true);
+
+      const validationErrors: Record<string, string> = {};
+
+      if (!editTitle.trim()) {
+        validationErrors.title = "Title is required";
+      } else if (editTitle.length > 100) {
+        validationErrors.title = "Title must be less than 100 characters";
+      }
+
+      if (!editReason.trim()) {
+        validationErrors.reason = "Reason is required";
+      } else if (editReason.length > 500) {
+        validationErrors.reason = "Reason must be less than 500 characters";
+      }
+
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        setIsUpdating(false);
+        return;
+      }
+
+      let imageUrl = selectedDecision.image;
+
+      if (editSelectedFile) {
+        const uploadResult = await uploadFile(editSelectedFile);
+
+        if (!uploadResult.success) {
+          toast.warning("Failed to upload new image. Keeping existing image.");
+          console.error("Upload error:", uploadResult.error);
+        } else if (uploadResult.url) {
+          imageUrl = uploadResult.url;
+        }
+      }
+
+      const updateData: DecisionEntry = {
+        id: selectedDecision.id,
+        title: editTitle,
+        reason: editReason,
+        category: editCategory,
+        date: selectedDecision.date.toString(),
+        image: imageUrl || undefined,
+      };
+
+      const res = await UpdateDecision(selectedDecision.id, updateData);
+
+      if (res?.error) {
+        if (res.fieldErrors) {
+          setErrors(res.fieldErrors);
+        } else {
+          toast.error(res.error);
+        }
+        setIsUpdating(false);
+        return;
+      }
+
+      toast.success("Decision updated successfully!");
+      setEditModalOpen(false);
+      setSelectedDecision(null);
+      setEditSelectedFile(null);
+      editUploaderRef.current?.resetFiles();
+    } catch (error) {
+      toast.error("An unexpected error occurred. Please try again.");
+      console.error("Error updating decision:", error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!selectedDecision) return;
+
+    try {
+      setIsDeleting(true);
+
+      const res = await DeleteDecision(selectedDecision.id);
+
+      if (res?.error) {
+        toast.error(res.error);
+        setIsDeleting(false);
+        return;
+      }
+
+      toast.success("Decision deleted successfully!");
+      setDeleteModalOpen(false);
+      setSelectedDecision(null);
+    } catch (error) {
+      toast.error("An unexpected error occurred. Please try again.");
+      console.error("Error deleting decision:", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError("");
@@ -100,22 +228,22 @@ export default function DecisionsTrackerPage({
 
     try {
       setIsSubmitting(true);
-      
+
       // Step 1: Client-side validation
       const validationErrors: Record<string, string> = {};
-      
+
       if (!title.trim()) {
         validationErrors.title = "Title is required";
       } else if (title.length > 100) {
         validationErrors.title = "Title must be less than 100 characters";
       }
-      
+
       if (!reason.trim()) {
         validationErrors.reason = "Reason is required";
       } else if (reason.length > 500) {
         validationErrors.reason = "Reason must be less than 500 characters";
       }
-      
+
       if (Object.keys(validationErrors).length > 0) {
         setErrors(validationErrors);
         setIsSubmitting(false);
@@ -147,7 +275,7 @@ export default function DecisionsTrackerPage({
       // Step 3: Upload file if selected (only after DB entry succeeds)
       if (selectedFile && res.id) {
         const uploadResult = await uploadFile(selectedFile);
-        
+
         if (!uploadResult.success) {
           // DB entry created but upload failed - show warning
           toast.warning("Decision created, but image upload failed. You can try uploading again later.");
@@ -155,7 +283,7 @@ export default function DecisionsTrackerPage({
         } else if (uploadResult.url) {
           // Step 4: Update decision with image URL (only if upload succeeds)
           const updateRes = await UpdateDecisionImage(res.id, uploadResult.url);
-          
+
           if (updateRes?.error) {
             toast.warning("Decision created, but failed to attach image.");
             console.error("Update error:", updateRes.error);
@@ -307,7 +435,7 @@ export default function DecisionsTrackerPage({
           <div className="space-y-4">
             {decisions?.map((decision, index) => (
               <Card key={decision.id} className="shadow-sm">
-                <CardContent className="pt-6">
+                <CardContent>
                   <div className="flex gap-4">
                     <div className="flex flex-col items-center">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground font-medium">
@@ -317,31 +445,53 @@ export default function DecisionsTrackerPage({
                         <div className="mt-2 h-full w-px bg-border" />
                       )}
                     </div>
-                    <div className="flex-1 space-y-2 pb-4">
-                      <div className="flex items-start justify-between gap-4">
-                        <h3 className="font-medium leading-relaxed">
-                          {decision.title}
-                        </h3>
-                        <span className={`shrink-0 inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium ${getCategoryColor(decision.category)}`}>
-                          <span>{getCategoryIcon(decision.category)}</span>
-                          <span>{decision.category}</span>
-                        </span>
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-start justify-between gap-4 pb-4">
+                        <div className="flex-1">
+                          <h3 className="font-medium leading-relaxed">
+                            {decision.title}
+                          </h3>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`shrink-0 inline-flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-medium ${getCategoryColor(decision.category)}`}>
+                            <span>{getCategoryIcon(decision.category)}</span>
+                            <span>{decision.category}</span>
+                          </span>
+                          <div className="flex items-center justify-end">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 rounded-full hover:scale-125 transition-all ease-in-out duration-500"
+                              onClick={() => openEditModal(decision)}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 rounded-full text-destructive hover:text-destructive hover:scale-125 transition-all ease-in-out duration-500"
+                              onClick={() => openDeleteModal(decision)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
                       </div>
                       <div className="flex items-start justify-between gap-4">
 
-                      <p className="text-sm leading-relaxed text-muted-foreground max-w-md w-full">
-                        {decision.reason}
-                      </p>
-                      {decision.image && (
-                        <div className="pt-2">
-                          <img
-                            src={decision.image || "/placeholder.svg"}
-                            alt="Decision reference"
-                            className="rounded-xl h-24 object-cover shadow-sm hover:scale-110 transition-all ease-in-out duration-500 cursor-pointer"
-                            onClick={() => openLightbox(decision.image!)}
-                          />
-                        </div>
-                      )}
+                        <p className="text-sm leading-relaxed text-muted-foreground max-w-md w-full">
+                          {decision.reason}
+                        </p>
+                        {decision.image && (
+                          <div className="pt-2">
+                            <img
+                              src={decision.image || "/placeholder.svg"}
+                              alt="Decision reference"
+                              className="rounded-xl h-24 object-cover shadow-sm hover:scale-110 transition-all ease-in-out duration-500 cursor-pointer"
+                              onClick={() => openLightbox(decision.image!)}
+                            />
+                          </div>
+                        )}
                       </div>
 
                       <p className="text-xs text-muted-foreground">
@@ -362,6 +512,118 @@ export default function DecisionsTrackerPage({
         isOpen={lightboxOpen}
         onClose={() => setLightboxOpen(false)}
         alt="Decision reference"
+      />
+
+      <ReusableModal
+        open={editModalOpen}
+        onOpenChange={setEditModalOpen}
+        title="Edit Decision"
+        description="Update your decision details"
+        className="sm:max-w-[500px]"
+      >
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="edit-title">Decision Title</Label>
+            <Input
+              id="edit-title"
+              value={editTitle}
+              onChange={(e) => setEditTitle(e.target.value)}
+              placeholder="What did you decide?"
+              className="rounded-full"
+              disabled={isUpdating}
+            />
+            {errors.title && (
+              <p className="text-sm text-destructive">{errors.title}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="edit-reason">Reason</Label>
+            <Textarea
+              id="edit-reason"
+              value={editReason}
+              onChange={(e) => setEditReason(e.target.value)}
+              placeholder="Why did you make this decision?"
+              rows={4}
+              maxLength={500}
+              className="rounded-2xl"
+              disabled={isUpdating}
+            />
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span>
+                {errors.reason && (
+                  <p className="text-sm text-destructive">{errors.reason}</p>
+                )}
+              </span>
+              <span>{editReason.length}/500</span>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="edit-category">Category</Label>
+            <Select
+              value={editCategory}
+              onValueChange={(val: string) =>
+                setEditCategory(val as DecisionCategory)
+              }
+              disabled={isUpdating}
+            >
+              <SelectTrigger id="edit-category" className="rounded-full">
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.values(DecisionCategory).map((dec) => (
+                  <SelectItem key={dec} value={dec}>
+                    {dec.replace("_", " ")}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="edit-image">Reference Image (optional)</Label>
+            <R2FileUploader
+              ref={editUploaderRef}
+              prefix="decisions"
+              multiple={false}
+              autoUpload={false}
+              onFilesSelected={handleEditFilesSelected}
+            />
+          </div>
+
+          <div className="flex justify-end gap-2 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setEditModalOpen(false)}
+              disabled={isUpdating}
+              className="rounded-full"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleUpdate}
+              disabled={isUpdating}
+              className="rounded-full"
+            >
+              {isUpdating ? <Loader /> : "Update Decision"}
+            </Button>
+          </div>
+        </div>
+      </ReusableModal>
+
+      <ConfirmModal
+        open={deleteModalOpen}
+        onOpenChange={setDeleteModalOpen}
+        title="Delete Decision"
+        description="Are you sure you want to delete this decision? This action cannot be undone."
+        onConfirm={handleDelete}
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="destructive"
+        isLoading={isDeleting}
       />
     </div>
   );

@@ -149,7 +149,7 @@ export default function DecisionTable({ data, pagination }: DecisionTableProps) 
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-lg border">
+      <div className="overflow-x-auto rounded-lg border max-w-xs sm:max-w-2xl md:max-w-full w-auto">
         <table className="w-full min-w-[800px]">
           <thead>
             <tr className="border-b border-border bg-muted/50">

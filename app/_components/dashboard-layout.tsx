@@ -7,13 +7,14 @@ import { usePathname } from "next/navigation";
 import { cn, getUserInitials } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { Settings, ChevronDown, LogOut, ChevronLeft, ChevronRight, User } from "lucide-react";
-import { navItems, pageTitles, settingsItems } from "@/consts/routesData";
-import { signOut, useSession } from "next-auth/react";
+import { navItems, settingsItems } from "@/consts/routesData";
+import {  useSession } from "next-auth/react";
 import { HoverPopover } from "@/components/custom/hover-popover";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/custom/Logo";
 import { BottomNav } from "./BottomNav";
 import { MobileHeader } from "./MobileHeader";
+import { logOut } from "@/lib/user";
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -25,7 +26,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
 
   // const pageTitle = pageTitles[pathname];
-  const userInitials = getUserInitials(session?.user?.name as string);
+  const userInitials = getUserInitials(session?.user?.name);
 
   // Auto-collapse sidebar on smaller screens
   useEffect(() => {
@@ -174,12 +175,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
             {/* Logout Button */}
             <Button
-              onClick={() =>
-                signOut({
-                  redirect: true,
-                  callbackUrl: "/",
-                })
-              }
+              onClick={logOut}
               variant="ghost"
               className={cn(
                 "w-full gap-2 text-muted-foreground hover:text-foreground hover:bg-accent",
@@ -256,7 +252,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                     </Button>
                   </Link>
                   <Button
-                    onClick={() => signOut()}
+                    onClick={logOut}
                     variant={"ghost"}
                     className="w-full justify-start gap-2 font-medium hover:bg-accent hocer:text-primary-foreground text-muted-foreground hover:text-foreground"
                   >

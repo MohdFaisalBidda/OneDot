@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { pageTitles } from "@/consts/routesData";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { getUserInitials } from "@/lib/utils";
 import { HoverPopover } from "@/components/custom/hover-popover";
 import { Button } from "@/components/ui/button";
@@ -11,11 +11,12 @@ import Link from "next/link";
 import { useState } from "react";
 import { APP_NAME } from "@/consts";
 import { Logo } from "@/components/custom/Logo";
+import { logOut } from "@/lib/user";
 
 export function MobileHeader() {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const userInitials = getUserInitials(session?.user?.name as string);
+  const userInitials = getUserInitials(session?.user?.name);
   const [popoverOpen, setPopoverOpen] = useState(false);
   
   // Get page title from pathname
@@ -45,10 +46,10 @@ export function MobileHeader() {
             <div className="flex flex-col space-y-1 min-w-[160px]">
               <div className="px-3 py-2 border-b border-border">
                 <p className="text-sm font-medium text-foreground truncate">
-                  {session?.user?.name}
+                  {session?.user?.name || 'User'}
                 </p>
                 <p className="text-xs text-muted-foreground truncate">
-                  {session?.user?.email}
+                  {session?.user?.email || 'No email'}
                 </p>
               </div>
               
@@ -73,7 +74,7 @@ export function MobileHeader() {
               </Link>
               
               <Button
-                onClick={() => signOut({ redirect: true, callbackUrl: "/" })}
+                onClick={logOut}
                 variant="ghost"
                 className="w-full justify-start gap-2 font-medium text-destructive hover:text-destructive"
               >

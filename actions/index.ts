@@ -227,3 +227,152 @@ export const UpdateFocusImage = async (focusId: string, imageUrl: string) => {
         };
     }
 };
+
+export const UpdateDecision = async (decisionId: string, data: Partial<DecisionEntry>) => {
+    try {
+        const user = await getCurrentUser();
+
+        if (!user) {
+            return { error: "Unauthorized" };
+        }
+
+        const { data: resData, error } = CreateDecisionSchema.safeParse(data);
+
+        if (error) {
+            const fieldErrors: Record<string, string> = {};
+
+            error.issues.forEach(issue => {
+                const fieldName = issue.path[0] as string;
+                fieldErrors[fieldName] = issue.message;
+            });
+            return { error: "Validation failed", fieldErrors };
+        }
+
+        await prisma.decision.update({
+            where: {
+                id: decisionId,
+                userId: user.id,
+            },
+            data: {
+                title: resData.title,
+                reason: resData.reason,
+                category: resData.category,
+                image: resData.image,
+            },
+        });
+
+        revalidatePath("/decisions");
+
+        return {
+            success: true,
+        };
+    } catch (error) {
+        console.error("Error updating decision:", error);
+        return {
+            error: "Failed to update decision. Please try again.",
+        };
+    }
+};
+
+export const DeleteDecision = async (decisionId: string) => {
+    try {
+        const user = await getCurrentUser();
+
+        if (!user) {
+            return { error: "Unauthorized" };
+        }
+
+        await prisma.decision.delete({
+            where: {
+                id: decisionId,
+                userId: user.id,
+            },
+        });
+
+        revalidatePath("/decisions");
+
+        return {
+            success: true,
+        };
+    } catch (error) {
+        console.error("Error deleting decision:", error);
+        return {
+            error: "Failed to delete decision. Please try again.",
+        };
+    }
+};
+
+export const UpdateFocus = async (focusId: string, data: Partial<FocusEntry>) => {
+    try {
+        const user = await getCurrentUser();
+
+        if (!user) {
+            return { error: "Unauthorized" };
+        }
+
+        const { data: resData, error } = CreateFocusSchema.safeParse(data);
+
+        if (error) {
+            const fieldErrors: Record<string, string> = {};
+
+            error.issues.forEach(issue => {
+                const fieldName = issue.path[0] as string;
+                fieldErrors[fieldName] = issue.message;
+            });
+            return { error: "Validation failed", fieldErrors };
+        }
+
+        await prisma.focus.update({
+            where: {
+                id: focusId,
+                userId: user.id,
+            },
+            data: {
+                title: resData.focus,
+                status: resData.status,
+                mood: resData.mood,
+                notes: resData.notes ?? "",
+                image: resData.image,
+            },
+        });
+
+        revalidatePath("/daily-focus");
+
+        return {
+            success: true,
+        };
+    } catch (error) {
+        console.error("Error updating focus:", error);
+        return {
+            error: "Failed to update focus. Please try again.",
+        };
+    }
+};
+
+export const DeleteFocus = async (focusId: string) => {
+    try {
+        const user = await getCurrentUser();
+
+        if (!user) {
+            return { error: "Unauthorized" };
+        }
+
+        await prisma.focus.delete({
+            where: {
+                id: focusId,
+                userId: user.id,
+            },
+        });
+
+        revalidatePath("/daily-focus");
+
+        return {
+            success: true,
+        };
+    } catch (error) {
+        console.error("Error deleting focus:", error);
+        return {
+            error: "Failed to delete focus. Please try again.",
+        };
+    }
+};

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn, getUserInitials } from "@/lib/utils";
-import { signOut, useSession } from "next-auth/react";
+import {  useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -21,6 +21,7 @@ import { ReusableDialog } from "@/components/custom/DialogWithForm";
 import SignupForm from "./forms/signup-form";
 import LoginForm from "./forms/login-form";
 import { Logo } from "@/components/custom/Logo";
+import { logOut } from "@/lib/user";
 
 function Navigation() {
   const [signupDialogOpen, setSignupDialogOpen] = useState(false);
@@ -29,7 +30,7 @@ function Navigation() {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const pathname = usePathname();
   const { data: session } = useSession();
-    const userInitials = getUserInitials(session?.user?.name as string);
+  const userInitials = getUserInitials(session?.user?.name);
 
   useEffect(() => {
     if (signupDialogOpen || loginDialogOpen) {
@@ -160,7 +161,7 @@ function Navigation() {
                       </Button>
                     </Link>
                     <Button
-                      onClick={() => signOut()}
+                      onClick={logOut}
                       variant={"ghost"}
                       className="w-full justify-start gap-2 font-medium hover:bg-accent hocer:text-primary-foreground text-muted-foreground hover:text-foreground"
                     >

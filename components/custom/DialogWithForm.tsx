@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
 interface ReusableDialogProps {
   trigger: React.ReactNode;
@@ -38,14 +39,14 @@ export function ReusableDialog({
       <DialogTrigger asChild>
         {trigger}
       </DialogTrigger>
-      <DialogContent className={className}>
+      <DialogContent className={cn("rounded-2xl shadow-lg", className)}>
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+          <DialogTitle className="font-serif text-2xl font-normal">{title}</DialogTitle>
           {description && (
-            <DialogDescription>{description}</DialogDescription>
+            <DialogDescription className="text-muted-foreground">{description}</DialogDescription>
           )}
         </DialogHeader>
-        {children}
+        <div className="py-4">{children}</div>
         {footer && <DialogFooter>{footer}</DialogFooter>}
       </DialogContent>
     </Dialog>

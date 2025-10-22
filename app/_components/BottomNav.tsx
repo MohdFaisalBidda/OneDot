@@ -10,7 +10,7 @@ import { Home } from "lucide-react";
 export function BottomNav() {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const userInitials = getUserInitials(session?.user?.name as string);
+  const userInitials = getUserInitials(session?.user?.name);
 
   // Get visible nav items and add home
   const visibleNavItems = [

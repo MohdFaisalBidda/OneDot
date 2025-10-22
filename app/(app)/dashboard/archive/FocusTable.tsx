@@ -38,8 +38,6 @@ interface FocusTableProps {
   }
 }
 
-// Status colors and labels are now handled by utility functions
-
 export default function FocusTable({ data, pagination }: FocusTableProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -69,7 +67,7 @@ export default function FocusTable({ data, pagination }: FocusTableProps) {
           focusPage: "1",
         })
       }
-    }, 500) // 500ms debounce
+    }, 500)
 
     return () => clearTimeout(timer)
   }, [searchTerm])
@@ -107,8 +105,6 @@ export default function FocusTable({ data, pagination }: FocusTableProps) {
   }
 
   const currentStatus = searchParams.get("focusStatus") || "all"
-  const currentSortBy = searchParams.get("focusSortBy") || "date"
-  const currentSortOrder = searchParams.get("focusSortOrder") || "desc"
 
   return (
     <div className="space-y-4">
@@ -149,11 +145,11 @@ export default function FocusTable({ data, pagination }: FocusTableProps) {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-lg border">
-        <table className="w-full">
+      <div className="overflow-x-auto rounded-lg border max-w-xs sm:max-w-2xl md:max-w-full w-auto">
+        <table className="w-full min-w-[200px]">
           <thead>
             <tr className="border-b border-border bg-muted/50">
-              <th className="p-3 text-left text-sm font-medium text-muted-foreground">
+              <th className="p-2 md:p-3 text-left text-xs md:text-sm font-medium text-muted-foreground whitespace-nowrap">
                 <button
                   onClick={() => handleSort("date")}
                   className="flex items-center gap-1 hover:text-foreground"
@@ -162,7 +158,7 @@ export default function FocusTable({ data, pagination }: FocusTableProps) {
                   <ArrowUpDown className="h-3 w-3" />
                 </button>
               </th>
-              <th className="p-3 text-left text-sm font-medium text-muted-foreground">
+              <th className="p-2 md:p-3 text-left text-xs md:text-sm font-medium text-muted-foreground">
                 <button
                   onClick={() => handleSort("title")}
                   className="flex items-center gap-1 hover:text-foreground"
@@ -171,7 +167,7 @@ export default function FocusTable({ data, pagination }: FocusTableProps) {
                   <ArrowUpDown className="h-3 w-3" />
                 </button>
               </th>
-              <th className="p-3 text-left text-sm font-medium text-muted-foreground">
+              <th className="p-2 md:p-3 text-left text-xs md:text-sm font-medium text-muted-foreground whitespace-nowrap">
                 <button
                   onClick={() => handleSort("status")}
                   className="flex items-center gap-1 hover:text-foreground"
@@ -180,7 +176,7 @@ export default function FocusTable({ data, pagination }: FocusTableProps) {
                   <ArrowUpDown className="h-3 w-3" />
                 </button>
               </th>
-              <th className="p-3 text-left text-sm font-medium text-muted-foreground">
+              <th className="p-2 md:p-3 text-left text-xs md:text-sm font-medium text-muted-foreground whitespace-nowrap">
                 <button
                   onClick={() => handleSort("mood")}
                   className="flex items-center gap-1 hover:text-foreground"
@@ -189,8 +185,12 @@ export default function FocusTable({ data, pagination }: FocusTableProps) {
                   <ArrowUpDown className="h-3 w-3" />
                 </button>
               </th>
-              <th className="p-3 text-left text-sm font-medium text-muted-foreground">Notes</th>
-              <th className="p-3 text-left text-sm font-medium text-muted-foreground">Image</th>
+              <th className="p-2 md:p-3 text-left text-xs md:text-sm font-medium text-muted-foreground whitespace-nowrap">
+                Notes
+              </th>
+              <th className="p-2 md:p-3 text-left text-xs md:text-sm font-medium text-muted-foreground whitespace-nowrap">
+                Image
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -203,25 +203,29 @@ export default function FocusTable({ data, pagination }: FocusTableProps) {
             ) : (
               data.map((entry) => (
                 <tr key={entry.id} className="border-b border-border/50 last:border-0 hover:bg-muted/30">
-                  <td className="p-3 text-sm">
+                  <td className="p-2 md:p-3 text-xs md:text-sm whitespace-nowrap">
                     {format(new Date(entry.date), "MMM dd, yyyy")}
                   </td>
-                  <td className="p-3 text-sm font-medium">{entry.title}</td>
-                  <td className="p-3 text-sm">
-                    <span className={`inline-flex rounded-full border px-2 py-1 text-xs ${getStatusBadgeStyle(entry.status)}`}>
+                  <td className="p-2 md:p-3 text-xs md:text-sm font-medium max-w-[150px] truncate">
+                    {entry.title}
+                  </td>
+                  <td className="p-2 md:p-3 text-xs md:text-sm">
+                    <span className={`inline-flex rounded-full border px-2 py-1 text-[10px] md:text-xs ${getStatusBadgeStyle(entry.status)}`}>
                       {getStatusText(entry.status)}
                     </span>
                   </td>
-                  <td className="p-3 text-sm">{entry.mood}</td>
-                  <td className="p-3 text-sm text-muted-foreground max-w-xs truncate">
+                  <td className="p-2 md:p-3 text-xs md:text-sm whitespace-nowrap">
+                    {entry.mood}
+                  </td>
+                  <td className="p-2 md:p-3 text-xs md:text-sm text-muted-foreground max-w-[150px] truncate">
                     {entry.notes || "—"}
                   </td>
-                  <td className="p-3">
+                  <td className="p-2 md:p-3">
                     {entry.image ? (
                       <img
                         src={entry.image}
                         alt="Entry"
-                        className="h-12 w-12 rounded-lg object-cover shadow-sm"
+                        className="h-10 w-10 md:h-12 md:w-12 rounded-lg object-cover shadow-sm"
                       />
                     ) : (
                       <span className="text-xs text-muted-foreground">—</span>
@@ -235,8 +239,8 @@ export default function FocusTable({ data, pagination }: FocusTableProps) {
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="text-xs md:text-sm text-muted-foreground">
           Showing {data.length > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0}-
           {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} entries
         </div>
@@ -248,10 +252,11 @@ export default function FocusTable({ data, pagination }: FocusTableProps) {
             disabled={!pagination.hasPrev}
             className="rounded-full"
           >
-            <ChevronLeft className="mr-1 h-4 w-4" />
-            Previous
+            <ChevronLeft className="mr-1 h-3 w-3 md:h-4 md:w-4" />
+            <span className="hidden sm:inline">Previous</span>
+            <span className="sm:hidden">Prev</span>
           </Button>
-          <span className="text-sm text-muted-foreground">
+          <span className="text-xs md:text-sm text-muted-foreground whitespace-nowrap">
             Page {pagination.page} of {pagination.totalPages}
           </span>
           <Button
@@ -261,8 +266,9 @@ export default function FocusTable({ data, pagination }: FocusTableProps) {
             disabled={!pagination.hasNext}
             className="rounded-full"
           >
-            Next
-            <ChevronRight className="ml-1 h-4 w-4" />
+            <span className="sm:hidden">Next</span>
+            <span className="hidden sm:inline">Next</span>
+            <ChevronRight className="ml-1 h-3 w-3 md:h-4 md:w-4" />
           </Button>
         </div>
       </div>

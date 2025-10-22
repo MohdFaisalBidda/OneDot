@@ -102,7 +102,7 @@ export default async function ArchivePage({
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 pb-4 md:p-6 sm:px-6 lg:px-8 overflow-x-hidden w-full">
+    <div className="mx-auto max-w-7xl px-4 pb-4 md:p-6 sm:px-6 lg:px-8 w-full">
       <div className="mb-6 md:mb-12 text-center">
         <h1 className="font-serif text-3xl md:text-5xl font-normal leading-tight text-balance text-foreground sm:text-6xl">
           Complete Archive
@@ -112,15 +112,17 @@ export default async function ArchivePage({
         </p>
       </div>
 
-      <div className="space-y-6 md:space-y-12 w-auto max-w-full">
+      <div className="space-y-6 md:space-y-12 w-full">
         {/* Daily Focus Archive */}
-        <Card className="shadow-sm overflow-hidden w-auto max-w-full">
+        <Card className="shadow-sm max-w-fit w-auto mx-auto md:max-w-full">
           <CardHeader>
             <CardTitle className="font-serif text-2xl md:text-3xl font-normal">Daily Focus Entries</CardTitle>
           </CardHeader>
-          <CardContent className="overflow-x-auto w-auto max-w-full">
+          <CardContent className="p-0">
             {focusResult.data && focusResult.pagination ? (
-              <FocusTable data={focusResult.data} pagination={focusResult.pagination} />
+              <div className="md:p-6 pt-0">
+                <FocusTable data={focusResult.data} pagination={focusResult.pagination} />
+              </div>
             ) : (
               <div className="text-center py-8 text-muted-foreground">
                 No focus entries found
@@ -130,13 +132,15 @@ export default async function ArchivePage({
         </Card>
 
         {/* Decisions Archive */}
-        <Card className="shadow-sm overflow-hidden w-auto max-w-full">
+        <Card className="shadow-sm max-w-fit w-auto mx-auto md:max-w-full">
           <CardHeader>
             <CardTitle className="font-serif text-2xl md:text-3xl font-normal">Decision History</CardTitle>
           </CardHeader>
-          <CardContent className="overflow-x-auto w-auto max-w-full">
+          <CardContent className="p-0">
             {decisionsResult.data && decisionsResult.pagination ? (
-              <DecisionTable data={decisionsResult.data} pagination={decisionsResult.pagination} />
+              <div className="md:p-6 pt-0">
+                <DecisionTable data={decisionsResult.data} pagination={decisionsResult.pagination} />
+              </div>
             ) : (
               <div className="text-center py-8 text-muted-foreground">
                 No decisions found

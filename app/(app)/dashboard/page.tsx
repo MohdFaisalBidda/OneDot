@@ -555,7 +555,7 @@ function page() {
                         <GitBranch className="h-4 w-4 md:h-5 md:w-5" />
                       )}
                     </div>
-                    <div className="flex-1 space-y-1.5 min-w-0 overflow-hidden">
+                    <div className="flex-1 space-y-1.5 max-w-none md:max-w-full w-auto">
                       <div className="flex items-start justify-between gap-2">
                         <div className="space-y-0.5 flex-1 min-w-0">
                           <p className="text-xs md:text-sm font-semibold text-[#37322F] truncate">
@@ -591,24 +591,6 @@ function page() {
                 ))}
               </div>
             ) 
-            // : (
-            //   <div className="text-center text-[#605A57] py-8 space-y-3">
-            //     <Zap className="h-12 w-12 mx-auto text-[#E0DEDB]" />
-            //     <p>No recent activity. Start by adding a focus or decision!</p>
-            //     <div className="flex gap-2 justify-center pt-2">
-            //       <Link href="/dashboard/daily-focus">
-            //         <Button size="sm" className="rounded-full bg-[#37322F] hover:bg-[#49423D]">
-            //           Add Focus
-            //         </Button>
-            //       </Link>
-            //       <Link href="/dashboard/decisions">
-            //         <Button variant="outline" size="sm" className="rounded-full">
-            //           Add Decision
-            //         </Button>
-            //       </Link>
-            //     </div>
-            //   </div>
-            // )
             }
 
             {stats?.recentActivities && stats.recentActivities.length > 0 && (
