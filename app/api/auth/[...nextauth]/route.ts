@@ -1,8 +1,16 @@
 import prisma from "@/lib/prismaClient"
-import NextAuth, { NextAuthOptions } from "next-auth"
+import NextAuth, { type DefaultSession, type NextAuthOptions } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
 import bcrypt from "bcrypt"
+
+declare module "next-auth" {
+  interface Session extends DefaultSession {
+    user: {
+      id: string;
+    } & DefaultSession["user"];
+  }
+}
 
 export const authOptions: NextAuthOptions = {
     pages: {
@@ -44,6 +52,18 @@ export const authOptions: NextAuthOptions = {
     ],
 
     callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
+                token.id = user.id;
+            }
+            return token;
+        },
+        async session({ session, token }) {
+            if (session.user) {
+                session.user.id = token.id as string;
+            }
+            return session;
+        },
         async signIn({ user, account }) {
             if (account?.provider === "google") {
                 // Ensure user exists in DB

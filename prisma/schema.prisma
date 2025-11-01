@@ -34,7 +34,8 @@ model User {
   updatedAt DateTime @updatedAt
 
   focuses Focus[]
-  decision Decision[]
+  decisions Decision[]
+  documents Document[]
 }
 
 model Focus {
@@ -89,4 +90,38 @@ enum UserTheme {
   LIGHT
   DARK
   SYSTEM
+}
+
+enum DocumentType {
+  FOCUS_REVIEW
+  DECISION_REFLECTION
+  GENERAL_NOTES
+  WEEKLY_REVIEW
+  OTHER
+}
+
+model Document {
+  id          String       @id @default(cuid())
+  title       String
+  content     Json         // Stores the Tiptap JSON content
+  type        DocumentType @default(GENERAL_NOTES)
+  tags        String[]     // For categorization and filtering
+  isArchived  Boolean      @default(false)
+  
+  // Relationships
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Embedded references
+  focusIds    String[]     // References to embedded Focus entries
+  decisionIds String[]     // References to embedded Decision entries
+  
+  // Timestamps
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  
+  // Indexes
+  @@index([userId])
+  @@index([type])
+  @@index([isArchived])
 }
