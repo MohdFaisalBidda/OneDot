@@ -6,32 +6,34 @@ import prisma from '@/lib/prismaClient';
 
 
 export default async function DocumentPage({ params }: { params: { id: string } }) {
-  const session = await getServerSession(authOptions);
-  
-  if (!session?.user?.email) {
-    return notFound();
-  }
+    const session = await getServerSession(authOptions);
 
-  const document = await prisma.document.findUnique({
-    where: {
-      id: params.id,
-      userId: session.user.id,
-    },
-  });
+    if (!session?.user?.email) {
+        return notFound();
+    }
 
-  if (!document) {
-    return notFound();
-  }
+    const document = await prisma.document.findUnique({
+        where: {
+            id: params.id,
+            userId: session.user.id,
+        },
+    });
 
-  return (
-    <DocumentEditor
-      initialData={{
-        id: document.id,
-        title: document.title,
-        type: document.type as any,
-        content: document.content,
-        tags: document.tags,
-      }}
-    />
-  );
+    if (!document) {
+        return notFound();
+    }
+
+    return (
+        <div className="container mx-auto p-4">
+            <DocumentEditor
+                initialData={{
+                    id: document.id,
+                    title: document.title,
+                    type: document.type as any,
+                    content: document.content,
+                    tags: document.tags,
+                }}
+            />
+        </div>
+    );
 }

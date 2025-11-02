@@ -96,6 +96,43 @@ export async function changePassword(formData: FormData) {
   }
 }
 
+export async function addPassword(formData: FormData) {
+  try {
+    const user = await requireUser();
+    // If user already has a password, use the change password flow
+    if (user.password) {
+      return { error: "Password already exists. Use change password instead." };
+    }
+
+    const newPassword = formData.get("newPassword") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
+
+    if (!newPassword || !confirmPassword) {
+      return { error: "All password fields are required" };
+    }
+    
+    if (newPassword !== confirmPassword) {
+      return { error: "Passwords do not match" };
+    }
+
+    if (newPassword.length < 6) {
+      return { error: "Password must be at least 6 characters long" };
+    }
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    // Update password
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { password: hashedPassword },
+    });
+    
+    return { success: true };
+  } catch (error) {
+    console.error("Error adding password:", error);
+    return { error: "Failed to add password" };
+  }
+}
+
 // Preferences Actions
 export async function updatePreferences(formData: FormData) {
   try {
@@ -128,7 +165,7 @@ export async function updatePreferences(formData: FormData) {
   } catch (error) {
     console.error("Error updating preferences:", error)
     return { error: "Failed to update preferences" }
-}
+  }
 }
 
 export async function getUserPreferences() {
@@ -156,6 +193,7 @@ export async function deleteAccount() {
       prisma.decision.deleteMany({ where: { userId: user.id } }),
       prisma.focus.deleteMany({ where: { userId: user.id } }),
       prisma.user.delete({ where: { id: user.id } }),
+      prisma.authProvider.deleteMany({ where: { userId: user.id } })
     ])
 
     return { success: true }

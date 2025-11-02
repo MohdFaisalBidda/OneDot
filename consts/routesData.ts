@@ -5,8 +5,8 @@ export const navItems = [
   { href: "/dashboard/daily-focus", label: "Daily Focus", icon: BookOpen,show: true },
   { href: "/dashboard/decisions", label: "Decisions", icon: GitBranch,show: true },
   { href: "/dashboard/history", label: "History", icon: BarChart3,show: false },
-  { href: "/dashboard/export", label: "Export", icon: Download,show: false },
   { href: "/dashboard/archive", label: "Archives", icon:Archive ,show: true }, 
+  { href: "/dashboard/export", label: "Export", icon: Download,show: false },
 ]
 
 export const settingsItems = [

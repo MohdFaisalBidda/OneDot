@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn, getUserInitials } from "@/lib/utils";
-import {  useSession } from "next-auth/react";
+import {  signIn, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -22,12 +22,22 @@ import SignupForm from "./forms/signup-form";
 import LoginForm from "./forms/login-form";
 import { Logo } from "@/components/custom/Logo";
 import { logOut } from "@/lib/user";
+import { toast } from "sonner";
 
 function Navigation() {
   const [signupDialogOpen, setSignupDialogOpen] = useState(false);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);
+  
+  const handleGoogleSignIn = async () => {
+    try {
+      await signIn('google', { callbackUrl: '/dashboard' });
+      setPopoverOpen(false);
+    } catch (error) {
+      console.error('Error signing in with Google:', error);
+      toast('Failed to sign in with Google');
+    }
+  };
   const pathname = usePathname();
   const { data: session } = useSession();
   const userInitials = getUserInitials(session?.user?.name);
@@ -189,7 +199,13 @@ function Navigation() {
                 open={signupDialogOpen}
                 onOpenChange={handleSignupDialogOpenChange}
               >
-                <SignupForm onSubmitSuccess={() => setDialogOpen(false)} />
+                <SignupForm 
+                  onSubmitSuccess={() => setSignupDialogOpen(false)}
+                  onSwitchToLogin={() => {
+                    setSignupDialogOpen(false);
+                    setLoginDialogOpen(true);
+                  }}
+                />
               </ReusableDialog>
 
               <ReusableDialog
@@ -207,7 +223,13 @@ function Navigation() {
                 open={loginDialogOpen}
                 onOpenChange={handleLoginDialogOpenChange}
               >
-                <LoginForm onSubmitSuccess={() => setDialogOpen(false)} />
+                <LoginForm 
+                  onSubmitSuccess={() => setLoginDialogOpen(false)}
+                  onSwitchToSignup={() => {
+                    setLoginDialogOpen(false);
+                    setSignupDialogOpen(true);
+                  }}
+                />
               </ReusableDialog>
 
               <HoverPopover

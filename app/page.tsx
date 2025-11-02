@@ -16,7 +16,6 @@ import CTASection from "../app/_components/cta-section";
 import FooterSection from "../app/_components/footer-section";
 import SocialProofs from "./_components/social-proofs";
 import BentoGrid from "./_components/bento-grid";
-import First100Offer from "./_components/first-100-offer";
 import { Button } from "@/components/ui/button";
 import Navigation from "./_components/Navigation";
 import { useSession } from "next-auth/react";
@@ -54,7 +53,7 @@ export default function LandingPage() {
         });
         setProgress(0);
       }, 100);
-      
+
       return () => clearTimeout(timer);
     }
   }, [progress]);
@@ -85,7 +84,7 @@ export default function LandingPage() {
               <div className="w-full max-w-[937px] lg:w-[937px] flex flex-col justify-center items-center gap-3 sm:gap-4 md:gap-5 lg:gap-6">
                 <div className="self-stretch rounded-[3px] flex flex-col justify-center items-center gap-4 sm:gap-5 md:gap-6 lg:gap-8">
                   <div className="w-full max-w-[748.71px] lg:w-[748.71px] text-center flex justify-center flex-col text-[#37322F] text-[28px] xs:text-[32px] sm:text-[36px] md:text-[52px] lg:text-[80px] font-normal leading-[1.1] sm:leading-[1.15] md:leading-[1.2] lg:leading-24 font-serif px-2 sm:px-4 md:px-0">
-                    Your Single Point of Focus & Clarity. 
+                    Your Single Point of Focus & Clarity.
                   </div>
                   <div className="w-full max-w-[506.08px] lg:w-[506.08px] text-center flex justify-center flex-col text-[rgba(55,50,47,0.80)] text-sm sm:text-base md:text-lg lg:text-xl leading-[1.4] sm:leading-[1.45] md:leading-[1.5] lg:leading-7 font-sans px-2 sm:px-4 md:px-0 font-medium">
                     Streamline your day with mindful journaling that connects focus, progress, and decisions
@@ -96,14 +95,8 @@ export default function LandingPage() {
               </div>
 
               <div className="w-full max-w-[497px] lg:w-[497px] flex flex-col justify-center items-center gap-6 sm:gap-8 md:gap-10 lg:gap-12 relative z-10 mt-6 sm:mt-8 md:mt-10 lg:mt-12 px-4">
-                {/* Limited Offer Badge */}
-                <Button className="px-4 py-2.5 rounded-full bg-white border-2 border-[#37322F] shadow-[0px_4px_12px_rgba(55,50,47,0.15)] w-full sm:w-auto">
-                  <p className="text-xs sm:text-sm font-bold text-center text-[#37322F]">
-                    ✨ First 100 Users Get Lifetime Free Access
-                  </p>
-                </Button>
-                
-                <div className="backdrop-blur-[8.25px] flex flex-col sm:flex-row justify-start items-center gap-4 w-full sm:w-auto">
+
+                <div className="backdrop-blur-[8.25px] flex flex-col justify-start items-center gap-4 w-full sm:w-auto">
                   <Button
                     variant="heroDark"
                     size="hero"
@@ -124,37 +117,22 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="absolute top-[180px] sm:top-[200px] md:top-[240px] lg:top-[280px] left-1/2 transform -translate-x-1/2 z-0 pointer-events-none overflow-hidden w-full">
-                <Image
-                  src="/mask-group-pattern.svg"
-                  alt="Background pattern"
-                  width={2808}
-                  height={1000}
-                  priority
-                  className="w-full max-w-[1200px] sm:max-w-[1600px] md:max-w-[2000px] lg:max-w-[2400px] h-auto opacity-20 sm:opacity-25 md:opacity-30 mix-blend-multiply"
-                  style={{
-                    filter: "hue-rotate(15deg) saturate(0.7) brightness(1.2)",
-                  }}
-                />
-              </div>
+              <div className="w-full max-w-[960px] lg:w-[768px] pt-2 sm:pt-4 pb-6 sm:pb-8 md:pb-10 px-2 sm:px-4 md:px-6 lg:px-11 flex flex-col justify-center items-center gap-2 relative z-5 my-8 sm:my-12 md:my-16 lg:my-16 mb-0 lg:pb-0">
+                <div className="w-full max-w-[960px] lg:w-[768px] h-[200px] sm:h-[280px] md:h-[450px] lg:h-[620px] bg-white shadow-[0px_0px_0px_0.9056603908538818px_rgba(0,0,0,0.08)] overflow-hidden rounded-[6px] sm:rounded-[8px] lg:rounded-[9.06px] flex flex-col justify-start items-start">
 
-              <div className="w-full max-w-[960px] lg:w-[960px] pt-2 sm:pt-4 pb-6 sm:pb-8 md:pb-10 px-2 sm:px-4 md:px-6 lg:px-11 flex flex-col justify-center items-center gap-2 relative z-5 my-8 sm:my-12 md:my-16 lg:my-16 mb-0 lg:pb-0">
-                <div className="w-full max-w-[960px] lg:w-[960px] h-[200px] sm:h-[280px] md:h-[450px] lg:h-[695.55px] bg-white shadow-[0px_0px_0px_0.9056603908538818px_rgba(0,0,0,0.08)] overflow-hidden rounded-[6px] sm:rounded-[8px] lg:rounded-[9.06px] flex flex-col justify-start items-start">
-                  {/* Dashboard Content */}
                   <div className="self-stretch flex-1 flex justify-start items-start">
                     {/* Main Content */}
                     <div className="w-full h-full flex items-center justify-center">
                       <div className="relative w-full h-full overflow-hidden">
                         {/* Product Image 1 - Plan your schedules */}
                         <div
-                          className={`absolute inset-0 transition-all duration-500 ease-in-out ${
-                            activeCard === 0
-                              ? "opacity-100 scale-100 blur-0"
-                              : "opacity-0 scale-95 blur-sm"
-                          }`}
+                          className={`absolute inset-0 transition-all duration-500 ease-in-out ${activeCard === 0
+                            ? "opacity-100 scale-100 blur-0"
+                            : "opacity-0 scale-95 blur-sm"
+                            }`}
                         >
                           <Image
-                            src="/mask-group-pattern.svg"
+                            src="/focus.png"
                             alt="Daily focus and priority tracking dashboard showing customer subscription management interface"
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 960px"
@@ -165,14 +143,13 @@ export default function LandingPage() {
 
                         {/* Product Image 2 - Data to insights */}
                         <div
-                          className={`absolute inset-0 transition-all duration-500 ease-in-out ${
-                            activeCard === 1
-                              ? "opacity-100 scale-100 blur-0"
-                              : "opacity-0 scale-95 blur-sm"
-                          }`}
+                          className={`absolute inset-0 transition-all duration-500 ease-in-out ${activeCard === 1
+                            ? "opacity-100 scale-100 blur-0"
+                            : "opacity-0 scale-95 blur-sm"
+                            }`}
                         >
                           <Image
-                            src="/mask-group-pattern.svg"
+                            src="/decision.png"
                             alt="Analytics dashboard with real-time insights, charts, graphs, and data visualization"
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 960px"
@@ -183,14 +160,13 @@ export default function LandingPage() {
 
                         {/* Product Image 3 - Data visualization */}
                         <div
-                          className={`absolute inset-0 transition-all duration-500 ease-in-out ${
-                            activeCard === 2
-                              ? "opacity-100 scale-100 blur-0"
-                              : "opacity-0 scale-95 blur-sm"
-                          }`}
+                          className={`absolute inset-0 transition-all duration-500 ease-in-out ${activeCard === 2
+                            ? "opacity-100 scale-100 blur-0"
+                            : "opacity-0 scale-95 blur-sm"
+                            }`}
                         >
                           <Image
-                            src="/mask-group-pattern.svg"
+                            src="/history.png"
                             alt="Interactive data visualization dashboard with charts, metrics, and decision tracking"
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 960px"
@@ -264,14 +240,11 @@ export default function LandingPage() {
               {/* Documentation Section */}
               <DocumentationSection />
 
-              {/* First 100 Lifetime Free Offer */}
-              <First100Offer />
-
               {/* Testimonials Section */}
               {/* <TestimonialsSection /> */}
 
               {/* Pricing Section */}
-              {/* <PricingSection /> */}
+              <PricingSection />
 
               {/* FAQ Section */}
               <FAQSection />
@@ -305,11 +278,10 @@ function FeatureCard({
 }) {
   return (
     <div
-      className={`w-full md:flex-1 self-stretch px-4 md:px-6 py-4 md:py-5 overflow-hidden flex flex-col justify-start items-start gap-2 cursor-pointer relative border-b md:border-b-0 last:border-b-0 ${
-        isActive
-          ? "bg-white shadow-[0px_0px_0px_0.75px_#E0DEDB_inset]"
-          : "border-l-0 border-r-0 md:border border-[#E0DEDB]/80"
-      }`}
+      className={`w-full md:flex-1 self-stretch px-4 md:px-6 py-4 md:py-5 overflow-hidden flex flex-col justify-start items-start gap-2 cursor-pointer relative border-b md:border-b-0 last:border-b-0 ${isActive
+        ? "bg-white shadow-[0px_0px_0px_0.75px_#E0DEDB_inset]"
+        : "border-l-0 border-r-0 md:border border-[#E0DEDB]/80"
+        }`}
       onClick={onClick}
     >
       {isActive && (

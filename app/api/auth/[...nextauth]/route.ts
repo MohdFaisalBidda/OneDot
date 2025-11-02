@@ -5,11 +5,11 @@ import GoogleProvider from "next-auth/providers/google"
 import bcrypt from "bcrypt"
 
 declare module "next-auth" {
-  interface Session extends DefaultSession {
-    user: {
-      id: string;
-    } & DefaultSession["user"];
-  }
+    interface Session extends DefaultSession {
+        user: {
+            id: string;
+        } & DefaultSession["user"];
+    }
 }
 
 export const authOptions: NextAuthOptions = {
@@ -58,29 +58,48 @@ export const authOptions: NextAuthOptions = {
             }
             return token;
         },
-        async session({ session, token }) {
-            if (session.user) {
-                session.user.id = token.id as string;
-            }
-            return session;
-        },
         async signIn({ user, account }) {
             if (account?.provider === "google") {
-                // Ensure user exists in DB
                 const existingUser = await prisma.user.findUnique({
                     where: { email: user.email! },
-                })
+                    include: { providers: true },
+                });
 
                 if (!existingUser) {
-                    await prisma.user.create({
+                    // Create new user and link Google provider
+                    const newUser = await prisma.user.create({
                         data: {
                             email: user.email!,
                             name: user.name ?? null,
+                            providers: {
+                                create: {
+                                    provider: "google",
+                                    providerId: account.providerAccountId,
+                                },
+                            },
                         },
-                    })
+                    });
+                    return !!newUser;
+                } else {
+                    // Check if Google provider already linked
+                    const hasProvider = existingUser.providers.some(
+                        (p) => p.provider === "google" && p.providerId === account.providerAccountId
+                    );
+
+                    if (!hasProvider) {
+                        await prisma.authProvider.create({
+                            data: {
+                                provider: "google",
+                                providerId: account.providerAccountId,
+                                userId: existingUser.id,
+                            },
+                        });
+                    }
+                    return true;
                 }
             }
-            return true
+
+            return true;
         },
 
         async session({ session, token }) {
@@ -96,6 +115,7 @@ export const authOptions: NextAuthOptions = {
     },
 
     secret: process.env.NEXTAUTH_SECRET,
+    debug: true
 }
 
 const handler = NextAuth(authOptions)

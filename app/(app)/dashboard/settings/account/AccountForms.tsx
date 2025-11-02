@@ -1,25 +1,43 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { changePassword, deleteAccount } from "@/actions/settings";
+import { addPassword, changePassword, deleteAccount } from "@/actions/settings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { logOut } from "@/lib/user";
 
-function PasswordChangeForm() {
+interface PasswordChangeFormProps {
+  hasPassword: boolean;
+}
+
+function PasswordChangeForm({ hasPassword }: PasswordChangeFormProps) {
   const [message, setMessage] = useState<{ text: string; success: boolean } | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const handleSubmit = async (formData: FormData) => {
     startTransition(async () => {
-      const result = await changePassword(formData);
+      const result = hasPassword
+        ? await changePassword(formData)
+        : await addPassword(formData);
+
       if (result?.error) {
         setMessage({ text: result.error, success: false });
       } else if (result?.success) {
-        setMessage({ text: "Password changed successfully!", success: true });
+        setMessage({
+          text: hasPassword
+            ? "Password changed successfully!"
+            : "Password added successfully!",
+          success: true
+        });
         // Clear form
         const form = document.getElementById("password-form") as HTMLFormElement;
         if (form) form.reset();
+
+        // Refresh to update the form state if we just added a password
+        if (!hasPassword) {
+          window.location.reload();
+        }
       }
     });
   };
@@ -27,8 +45,14 @@ function PasswordChangeForm() {
   return (
     <div className="bg-card p-6 md:p-8 rounded-2xl border border-border shadow-sm">
       <div className="mb-6">
-        <h2 className="font-serif text-2xl md:text-3xl font-normal text-foreground">Change Password</h2>
-        <p className="mt-2 text-sm text-muted-foreground">Update your password to keep your account secure</p>
+        <h2 className="font-serif text-2xl md:text-3xl font-normal text-foreground">
+          {hasPassword ? 'Change Password' : 'Apply Password'}
+        </h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {hasPassword
+            ? 'Update your password to keep your account secure'
+            : 'Add a password to enable email/password login for your account'}
+        </p>
       </div>
       <form id="password-form" action={handleSubmit} className="space-y-6">
         {message && (
@@ -37,7 +61,7 @@ function PasswordChangeForm() {
           </div>
         )}
 
-        <div className="space-y-2">
+        {hasPassword && <div className="space-y-2">
           <Label htmlFor="currentPassword" className="text-sm font-medium">Current Password</Label>
           <Input
             id="currentPassword"
@@ -47,7 +71,7 @@ function PasswordChangeForm() {
             className="rounded-full h-11"
             required
           />
-        </div>
+        </div>}
 
         <div className="space-y-2">
           <Label htmlFor="newPassword" className="text-sm font-medium">New Password</Label>
@@ -74,7 +98,13 @@ function PasswordChangeForm() {
         </div>
 
         <Button type="submit" className="w-full rounded-full h-11" size="lg" disabled={isPending}>
-          {isPending ? "Updating..." : "Update Password"}
+          {isPending
+            ? hasPassword
+              ? "Updating..."
+              : "Applying..."
+            : hasPassword
+              ? "Update Password"
+              : "Apply Password"}
         </Button>
       </form>
     </div>
@@ -89,8 +119,7 @@ function DeleteAccountForm() {
       startTransition(async () => {
         const result = await deleteAccount();
         if (result?.success) {
-          // Redirect to home page or show success message
-          window.location.href = "/";
+          logOut()
         } else {
           alert("Failed to delete account. Please try again.");
         }
@@ -122,7 +151,7 @@ function DeleteAccountForm() {
   );
 }
 
-export function AccountForms() {
+export function AccountForms({ user }: { user: { password: string | null } }) {
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 md:py-8 w-full">
       <div className="mb-8">
@@ -134,7 +163,7 @@ export function AccountForms() {
         </p>
       </div>
       <div className="space-y-6">
-        <PasswordChangeForm />
+        <PasswordChangeForm hasPassword={!!user?.password} />
         <DeleteAccountForm />
       </div>
     </div>

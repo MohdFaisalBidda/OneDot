@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getCurrentUser } from "@/actions/auth";
 import { AccountForms } from "./AccountForms";
 import { generatePageMetadata } from "@/lib/metadata";
 
@@ -10,6 +11,12 @@ export const metadata: Metadata = generatePageMetadata({
   noIndex: true,
 });
 
-export default function AccountPage() {
-  return <AccountForms />;
+export default async function AccountPage() {
+  const user = await getCurrentUser();
+  
+  if (!user) {
+    return <div>Not authenticated</div>;
+  }
+  
+  return <AccountForms user={user} />;
 }

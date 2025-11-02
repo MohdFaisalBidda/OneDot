@@ -137,6 +137,7 @@ export function DocumentsList({
                 </CardHeader>
                 <CardContent className="flex-1">
                   <p className="text-sm text-muted-foreground line-clamp-3">
+                    {/* @ts-ignore */}
                     {doc.content?.content?.[0]?.content?.[0]?.text || 'No content yet...'}
                   </p>
                 </CardContent>

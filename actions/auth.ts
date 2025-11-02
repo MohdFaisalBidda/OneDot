@@ -32,28 +32,13 @@ export async function registerUser(formData: FormData) {
     return { error: "User already exists" }
   }
 
-  // Check total user count - lock after first 100 users
-  const userCount = await prisma.user.count()
-  if (userCount >= 100) {
-    return { 
-      error: "We've reached our initial capacity of 100 users. Join our waitlist to be notified when we open up!", 
-      isWaitlist: true 
-    }
-  }
-
   const passwordHash = await bcrypt.hash(password, 10)
-
-  // Calculate user number and lifetime free status
-  const userNumber = userCount + 1
-  const isLifetimeFree = userNumber <= 100
 
   const newUser = await prisma.user.create({
     data: {
       email,
       name,
       password: passwordHash,
-      userNumber,
-      isLifetimeFree,
     },
   })
 
