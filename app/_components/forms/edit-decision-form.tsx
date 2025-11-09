@@ -22,15 +22,18 @@ import { DecisionEntry } from "../DecisionTracker";
 
 interface EditDecisionFormProps {
     decision: Decision;
-    onSuccess: () => void;
-    onCancel: () => void;
+    onSuccess?: () => void;
+    onCancel?: () => void;
+    viewOnly?: boolean;
 }
 
-export function EditDecisionForm({ decision, onSuccess, onCancel }: EditDecisionFormProps) {
-    const [title, setTitle] = useState(decision.title);
-    const [reason, setReason] = useState(decision.reason);
-    const [status, setStatus] = useState<DecisionStatus>(decision.status as DecisionStatus);
-    const [category, setCategory] = useState<DecisionCategory>(decision.category as DecisionCategory);
+export function EditDecisionForm({ decision, onSuccess, onCancel, viewOnly = false }: EditDecisionFormProps) {
+    console.log(decision,"decision");
+    
+    const [title, setTitle] = useState(decision?.title);
+    const [reason, setReason] = useState(decision?.reason);
+    const [status, setStatus] = useState<DecisionStatus>(decision?.status as DecisionStatus);
+    const [category, setCategory] = useState<DecisionCategory>(decision?.category as DecisionCategory);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [isUpdating, setIsUpdating] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -49,6 +52,11 @@ export function EditDecisionForm({ decision, onSuccess, onCancel }: EditDecision
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
+        if (viewOnly) {
+            onCancel?.();
+            return;
+        }
+
         e.preventDefault();
         setFormError("");
         setErrors({});
@@ -76,7 +84,6 @@ export function EditDecisionForm({ decision, onSuccess, onCancel }: EditDecision
                 setIsUpdating(false);
                 return;
             }
-
 
             let imageUrl = decision.image;
 
@@ -126,7 +133,7 @@ export function EditDecisionForm({ decision, onSuccess, onCancel }: EditDecision
             }
 
             toast.success("Decision updated successfully!");
-            onSuccess();
+            onSuccess?.();
         } catch (error) {
             setFormError("An unexpected error occurred. Please try again.");
             console.error("Error updating decision:", error);
@@ -161,7 +168,8 @@ export function EditDecisionForm({ decision, onSuccess, onCancel }: EditDecision
                     }}
                     placeholder="What did you decide?"
                     className="rounded-full"
-                    disabled={isUpdating}
+                    disabled={isUpdating || viewOnly}
+                    readOnly={viewOnly}
                 />
                 {errors.title && (
                     <p className="text-sm text-destructive">{errors.title}</p>
@@ -182,8 +190,9 @@ export function EditDecisionForm({ decision, onSuccess, onCancel }: EditDecision
                     placeholder="Why did you make this decision?"
                     maxLength={500}
                     rows={4}
-                    className="rounded-2xl max-h-10"
-                    disabled={isUpdating}
+                    className="rounded-2xl"
+                    disabled={isUpdating || viewOnly}
+                    readOnly={viewOnly}
                 />
                 <div className="flex justify-between text-xs text-muted-foreground">
                     <span>
@@ -191,7 +200,7 @@ export function EditDecisionForm({ decision, onSuccess, onCancel }: EditDecision
                             <span className="text-destructive">{errors.reason}</span>
                         )}
                     </span>
-                    <span>{reason.length}/500</span>
+                    <span>{reason?.length}/500</span>
                 </div>
             </div>
 
@@ -200,7 +209,7 @@ export function EditDecisionForm({ decision, onSuccess, onCancel }: EditDecision
                 <Select
                     value={status}
                     onValueChange={(value: string) => setStatus(value as DecisionStatus)}
-                    disabled={isUpdating}
+                    disabled={isUpdating || viewOnly}
                 >
                     <SelectTrigger id="status" className="rounded-full">
                         <SelectValue placeholder="Select status" />
@@ -222,7 +231,7 @@ export function EditDecisionForm({ decision, onSuccess, onCancel }: EditDecision
                 <Select
                     value={category}
                     onValueChange={(value: string) => setCategory(value as DecisionCategory)}
-                    disabled={isUpdating}
+                    disabled={isUpdating || viewOnly}
                 >
                     <SelectTrigger id="edit-category" className="rounded-full">
                         <SelectValue placeholder="Select a category" />
@@ -237,35 +246,39 @@ export function EditDecisionForm({ decision, onSuccess, onCancel }: EditDecision
                 </Select>
             </div>
 
-            <div className="space-y-2">
-                <Label htmlFor="edit-image">Reference Image (Optional)</Label>
-                <R2FileUploader
-                    ref={uploaderRef}
-                    onFilesSelected={handleFilesSelected}
-                    prefix="decisions"
-                    multiple={false}
-                    autoUpload={false}
-                />
-            </div>
+            {!viewOnly && (
+                <div className="space-y-2">
+                    <Label htmlFor="edit-image">Reference Image (Optional)</Label>
+                    <R2FileUploader
+                        ref={uploaderRef}
+                        onFilesSelected={handleFilesSelected}
+                        prefix="decisions"
+                        multiple={false}
+                        autoUpload={false}
+                    />
+                </div>
+            )}
 
-            <div className="flex justify-end space-x-3">
-                <Button
-                    type="button"
-                    variant="outline"
-                    onClick={onCancel}
-                    disabled={isUpdating}
-                    className="rounded-full"
-                >
-                    Cancel
-                </Button>
-                <Button
-                    type="submit"
-                    disabled={isUpdating}
-                    className="rounded-full"
-                >
-                    {isUpdating ? <Loader /> : "Update Decision"}
-                </Button>
-            </div>
+            {!viewOnly && (
+                <div className="flex justify-end space-x-3">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={onCancel}
+                        disabled={isUpdating}
+                        className="rounded-full"
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        type="submit"
+                        disabled={isUpdating}
+                        className="rounded-full"
+                    >
+                        {isUpdating ? <Loader /> : "Update Decision"}
+                    </Button>
+                </div>
+            )}
         </form>
     );
 }

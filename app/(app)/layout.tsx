@@ -45,7 +45,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`font-sans ${geistSans.variable} ${geistSans.variable} ${playfair.variable} antialiased`}
+        // className={`font-sans ${geistSans.variable} ${playfair.variable} antialiased`}
+        className="font-sans"
       >
         <DashboardLayout>
           <Suspense fallback={<Loader />}>
