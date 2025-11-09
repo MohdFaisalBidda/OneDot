@@ -35,7 +35,6 @@ import {
   Crown,
   ArrowRight,
 } from "lucide-react";
-import SmartInsights from "@/app/_components/SmartInsights";
 import { homeDashboardQuickLinks } from "@/consts/routesData";
 import { announcements } from "@/consts/dashboard";
 import { useSession } from "next-auth/react";
@@ -72,14 +71,12 @@ function page() {
   const { data: session } = useSession();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [userData, setUserData] = useState<any>(null);
 
   useEffect(() => {
     const fetchStats = async () => {
       const result = await getDashboardStats();
       if (result.data) {
         setStats(result.data);
-        setUserData(result.userData);
       }
       setLoading(false);
     };
@@ -103,12 +100,6 @@ function page() {
             <h1 className="font-serif text-2xl md:text-4xl font-semibold text-[#37322F]">
               {greeting}, {session?.user?.name}
             </h1>
-            {userData?.isLifetimeFree && (
-              <Badge className="bg-[#37322F] text-[#F7F5F3] border border-[#E0DEDB] px-3 py-1 shadow-sm">
-                <Crown className="h-3 w-3 mr-1" />
-                Lifetime Free #{userData.userNumber}
-              </Badge>
-            )}
           </div>
           <p className="text-sm md:text-lg text-[#605A57]">
             Here's your complete overview and insights

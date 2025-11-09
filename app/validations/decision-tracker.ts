@@ -1,4 +1,4 @@
-import { DecisionCategory } from "@/lib/generated/prisma";
+import { DecisionCategory, DecisionStatus } from "@/lib/generated/prisma";
 import z from "zod";
 
 
@@ -13,6 +13,11 @@ export const CreateDecisionSchema = z.object({
         .min(1, { message: "Reason is required" })
         .max(500, { message: "Reason must be less than 500 characters" })
         .trim(),
+    status: z
+        .enum(DecisionStatus, {
+            error: "Status is required",
+        })
+        .default(DecisionStatus.PENDING),
     category: z
         .enum(DecisionCategory, {
             error: "Category is required",

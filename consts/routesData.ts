@@ -1,11 +1,11 @@
-import { Archive, BarChart3, BookOpen, CreditCard, Download, GitBranch, Home, Sliders, StoreIcon, User } from "lucide-react"
+import { Archive, BarChart3, BookOpen, Brain, Clock, CreditCard, Download, GitBranch, Home, Sliders, StoreIcon, User } from "lucide-react"
 
 export const navItems = [
   { href: "/dashboard", label: "Home", icon: Home, show: false },
   { href: "/dashboard/daily-focus", label: "Daily Focus", icon: BookOpen,show: true },
   { href: "/dashboard/decisions", label: "Decisions", icon: GitBranch,show: true },
-  { href: "/dashboard/history", label: "History", icon: BarChart3,show: false },
-  { href: "/dashboard/archive", label: "Archives", icon:Archive ,show: true }, 
+  { href: "/dashboard/timeline", label: "Timeline", icon:Clock ,show: true }, 
+  { href: "/dashboard/insights", label: "Insights", icon: Brain,show: false },
   { href: "/dashboard/export", label: "Export", icon: Download,show: false },
 ]
 

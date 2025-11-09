@@ -89,8 +89,8 @@ export const getRecentFocus = async () => {
 export const CreateDecision = async (data: DecisionEntry) => {
     try {
         const { data: resData, error } = CreateDecisionSchema.safeParse(data);
-        console.log(data,"data in decision");
-        
+        console.log(data, "data in decision");
+
 
         if (error) {
             const fieldErrors: Record<string, string> = {}
@@ -108,13 +108,14 @@ export const CreateDecision = async (data: DecisionEntry) => {
             return { error: "Unauthorized" }
         }
 
-        const { title, reason, category, image } = resData
+        const { title, reason, category, status, image } = resData
 
         const decision = await prisma.decision.create({
             data: {
                 userId: user?.id,
                 title: title,
                 category,
+                status,
                 reason: reason,
                 image,
             },
@@ -135,7 +136,7 @@ export const CreateDecision = async (data: DecisionEntry) => {
 }
 
 export const getRecentDecisions = async () => {
- const user = await getCurrentUser()
+    const user = await getCurrentUser()
 
     if (!user) {
         return { error: "Unauthorized" }
@@ -149,7 +150,6 @@ export const getRecentDecisions = async () => {
             orderBy: {
                 date: "asc",
             },
-            take: 3,
         })
 
         return {
@@ -255,6 +255,7 @@ export const UpdateDecision = async (decisionId: string, data: Partial<DecisionE
             data: {
                 title: resData.title,
                 reason: resData.reason,
+                status: resData.status,
                 category: resData.category,
                 image: resData.image,
             },

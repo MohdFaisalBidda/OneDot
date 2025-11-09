@@ -54,9 +54,9 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           {/* Logo */}
           <div className="flex justify-center h-16 items-center border-b border-border px-6">
             {!sidebarCollapsed && <Logo />}
-            {sidebarCollapsed && <div className="w-8 h-8 rounded-lg bg-sidebar-primary flex items-center justify-center">
+            {sidebarCollapsed && <Link href={"/"} className="w-8 h-8 rounded-lg bg-sidebar-primary flex items-center justify-center">
               <span className="text-sidebar-primary-foreground font-serif font-bold text-lg">•</span>
-            </div>}
+            </Link>}
           </div>
 
           {/* Navigation */}
