@@ -77,7 +77,7 @@ export function ReusableModal({
             </DialogDescription>
           )}
         </DialogHeader>
-        <div className="py-4">{children}</div>
+        <div>{children}</div>
         {(footer || showDefaultFooter) && (
           <DialogFooter>
             {footer || (

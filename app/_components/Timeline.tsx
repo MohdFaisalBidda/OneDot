@@ -79,6 +79,7 @@ export function Timeline({
   const isToday = (date: Date) => date.toDateString() === new Date().toDateString()
 
   return (
+    <>
     <div className="max-w-8xl px-4 pb-4 sm:px-6 lg:px-12 md:p-6 space-y-8">
       <div>
         <h3 className="text-3xl font-serif font-bold text-foreground mb-2">Timeline</h3>
@@ -200,5 +201,6 @@ export function Timeline({
         </div>
       </div>
     </div>
+    </>
   )
 }

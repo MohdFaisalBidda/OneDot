@@ -200,7 +200,7 @@ export function DecisionForm({
                     placeholder="Why did you make this decision?"
                     maxLength={500}
                     rows={4}
-                    className="rounded-2xl"
+                    className="rounded-2xl max-h-10"
                     disabled={isSubmitting}
                 />
                 <div className="flex justify-between text-xs text-muted-foreground">
@@ -269,7 +269,7 @@ export function DecisionForm({
                 </div>
             </div>
 
-            <div className="flex justify-end space-x-3 pt-4">
+            <div className="flex justify-end space-x-3">
                 <Button
                     type="button"
                     variant="outline"

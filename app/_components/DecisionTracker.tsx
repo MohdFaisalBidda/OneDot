@@ -74,7 +74,42 @@ export default function DecisionsTrackerPage({
   };
 
 
-  const handleToggleStatus = (id: string) => {
+  const handleToggleStatus = async (id: string) => {
+    try {
+      // Find the decision to update
+      const decisionToUpdate = decisions?.find(d => d.id === id);
+      if (!decisionToUpdate) return;
+
+      const newStatus:DecisionStatus = decisionToUpdate.status === 'ACHIEVED' ? 'PENDING' : 'ACHIEVED';
+      
+      // Update the selectedDecision if it's the one being toggled
+      if (selectedDecision?.id === id) {
+        setSelectedDecision(prev => prev ? { ...prev, status: newStatus } : null);
+      }
+
+      // Prepare the update data
+      const updateData = {
+        id: decisionToUpdate.id,
+        title: decisionToUpdate.title,
+        reason: decisionToUpdate.reason,
+        status: newStatus,
+        category: decisionToUpdate.category,
+        date: decisionToUpdate.date.toString(),
+        image: decisionToUpdate.image || undefined,
+      };
+
+      // Update on the server
+      const res = await UpdateDecision(id, updateData);
+      
+      if (res?.error) {
+        // Revert the optimistic update if there's an error
+        toast.error(res.error);
+        // You might want to trigger a refetch of the data here
+      }
+    } catch (error) {
+      console.error("Error toggling decision status:", error);
+      toast.error("Failed to update decision status. Please try again.");
+    }
   }
 
   const handleDelete = async () => {

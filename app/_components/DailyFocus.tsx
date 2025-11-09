@@ -188,21 +188,49 @@ export default function DailyFocusPage({
     }
   };
 
-  const handleToggleComplete = async () => {
-    // const entry = getEntriesByType("focus").find((e) => e.id === id)
-    if (selectedFocus) {
-      const isCompleted = selectedFocus.status === "ACHIEVED"
-      const newStatus = isCompleted ? "PENDING" : "ACHIEVED"
+  const handleToggleComplete = async (item: Focus) => {
+    try {
+      // Optimistically update the UI
+      const updatedFocus = recentFocus?.map(focus => 
+        focus.id === item.id 
+          ? { ...focus, status: focus.status === "ACHIEVED" ? "PENDING" : "ACHIEVED" as FocusStatus }
+          : focus
+      );
+      
+      // Update the local state
+      if (updatedFocus) {
+        // Since we're using props, we need to find a way to update the parent state
+        // For now, we'll just update the selectedFocus if it's the one being toggled
+        if (selectedFocus?.id === item.id) {
+          setSelectedFocus(prev => prev ? { ...prev, status: prev.status === "ACHIEVED" ? "PENDING" : "ACHIEVED" } : null);
+        }
+      }
+
+      // Prepare the update data
+      const isCompleted = item.status === "ACHIEVED";
+      const newStatus = isCompleted ? "PENDING" : "ACHIEVED";
       const updateData: FocusEntry = {
-        id: selectedFocus.id,
-        focus: selectedFocus.title,
+        id: item.id,
+        focus: item.title,
         status: newStatus,
-        mood: selectedFocus.mood,
-        notes: selectedFocus.notes,
-        date: selectedFocus.date.toString(),
-        image: selectedFocus.image || undefined,
+        mood: item.mood,
+        notes: item.notes || "",
+        date: item.date.toString(),
+        image: item.image || undefined,
       };
-      const res = await UpdateFocus(selectedFocus.id, updateData);
+
+      // Update on the server
+      const res = await UpdateFocus(item.id, updateData);
+      
+      if (res?.error) {
+        // Revert the optimistic update if there's an error
+        toast.error(res.error);
+        // You might want to trigger a refetch of the data here
+      }
+    } catch (error) {
+      console.error("Error toggling focus status:", error);
+      toast.error("Failed to update focus status. Please try again.");
+      // You might want to trigger a refetch of the data here to sync with server
     }
   }
 
@@ -249,7 +277,7 @@ export default function DailyFocusPage({
                           <button
                             onClick={(e) => {
                               e.stopPropagation()
-                              handleToggleComplete()
+                              handleToggleComplete(item)
                             }}
                             className="mt-1 cursor-pointer"
                           >
