@@ -8,7 +8,7 @@ import { cn, getUserInitials } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { Settings, ChevronDown, LogOut, ChevronLeft, ChevronRight, User } from "lucide-react";
 import { navItems, settingsItems } from "@/consts/routesData";
-import {  useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { HoverPopover } from "@/components/custom/hover-popover";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/custom/Logo";
@@ -54,7 +54,9 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           {/* Logo */}
           <div className="flex justify-center h-16 items-center border-b border-border px-6">
             {!sidebarCollapsed && <Logo />}
-            {sidebarCollapsed && <span className="text-2xl font-bold text-primary">OD</span>}
+            {sidebarCollapsed && <div className="w-8 h-8 rounded-lg bg-sidebar-primary flex items-center justify-center">
+              <span className="text-sidebar-primary-foreground font-serif font-bold text-lg">•</span>
+            </div>}
           </div>
 
           {/* Navigation */}

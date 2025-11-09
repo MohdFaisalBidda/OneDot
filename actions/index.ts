@@ -70,7 +70,6 @@ export const getRecentFocus = async () => {
             orderBy: {
                 date: "desc",
             },
-            take: 3,
         })
 
         return {

@@ -33,11 +33,13 @@ interface DailyFocusFormProps {
     notes?: string;
     image?: string;
   };
+  closeModal?: () => void;
 }
 
 export function DailyFocusForm({
   onSubmitSuccess,
   defaultValues,
+  closeModal,
 }: DailyFocusFormProps) {
   const [focus, setFocus] = useState(defaultValues?.focus || "");
   const [status, setStatus] = useState<FocusStatus>(
@@ -146,6 +148,7 @@ export function DailyFocusForm({
       setMood("");
       setNotes("");
       setSelectedFile(null);
+      closeModal?.();
       uploaderRef.current?.resetFiles();
     } catch (error) {
       setFormError("An unexpected error occurred. Please try again.");
