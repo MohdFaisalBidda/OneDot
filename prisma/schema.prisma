@@ -26,17 +26,28 @@ model User {
   // Preferences fields
   theme           UserTheme @default(LIGHT)
   
-  // Membership tracking
-  isLifetimeFree  Boolean @default(false)
-  userNumber      Int?    @unique // Position in signup queue (1-100 are lifetime free)
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   focuses Focus[]
   decisions Decision[]
   documents Document[]
+  Reflection Reflection[]
   providers  AuthProvider[] 
+}
+
+
+model AuthProvider {
+  id          String   @id @default(cuid())
+  provider    String
+  providerId  String
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([provider, providerId]) // prevent duplicates
 }
 
 model Focus {
@@ -70,17 +81,17 @@ model Decision {
   updatedAt DateTime @updatedAt
 }
 
-model AuthProvider {
-  id          String   @id @default(cuid())
-  provider    String
-  providerId  String
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+model Reflection {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String
+  type      String   // 'daily', 'weekly', 'decision'
+  metadata  Json?    // Store additional context like prompt, entry counts, etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@unique([provider, providerId]) // prevent duplicates
+  @@index([userId])
 }
 
 enum FocusStatus {

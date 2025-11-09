@@ -47,9 +47,7 @@ export async function registerUser(formData: FormData) {
     user: { 
       id: newUser.id, 
       email: newUser.email, 
-      name: newUser.name,
-      userNumber: newUser.userNumber,
-      isLifetimeFree: newUser.isLifetimeFree 
+      name: newUser.name
     } 
   }
 }

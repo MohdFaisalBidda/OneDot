@@ -9,6 +9,7 @@ export type SmartInsight = {
   details?: string;
 };
 
+//Not using AI it is static 
 export async function getSmartInsights() {
   try {
     const user = await requireUser();
