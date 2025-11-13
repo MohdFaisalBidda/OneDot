@@ -23,6 +23,7 @@ import { toast } from "sonner";
 import Loader from "../Loader";
 import { R2FileUploader, type R2FileUploaderRef } from "@/components/custom/r2-file-uploader";
 import { useR2Upload } from "@/hooks/use-r2-upload";
+import { FocusEntry } from "../DailyFocus";
 
 interface DailyFocusFormProps {
   onSubmitSuccess?: () => void;
@@ -98,9 +99,9 @@ export function DailyFocusForm({
       }
 
       // Step 2: Create focus entry first (without image)
-      const newEntry = {
+      const newEntry: FocusEntry = {
         id: Date.now().toString(),
-        focus,
+        title: focus,
         status: status || "PENDING",
         mood,
         notes,
@@ -128,9 +129,9 @@ export function DailyFocusForm({
           // DB entry created but upload failed - show warning
           toast.warning("Focus created, but image upload failed. You can try uploading again later.");
           console.error("Upload error:", uploadResult.error);
-        } else if (uploadResult.url) {
+        } else if (uploadResult.key) {
           // Step 4: Update focus with image URL (only if upload succeeds)
-          const updateRes = await UpdateFocusImage(res.id, uploadResult.url);
+          const updateRes = await UpdateFocusImage(res.id, `${process.env.NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_URL}/${uploadResult.key}`);
           
           if (updateRes?.error) {
             toast.warning("Focus created, but failed to attach image.");

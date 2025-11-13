@@ -162,7 +162,7 @@ export default function DailyFocusPage({
                       <div
                         key={item.id}
                         onClick={() => setSelectedEntryId(item.id)}
-                        className="flex flex-col gap-2 p-3 rounded-lg hover:bg-muted transition-smooth group border border-border/50 hover:border-primary/10"
+                        className="flex flex-col gap-2 p-3 rounded-lg hover:bg-muted transition-smooth group border border-border/50 hover:border-primary/10 self-start"
                       >
                         {item?.image && (
                           <img

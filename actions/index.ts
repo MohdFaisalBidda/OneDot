@@ -28,12 +28,12 @@ export const CreateFocus = async (data: FocusEntry) => {
             return { error: "Unauthorized" }
         }
 
-        const { focus, status, mood, notes, image } = resData
+        const { title, status, mood, notes, image } = resData
 
         const focusEntry = await prisma.focus.create({
             data: {
                 userId: user?.id,
-                title: focus,
+                title,
                 status,
                 mood,
                 notes: notes ?? "",
@@ -328,7 +328,7 @@ export const UpdateFocus = async (focusId: string, data: Partial<FocusEntry>) =>
                 userId: user.id,
             },
             data: {
-                title: resData.focus,
+                title: resData.title,
                 status: resData.status,
                 mood: resData.mood,
                 notes: resData.notes ?? "",

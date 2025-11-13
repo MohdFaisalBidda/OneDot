@@ -29,6 +29,7 @@ export function EditFocusForm({ focus, onSuccess, onCancel, viewOnly = false }: 
   const [isUpdating, setIsUpdating] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formError, setFormError] = useState<string>("");
+  const [imageUrl, setImageUrl] = useState<string | null>(focus?.image || null);
   const uploaderRef = useRef<R2FileUploaderRef>(null);
 
   const { uploadFile } = useR2Upload({
@@ -39,7 +40,14 @@ export function EditFocusForm({ focus, onSuccess, onCancel, viewOnly = false }: 
   const handleFilesSelected = (files: File[]) => {
     if (files && files.length > 0) {
       setSelectedFile(files[0]);
+      // Clear any existing image URL when a new file is selected
+      setImageUrl(null);
     }
+  };
+  
+  const handleImageRemove = () => {
+    setImageUrl(null);
+    setSelectedFile(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -65,18 +73,22 @@ export function EditFocusForm({ focus, onSuccess, onCancel, viewOnly = false }: 
         return;
       }
 
-      let imageUrl = focus.image;
-
+      // If we have a selected file, upload it
       if (selectedFile) {
         const uploadResult = await uploadFile(selectedFile);
 
         if (!uploadResult.success) {
-          toast.warning("Failed to upload new image. Keeping existing image.");
+          toast.warning("Failed to upload new image. Please try again.");
           console.error("Upload error:", uploadResult.error);
-        } else if (uploadResult.url) {
-          imageUrl = uploadResult.url;
+          setIsUpdating(false);
+          return;
+        } else if (uploadResult.key) {
+          setImageUrl(`${process.env.NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_URL}/${uploadResult.key}`);
         }
       }
+      
+      // If we don't have a new image URL and no existing image, clear the image
+      const finalImageUrl = imageUrl || focus.image;
 
       const updateData = {
         id: focus.id,
@@ -84,7 +96,7 @@ export function EditFocusForm({ focus, onSuccess, onCancel, viewOnly = false }: 
         status,
         mood,
         notes,
-        image: imageUrl || undefined,
+        image: finalImageUrl || undefined,
       };
 
       const res = await UpdateFocus(focus.id, updateData);
@@ -197,10 +209,13 @@ export function EditFocusForm({ focus, onSuccess, onCancel, viewOnly = false }: 
           <Label htmlFor="edit-image">Reference Image (Optional)</Label>
           <R2FileUploader
             ref={uploaderRef}
-            onFilesSelected={handleFilesSelected}
             prefix="focus"
-            multiple={false}
             autoUpload={false}
+            onFilesSelected={handleFilesSelected}
+            onImageRemove={handleImageRemove}
+            imageSrc={focus?.image || null}
+            viewOnly={viewOnly}
+            className="mb-4"
           />
         </div>
       )}

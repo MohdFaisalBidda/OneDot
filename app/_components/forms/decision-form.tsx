@@ -126,9 +126,9 @@ export function DecisionForm({
                     // DB entry created but upload failed - show warning
                     toast.warning("Decision created, but image upload failed. You can try uploading again later.");
                     console.error("Upload error:", uploadResult.error);
-                } else if (uploadResult.url) {
+                } else if (uploadResult.key) {
                     // Update decision with image URL (only if upload succeeds)
-                    const updateRes = await UpdateDecisionImage(res.id, uploadResult.url);
+                    const updateRes = await UpdateDecisionImage(res.id, `${process.env.NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_URL}/${uploadResult.key}`);
 
                     if (updateRes?.error) {
                         toast.warning("Decision created, but failed to attach image.");

@@ -10,8 +10,11 @@ import {
 } from '@/actions/r2';
 import { toast } from 'sonner';
 
+export type FileSource = 'focus' | 'decisions' | 'all';
+
 export interface UseR2UploadOptions {
-  prefix?: string;
+  prefix?: FileSource;
+  source?: FileSource;
   onUploadSuccess?: (result: { key?: string; url?: string }) => void;
   onUploadError?: (error: string) => void;
   showToast?: boolean;
@@ -31,6 +34,7 @@ export function useR2Upload(options: UseR2UploadOptions = {}) {
     onUploadSuccess,
     onUploadError,
     showToast = true,
+    source = 'all',
   } = options;
 
   const [isUploading, setIsUploading] = useState(false);
@@ -225,7 +229,7 @@ export function useR2Upload(options: UseR2UploadOptions = {}) {
   const deleteFile = useCallback(
     async (key: string) => {
       try {
-        const result = await deleteFileAction(key);
+        const result = await deleteFileAction(key,prefix);
 
         if (result.success && showToast) {
           toast.success('File deleted successfully!');

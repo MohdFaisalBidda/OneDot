@@ -2,7 +2,7 @@ import { FocusStatus } from "@/lib/generated/prisma";
 import z from "zod";
 
 export const CreateFocusSchema = z.object({
-  focus: z
+  title: z
     .string()
     .min(1, { message: "Focus is required" })
     .max(100, { message: "Focus must be less than 100 characters" })

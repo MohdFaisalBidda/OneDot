@@ -38,6 +38,7 @@ export function EditDecisionForm({ decision, onSuccess, onCancel, viewOnly = fal
     const [isUpdating, setIsUpdating] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [formError, setFormError] = useState<string>("");
+    const [imageUrl, setImageUrl] = useState<string | null>(decision?.image || null);
     const uploaderRef = useRef<R2FileUploaderRef>(null);
 
     const { uploadFile } = useR2Upload({
@@ -48,7 +49,14 @@ export function EditDecisionForm({ decision, onSuccess, onCancel, viewOnly = fal
     const handleFilesSelected = (files: File[]) => {
         if (files && files.length > 0) {
             setSelectedFile(files[0]);
+            // Clear any existing image URL when a new file is selected
+            setImageUrl(null);
         }
+    };
+
+    const handleImageRemove = () => {
+        setImageUrl(null);
+        setSelectedFile(null);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -85,18 +93,22 @@ export function EditDecisionForm({ decision, onSuccess, onCancel, viewOnly = fal
                 return;
             }
 
-            let imageUrl = decision.image;
-
+            // If we have a selected file, upload it
             if (selectedFile) {
                 const uploadResult = await uploadFile(selectedFile);
 
                 if (!uploadResult.success) {
-                    toast.warning("Failed to upload new image. Keeping existing image.");
+                    toast.warning("Failed to upload new image. Please try again.");
                     console.error("Upload error:", uploadResult.error);
+                    setIsUpdating(false);
+                    return;
                 } else if (uploadResult.url) {
-                    imageUrl = uploadResult.url;
+                    setImageUrl(uploadResult.url);
                 }
             }
+            
+            // If we don't have a new image URL and no existing image, clear the image
+            const finalImageUrl = imageUrl || decision.image;
 
             const updateData: DecisionEntry = {
                 id: decision.id,
@@ -105,7 +117,7 @@ export function EditDecisionForm({ decision, onSuccess, onCancel, viewOnly = fal
                 status: status,
                 category: category,
                 date: decision.date.toString(),
-                image: imageUrl || undefined,
+                image: finalImageUrl || undefined,
             };
 
             const res = await UpdateDecision(decision.id, updateData);
@@ -124,8 +136,8 @@ export function EditDecisionForm({ decision, onSuccess, onCancel, viewOnly = fal
             if (selectedFile) {
                 const uploadResult = await uploadFile(selectedFile);
 
-                if (uploadResult.success && uploadResult.url) {
-                    await UpdateDecisionImage(decision.id, uploadResult.url);
+                if (uploadResult.success && uploadResult.key) {
+                    await UpdateDecisionImage(decision.id, `${process.env.NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_URL}/${uploadResult.key}`);
                 } else if (!uploadResult.success) {
                     toast.warning("Decision updated, but image upload failed. You can try uploading again later.");
                     console.error("Upload error:", uploadResult.error);
@@ -251,10 +263,13 @@ export function EditDecisionForm({ decision, onSuccess, onCancel, viewOnly = fal
                     <Label htmlFor="edit-image">Reference Image (Optional)</Label>
                     <R2FileUploader
                         ref={uploaderRef}
-                        onFilesSelected={handleFilesSelected}
                         prefix="decisions"
-                        multiple={false}
                         autoUpload={false}
+                        onFilesSelected={handleFilesSelected}
+                        onImageRemove={handleImageRemove}
+                        imageSrc={decision?.image || null}
+                        viewOnly={viewOnly}
+                        className="mb-4"
                     />
                 </div>
             )}

@@ -2,33 +2,17 @@
 
 import type React from "react";
 
-import { useState, useRef } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { AlertCircle, CheckCircle2, Edit2, Pencil, Trash2 } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useState } from "react";
+import {  CheckCircle2, Edit2, Trash2 } from "lucide-react";
 import { Decision, DecisionCategory, DecisionStatus } from "@/lib/generated/prisma";
-import Loader from "./Loader";
-import { CreateDecision, UpdateDecisionImage, UpdateDecision, DeleteDecision } from "@/actions";
 import { toast } from "sonner";
-import { R2FileUploader, type R2FileUploaderRef } from "@/components/custom/r2-file-uploader";
-import { useR2Upload } from "@/hooks/use-r2-upload";
 import { ImageLightbox } from "@/components/custom/image-lightbox";
-import { getCategoryColor, getCategoryIcon } from "@/lib/status-colors";
+import { getCategoryColor } from "@/lib/status-colors";
 import { ReusableModal, ConfirmModal } from "@/components/custom/reusable-modal";
 import { DecisionForm } from "./forms/decision-form";
 import { FloatingActionButton } from "./floating-action-button";
 import { EditDecisionForm } from "./forms/edit-decision-form";
+import { DeleteDecision, UpdateDecision } from "@/actions";
 
 export type DecisionEntry = {
   id: string;
@@ -164,7 +148,7 @@ export default function DecisionsTrackerPage({
                       <div
                         key={d.id}
                         onClick={() => setSelectedEntryId(d.id)}
-                        className="flex flex-col gap-2 p-3 rounded-lg hover:bg-muted transition-smooth group border border-border/50 hover:border-primary/10"
+                        className="flex flex-col gap-2 p-3 rounded-lg hover:bg-muted transition-smooth group border border-border/50 hover:border-primary/10 self-start"
                       >
                         {d?.image && (
                           <img

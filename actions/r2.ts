@@ -12,6 +12,8 @@ import {
   type ListFilesResult,
 } from '@/lib/r2';
 import { getCurrentUser } from './auth';
+import { prisma } from '@/lib/prismaClient';
+import { FileSource } from '@/hooks/use-r2-upload';
 
 export interface UploadFileActionOptions {
   fileBuffer: ArrayBuffer;
@@ -88,9 +90,40 @@ export async function getFileUrlAction(
 /**
  * Server action to delete a file from R2
  */
-export async function deleteFileAction(key: string): Promise<DeleteFileResult> {
+
+export async function deleteFileAction(key: string, source: FileSource = 'all'): Promise<DeleteFileResult> {
   try {
+    console.log(`Deleting file from R2 - Key: ${key}, Source: ${source}`);
+    
+    // First delete the file from R2
     const result = await deleteFileFromR2({ key });
+    
+    if (!result.success) {
+      return result; // Return early if R2 deletion failed
+    }
+    
+    // Then try to clean up database references based on the source
+    try {
+      if (source === 'all' || source === 'focus') {
+        await prisma.focus.updateMany({
+          where: { image: key },
+          data: { image: null },
+        });
+      }
+      
+      if (source === 'all' || source === 'decisions') {
+        await prisma.decision.updateMany({
+          where: { image: key },
+          data: { image: null },
+        });
+      }
+      
+      console.log(`Successfully cleaned up database references for file: ${key} from source: ${source}`);
+    } catch (dbError) {
+      console.error('Error cleaning up database references:', dbError);
+      // Don't fail the entire operation if DB cleanup fails, just log it
+    }
+    
     return result;
   } catch (error) {
     console.error('Error in deleteFileAction:', error);

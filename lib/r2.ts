@@ -116,7 +116,7 @@ export async function uploadToR2(options: UploadOptions): Promise<UploadResult> 
       );
     }
 
-    const publicUrl = process.env.CLOUDFLARE_R2_PUBLIC_URL 
+    const publicUrl = process.env.CLOUDFLARE_R2_PUBLIC_URL
       ? `${process.env.CLOUDFLARE_R2_PUBLIC_URL}/${key}`
       : undefined;
 
@@ -168,20 +168,34 @@ export async function getFileFromR2(options: GetFileOptions): Promise<GetFileRes
 export async function deleteFileFromR2(options: DeleteFileOptions): Promise<DeleteFileResult> {
   try {
     const client = getR2Client();
-    const { key } = options;
+    let { key } = options;
+
+    key = decodeURIComponent(key);
+
+   const publicBase = process.env.CLOUDFLARE_R2_PUBLIC_URL;
+    if (publicBase && key.startsWith(publicBase)) {
+      key = key.slice(publicBase.length + 1); // +1 to remove the slash
+    }
+
+    console.log('🗑️ Key to delete (decoded):', key);
 
     const command = new DeleteObjectCommand({
       Bucket: R2_CONFIG.bucket,
       Key: key,
     });
 
-    await client.send(command);
+    const result = await client.send(command);
+    console.log(key, result, "result present");
 
-    return {
-      success: true,
-    };
+    if (result.$metadata.httpStatusCode === 204) {
+      console.log('✅ Successfully deleted from R2:', key);
+      return { success: true };
+    } else {
+      console.warn('⚠️ Delete call did not return 204:', result.$metadata);
+      return { success: false, error: 'Unexpected delete response' };
+    }
   } catch (error) {
-    console.error('Error deleting file from R2:', error);
+    console.error('❌ Error deleting file from R2:', error);
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error occurred',
@@ -231,8 +245,8 @@ export function generateFileKey(filename: string, prefix?: string): string {
   const timestamp = Date.now();
   const randomString = Math.random().toString(36).substring(2, 15);
   const sanitizedFilename = filename.replace(/[^a-zA-Z0-9._-]/g, '_');
-  
-  return prefix 
+
+  return prefix
     ? `${prefix}/${timestamp}-${randomString}-${sanitizedFilename}`
     : `${timestamp}-${randomString}-${sanitizedFilename}`;
 }
