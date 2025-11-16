@@ -4,13 +4,21 @@ import { Flame, Award } from "lucide-react";
 import { DashboardCharts } from "./dashboard-charts";
 import { StatsGrid } from "./stats-grid";
 import { getServerSession } from "next-auth";
+import { NoDataFound } from "@/components/custom/NoDataFound";
 
 export async function DashboardServer() {
   const session = await getServerSession();
   const stats = await getDashboardStats();
   
   if (!stats.data) {
-    return <div>Error loading dashboard data</div>;
+    return (
+      <NoDataFound
+        title="Dashboard Data Unavailable"
+        description="We couldn't load your dashboard data. This might be because you're new here or there was a temporary issue."
+        redirectOnRetry="/dashboard"
+        className="min-h-[60vh]"
+      />
+    );
   }
 
   const currentTime = new Date().getHours();
