@@ -57,7 +57,12 @@ export function DecisionForm({
 
     const { uploadFile } = useR2Upload({
         prefix: 'decisions',
-        showToast: false,
+        showToast: true,
+        onUploadSuccess: (result) => {
+            if (result.key) {
+                console.log('File uploaded successfully:', result);
+            }
+        },
     });
 
     const handleFilesSelected = (files: File[]) => {
@@ -120,20 +125,30 @@ export function DecisionForm({
 
             // Upload file if selected (only after DB entry succeeds)
             if (selectedFile && res.id) {
-                const uploadResult = await uploadFile(selectedFile);
+                try {
+                    const uploadResult = await uploadFile(selectedFile);
 
-                if (!uploadResult.success) {
-                    // DB entry created but upload failed - show warning
-                    toast.warning("Decision created, but image upload failed. You can try uploading again later.");
-                    console.error("Upload error:", uploadResult.error);
-                } else if (uploadResult.key) {
-                    // Update decision with image URL (only if upload succeeds)
-                    const updateRes = await UpdateDecisionImage(res.id, `${process.env.NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_URL}/${uploadResult.key}`);
+                    if (!uploadResult.success) {
+                        // DB entry created but upload failed - show warning
+                        toast.warning("Decision created, but image upload failed. You can try uploading again later.");
+                        console.error("Upload error:", uploadResult.error);
+                    } else if (uploadResult.key) {
+                        // Get the public URL for the uploaded file
+                        const publicUrl = uploadResult.url || `${process.env.NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_URL}/${uploadResult.key}`;
+                        
+                        // Update decision with image URL (only if upload succeeds)
+                        const updateRes = await UpdateDecisionImage(res.id, publicUrl);
 
-                    if (updateRes?.error) {
-                        toast.warning("Decision created, but failed to attach image.");
-                        console.error("Update error:", updateRes.error);
+                        if (updateRes?.error) {
+                            toast.warning("Decision created, but failed to attach image.");
+                            console.error("Update error:", updateRes.error);
+                        } else {
+                            console.log("Image URL updated in database:", publicUrl);
+                        }
                     }
+                } catch (error) {
+                    console.error("Error during file upload/update:", error);
+                    toast.warning("Decision created, but there was an error processing the image.");
                 }
             }
 

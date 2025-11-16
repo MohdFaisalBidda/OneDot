@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { R2FileUploader, type R2FileUploaderRef } from "@/components/custom/r2-file-uploader";
 import { useR2Upload } from "@/hooks/use-r2-upload";
-import { UpdateFocus } from "@/actions";
+import { UpdateFocus, UpdateFocusImage } from "@/actions";
 import { toast } from "sonner";
 import Loader from "../Loader";
 
@@ -73,6 +73,8 @@ export function EditFocusForm({ focus, onSuccess, onCancel, viewOnly = false }: 
         return;
       }
 
+      let finalImageUrl = focus.image;
+
       // If we have a selected file, upload it
       if (selectedFile) {
         const uploadResult = await uploadFile(selectedFile);
@@ -83,12 +85,18 @@ export function EditFocusForm({ focus, onSuccess, onCancel, viewOnly = false }: 
           setIsUpdating(false);
           return;
         } else if (uploadResult.key) {
-          setImageUrl(`${process.env.NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_URL}/${uploadResult.key}`);
+          const publicUrl = uploadResult.url || `${process.env.NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_URL}/${uploadResult.key}`;
+          setImageUrl(publicUrl);
+          finalImageUrl = publicUrl;
+          
+          // Update the focus entry with the new image URL
+          const updateRes = await UpdateFocusImage(focus.id, publicUrl);
+          if (updateRes?.error) {
+            toast.warning("Focus updated, but failed to update image URL.");
+            console.error("Update error:", updateRes.error);
+          }
         }
       }
-      
-      // If we don't have a new image URL and no existing image, clear the image
-      const finalImageUrl = imageUrl || focus.image;
 
       const updateData = {
         id: focus.id,

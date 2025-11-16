@@ -28,8 +28,8 @@ interface EditDecisionFormProps {
 }
 
 export function EditDecisionForm({ decision, onSuccess, onCancel, viewOnly = false }: EditDecisionFormProps) {
-    console.log(decision,"decision");
-    
+    console.log(decision, "decision");
+
     const [title, setTitle] = useState(decision?.title);
     const [reason, setReason] = useState(decision?.reason);
     const [status, setStatus] = useState<DecisionStatus>(decision?.status as DecisionStatus);
@@ -41,16 +41,30 @@ export function EditDecisionForm({ decision, onSuccess, onCancel, viewOnly = fal
     const [imageUrl, setImageUrl] = useState<string | null>(decision?.image || null);
     const uploaderRef = useRef<R2FileUploaderRef>(null);
 
-    const { uploadFile } = useR2Upload({
+    const { uploadFile, deleteFile } = useR2Upload({
         prefix: 'decisions',
-        showToast: false,
+        showToast: true,
+        onUploadSuccess: (result) => {
+            if (result.key) {
+                console.log('File uploaded successfully:', result);
+            }
+        },
     });
 
-    const handleFilesSelected = (files: File[]) => {
+    const handleFilesSelected = async (files: File[]) => {
         if (files && files.length > 0) {
             setSelectedFile(files[0]);
-            // Clear any existing image URL when a new file is selected
-            setImageUrl(null);
+
+            // If there's an existing image, delete it first
+            if (imageUrl) {
+                try {
+                    await deleteFile(imageUrl);
+                    setImageUrl(null);
+                } catch (error) {
+                    console.error('Error removing old image:', error);
+                    toast.error('Failed to remove old image');
+                }
+            }
         }
     };
 
@@ -106,7 +120,7 @@ export function EditDecisionForm({ decision, onSuccess, onCancel, viewOnly = fal
                     setImageUrl(uploadResult.url);
                 }
             }
-            
+
             // If we don't have a new image URL and no existing image, clear the image
             const finalImageUrl = imageUrl || decision.image;
 
@@ -132,20 +146,38 @@ export function EditDecisionForm({ decision, onSuccess, onCancel, viewOnly = fal
                 return;
             }
 
-            // Upload new file if selected
+            // Upload file if selected (only after DB entry succeeds)
             if (selectedFile) {
-                const uploadResult = await uploadFile(selectedFile);
+                try {
+                    const uploadResult = await uploadFile(selectedFile);
 
-                if (uploadResult.success && uploadResult.key) {
-                    await UpdateDecisionImage(decision.id, `${process.env.NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_URL}/${uploadResult.key}`);
-                } else if (!uploadResult.success) {
-                    toast.warning("Decision updated, but image upload failed. You can try uploading again later.");
-                    console.error("Upload error:", uploadResult.error);
+                    if (!uploadResult.success) {
+                        // DB entry created but upload failed - show warning
+                        toast.warning("Decision updated, but image upload failed. You can try uploading again later.");
+                        console.error("Upload error:", uploadResult.error);
+                    } else if (uploadResult.key) {
+                        // Get the public URL for the uploaded file
+                        const publicUrl = uploadResult.url || `${process.env.NEXT_PUBLIC_CLOUDFLARE_R2_PUBLIC_URL}/${uploadResult.key}`;
+
+                        // Update decision with image URL (only if upload succeeds)
+                        const updateRes = await UpdateDecisionImage(decision.id, publicUrl);
+
+                        if (updateRes?.error) {
+                            toast.warning("Decision updated, but failed to attach image.");
+                            console.error("Update error:", updateRes.error);
+                        } else {
+                            setImageUrl(publicUrl);
+                            console.log("Image URL updated in database:", publicUrl);
+                        }
+                    }
+                } catch (error) {
+                    console.error("Error during file upload/update:", error);
+                    toast.warning("Decision updated, but there was an error processing the image.");
                 }
-            }
 
-            toast.success("Decision updated successfully!");
-            onSuccess?.();
+                toast.success("Decision updated successfully!");
+                onSuccess?.();
+            }
         } catch (error) {
             setFormError("An unexpected error occurred. Please try again.");
             console.error("Error updating decision:", error);

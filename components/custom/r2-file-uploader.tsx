@@ -14,6 +14,7 @@ import {
   FileImage
 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useRouter } from 'next/navigation';
 
 // Configuration constants
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB in bytes
@@ -63,6 +64,7 @@ export const R2FileUploader = forwardRef<R2FileUploaderRef, R2FileUploaderProps>
     const [uploadingFileIds, setUploadingFileIds] = useState<Set<string>>(new Set());
     const [showExistingImage, setShowExistingImage] = useState(!!props.imageSrc);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const router = useRouter();
 
     const { uploadFile, uploadMultipleFiles, isUploading, deleteFile } = useR2Upload({
       prefix,
@@ -126,15 +128,10 @@ export const R2FileUploader = forwardRef<R2FileUploaderRef, R2FileUploaderProps>
         return;
       }
 
+      // If we have an existing file and no existing image, show error
       if (!multiple && files.length > 0 && !showExistingImage) {
         setError('Please remove the current file before uploading a new one');
         return;
-      }
-
-      // If we're adding a new file and have an existing image, hide the existing one
-      if (showExistingImage && filesArray.length > 0) {
-        setShowExistingImage(false);
-        props.onImageRemove?.();
       }
 
       const validFiles: FileWithPreview[] = [];
@@ -234,18 +231,29 @@ export const R2FileUploader = forwardRef<R2FileUploaderRef, R2FileUploaderProps>
     }, [onFilesChange, files.length, props]);
 
     // Change/replace file (for single mode)
-    const handleChangeFile = (e: React.MouseEvent) => {
+    const handleChangeFile = async (e: React.MouseEvent) => {
       e.stopPropagation();
+      
+      // If we have an existing image, remove it first
+      if (props.imageSrc) {
+        try {
+          await handleRemoveExistingImage(props.imageSrc);
+        } catch (error) {
+          console.error('Error removing existing image:', error);
+          setError('Failed to remove existing image. Please try again.');
+          return;
+        }
+      }
+      
+      // Open file picker
       if (fileInputRef.current) {
-        // Clear the input to allow selecting the same file again
         fileInputRef.current.value = '';
         fileInputRef.current.click();
-        // The file input change handler will handle the rest
       }
-      // If we're changing an existing image, hide it
+      
+      // Hide existing image preview
       if (showExistingImage) {
         setShowExistingImage(false);
-        props.onImageRemove?.();
       }
     };
 
@@ -317,16 +325,18 @@ export const R2FileUploader = forwardRef<R2FileUploaderRef, R2FileUploaderProps>
 
     // Handle existing image removal
     const handleRemoveExistingImage = async (imageUrl: string | null | undefined) => {
-      console.log(imageUrl,"imageUrl present");
+      if (!imageUrl) return true; // Return true if there's nothing to remove
       
-      if (!imageUrl) return;
       try {
         setShowExistingImage(false);
         await deleteFile(imageUrl);
         props.onImageRemove?.();
+        router.refresh()
+        return true;
       } catch (error) {
         console.error('Error removing existing image:', error);
         setError('Failed to remove existing image. Please try again.');
+        return false;
       }
     };
 
@@ -361,9 +371,14 @@ export const R2FileUploader = forwardRef<R2FileUploaderRef, R2FileUploaderProps>
                       size="sm"
                       onClick={handleChangeFile}
                       className="rounded-full"
+                      disabled={isUploading}
                     >
-                      <RefreshCw className="h-4 w-4 mr-2" />
-                      Change
+                      {isUploading ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                      )}
+                      {isUploading ? 'Uploading...' : 'Change'}
                     </Button>
                     <Button
                       type="button"
