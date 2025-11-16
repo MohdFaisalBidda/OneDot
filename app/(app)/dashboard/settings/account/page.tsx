@@ -3,6 +3,8 @@ import { getCurrentUser } from "@/actions/auth";
 import { AccountForms } from "./AccountForms";
 import { generatePageMetadata } from "@/lib/metadata";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = generatePageMetadata({
   title: "Account Settings",
   description: "Manage your account security and authentication settings.",
