@@ -4,8 +4,14 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import prisma from '@/lib/prismaClient';
 
+interface PageProps {
+  params: {
+    id: string;
+  };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
 
-export default async function DocumentPage({ params }: { params: { id: string } }) {
+export default async function DocumentPage({ params }: PageProps) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
