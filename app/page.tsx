@@ -4,27 +4,29 @@ import type React from "react";
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-import SmartSimpleBrilliant from "../app/_components/smart-simple-brilliant";
-import YourWorkInSync from "../app/_components/your-work-in-sync";
-import EffortlessIntegration from "../app/_components/effortless-integration-updated";
-import NumbersThatSpeak from "../app/_components/numbers-that-speak";
+// import SmartSimpleBrilliant from "../app/_components/smart-simple-brilliant";
+// import YourWorkInSync from "../app/_components/your-work-in-sync";
+// import EffortlessIntegration from "../app/_components/effortless-integration-updated";
+// import NumbersThatSpeak from "../app/_components/numbers-that-speak";
 import DocumentationSection from "../app/_components/documentation-section";
-import TestimonialsSection from "../app/_components/testimonials-section";
+// import TestimonialsSection from "../app/_components/testimonials-section";
 import FAQSection from "../app/_components/faq-section";
 import PricingSection from "../app/_components/pricing-section";
 import CTASection from "../app/_components/cta-section";
 import FooterSection from "../app/_components/footer-section";
-import SocialProofs from "./_components/social-proofs";
-import BentoGrid from "./_components/bento-grid";
+// import SocialProofs from "./_components/social-proofs";
+// import BentoGrid from "./_components/bento-grid";
 import { Button } from "@/components/ui/button";
 import Navigation from "./_components/Navigation";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { AuthDialogProvider, useAuthDialog } from "@/components/custom/AuthDialog";
 
 export default function LandingPage() {
   const [activeCard, setActiveCard] = useState(0);
   const [progress, setProgress] = useState(0);
   const router = useRouter();
+  const {openSignup} = useAuthDialog();
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -104,10 +106,10 @@ export default function LandingPage() {
                     onClick={() =>
                       session?.user
                         ? router.push("/dashboard")
-                        : router.push("/signup")
+                        : openSignup()
                     }
                   >
-                    {session?.user ? "Explore Tools" : "Claim Your Free Spot"}
+                    Explore Tools
                   </Button>
                   {!session?.user && (
                     <p className="text-xs text-[#605A57] text-center sm:text-left">

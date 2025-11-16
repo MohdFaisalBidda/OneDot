@@ -23,55 +23,16 @@ import LoginForm from "./forms/login-form";
 import { Logo } from "@/components/custom/Logo";
 import { logOut } from "@/lib/user";
 import { toast } from "sonner";
+import AuthDialog, { useAuthDialog } from "@/components/custom/AuthDialog";
 
 function Navigation() {
-  const [signupDialogOpen, setSignupDialogOpen] = useState(false);
-  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
-  const [popoverOpen, setPopoverOpen] = useState(false);
-  
-  const handleGoogleSignIn = async () => {
-    try {
-      await signIn('google', { callbackUrl: '/dashboard' });
-      setPopoverOpen(false);
-    } catch (error) {
-      console.error('Error signing in with Google:', error);
-      toast('Failed to sign in with Google');
-    }
-  };
+
   const pathname = usePathname();
   const { data: session } = useSession();
+  const {openSignup, openLogin, closeAll, popoverOpen, setPopoverOpen} = useAuthDialog();
   const userInitials = getUserInitials(session?.user?.name);
 
-  useEffect(() => {
-    if (signupDialogOpen || loginDialogOpen) {
-      setPopoverOpen(false);
-    }
-  }, [signupDialogOpen, loginDialogOpen]);
-
-  const handleSignupDialogOpenChange = (open: boolean) => {
-    setSignupDialogOpen(open);
-    if (open) {
-      setPopoverOpen(false);
-    }
-  };
-
-  const handleLoginDialogOpenChange = (open: boolean) => {
-    setLoginDialogOpen(open);
-    if (open) {
-      setPopoverOpen(false);
-    }
-  };
-
-  const handleSignUpClick = () => {
-    setPopoverOpen(false);
-    setSignupDialogOpen(true);
-  };
-
-  const handleLoginClick = () => {
-    setPopoverOpen(false);
-    setLoginDialogOpen(true);
-  };
-
+  
   return (
     <div className="w-full h-12 sm:h-14 md:h-16 lg:h-[84px] absolute left-0 top-0 flex justify-center items-center z-20 px-4 sm:px-6 md:px-8 lg:px-0">
       <div className="w-full h-0 absolute left-0 top-6 sm:top-7 md:top-8 lg:top-[42px] border-t border-[rgba(55,50,47,0.12)] shadow-[0px_1px_0px_white]"></div>
@@ -184,54 +145,6 @@ function Navigation() {
             </>
           ) : (
             <>
-              <ReusableDialog
-                trigger={
-                  <Button
-                    variant={"ghost"}
-                    className="hidden w-full justify-start gap-4 font-medium border-none"
-                  >
-                    <UserPlus className="h-4 w-4" />
-                    Sign up
-                  </Button>
-                }
-                title="Create Account"
-                description="Start your journey to better focus and decisions"
-                open={signupDialogOpen}
-                onOpenChange={handleSignupDialogOpenChange}
-              >
-                <SignupForm 
-                  onSubmitSuccess={() => setSignupDialogOpen(false)}
-                  onSwitchToLogin={() => {
-                    setSignupDialogOpen(false);
-                    setLoginDialogOpen(true);
-                  }}
-                />
-              </ReusableDialog>
-
-              <ReusableDialog
-                trigger={
-                  <Button
-                    variant={"ghost"}
-                    className="hidden w-full justify-start gap-4 font-medium border-none"
-                  >
-                    <Fingerprint className="h-4 w-4" />
-                    Log in
-                  </Button>
-                }
-                title="Welcome Back"
-                description="Enter your credentials to access your account"
-                open={loginDialogOpen}
-                onOpenChange={handleLoginDialogOpenChange}
-              >
-                <LoginForm 
-                  onSubmitSuccess={() => setLoginDialogOpen(false)}
-                  onSwitchToSignup={() => {
-                    setLoginDialogOpen(false);
-                    setSignupDialogOpen(true);
-                  }}
-                />
-              </ReusableDialog>
-
               <HoverPopover
                 open={popoverOpen}
                 onOpenChange={setPopoverOpen}
@@ -244,24 +157,7 @@ function Navigation() {
                   </Button>
                 }
                 content={
-                  <div className="flex flex-col space-y-1">
-                    <Button
-                      onClick={handleSignUpClick}
-                      variant={"ghost"}
-                      className="w-full justify-start gap-4 font-medium border-none"
-                    >
-                      <UserPlus className="h-4 w-4" />
-                      Sign up
-                    </Button>
-                    <Button
-                      onClick={handleLoginClick}
-                      variant={"ghost"}
-                      className="w-full justify-start gap-4 font-medium border-none"
-                    >
-                      <Fingerprint className="h-4 w-4" />
-                      Log in
-                    </Button>
-                  </div>
+                  <AuthDialog/>
                 }
               />
             </>

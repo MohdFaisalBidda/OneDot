@@ -18,6 +18,7 @@ import {
   generateOrganizationSchema,
   generateWebApplicationSchema,
 } from "@/lib/metadata";
+import { AuthDialogProvider } from "@/components/custom/AuthDialog";
 
 // const inter = Inter({
 //   subsets: ["latin"],
@@ -65,9 +66,12 @@ export default async function RootLayout({
         />
       </head>
       <body className="font-sans">
+
         <AuthProvider session={session}>
+        <AuthDialogProvider>
           <Toaster position="top-center" />
           {children}
+        </AuthDialogProvider>
         </AuthProvider>
       </body>
     </html>
