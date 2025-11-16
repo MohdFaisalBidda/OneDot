@@ -37,6 +37,8 @@ export const metadata: Metadata = generatePageMetadata({
   noIndex: true,
 });
 
+const bodyClassName = `font-sans ${geistSans.variable} ${playfair.variable} ${instrumentSerif.variable} antialiased`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -44,10 +46,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        // className={`font-sans ${geistSans.variable} ${playfair.variable} antialiased`}
-        className="font-sans"
-      >
+      <body className={bodyClassName}>
         <DashboardLayout>
           <Suspense fallback={<Loader />}>
             <main className="">{children}</main>

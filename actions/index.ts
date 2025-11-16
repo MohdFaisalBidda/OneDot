@@ -55,7 +55,42 @@ export const CreateFocus = async (data: FocusEntry) => {
     }
 }
 
-export const getRecentFocus = async () => {
+export const getTodaysFocus = async () => {
+    const user = await getCurrentUser()
+
+    if (!user) {
+        return { error: "Unauthorized" }
+    }
+
+    try {
+        const recentFocus = await prisma.focus.findMany({
+            where: {
+                userId: user.id,
+                createdAt: {
+                    //Today's focus only to show here
+                    gte: new Date(new Date().setDate(new Date().getDate() - 1)),
+                    lte: new Date(),
+                }
+            },
+            orderBy: {
+                date: "desc",
+            },
+        })
+
+        return {
+            status: 200,
+            data: recentFocus
+        }
+    } catch (error) {
+        console.log("Error getting recent focus:", error);
+        return {
+            status: 500,
+            error: "Failed to fetch recent focus entries. Please try again."
+        };
+    }
+}
+
+export const getAllFocus = async () => {
     const user = await getCurrentUser()
 
     if (!user) {
@@ -68,7 +103,7 @@ export const getRecentFocus = async () => {
                 userId: user.id,
             },
             orderBy: {
-                date: "desc",
+                createdAt: "desc",
             },
         })
 
@@ -135,7 +170,41 @@ export const CreateDecision = async (data: DecisionEntry) => {
     }
 }
 
-export const getRecentDecisions = async () => {
+export const getTodaysDecisions = async () => {
+    const user = await getCurrentUser()
+
+    if (!user) {
+        return { error: "Unauthorized" }
+    }
+
+    try {
+        const recentDecision = await prisma.decision.findMany({
+            where: {
+                userId: user.id,
+                createdAt: {
+                    gte: new Date(new Date().setDate(new Date().getDate() - 1)),
+                    lte: new Date(),
+                }
+            },
+            orderBy: {
+                date: "asc",
+            },
+        })
+
+        return {
+            status: 200,
+            data: recentDecision
+        }
+    } catch (error) {
+        console.log("Error getting recent decision:", error);
+        return {
+            status: 500,
+            error: "Failed to fetch recent decision entries. Please try again."
+        };
+    }
+}
+
+export const getAllDecisions = async () => {
     const user = await getCurrentUser()
 
     if (!user) {
@@ -148,7 +217,7 @@ export const getRecentDecisions = async () => {
                 userId: user.id,
             },
             orderBy: {
-                date: "asc",
+                createdAt: "asc",
             },
         })
 

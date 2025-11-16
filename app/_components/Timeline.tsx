@@ -47,13 +47,25 @@ export function Timeline({
 
   const timelineDays = viewMode === "week" ? getWeekDays() : getMonthDays()
 
-  const getEntriesForDate = (date: Date) => {
-    const dateStr = date.toDateString()
+  const getEntriesForDate = (targetDate: Date) => {
+    console.log(targetDate.getDate(),"all");
+    
+    // Normalize target day → YYYY-MM-DD
+    const target = targetDate.getDate();
+
     return [
-      ...(focusEntries?.filter((e) => new Date(e.createdAt).toDateString() === dateStr) || []),
-      ...(decisionEntries?.filter((e) => new Date(e.createdAt).toDateString() === dateStr) || [])
-    ]
-  }
+      ...(focusEntries?.filter(e => {
+        if (!e?.createdAt) return false;
+        return new Date(e.createdAt).getDate() === target;
+      }) || []),
+
+      ...(decisionEntries?.filter(e => {
+        if (!e?.createdAt) return false;
+        return new Date(e.createdAt).getDate() === target;
+      }) || []),
+    ];
+  };
+
 
   const goToPrevious = () => {
     const newDate = new Date(currentDate)
@@ -81,7 +93,7 @@ export function Timeline({
   }
 
   const isToday = (date: Date) => date.toDateString() === new Date().toDateString()
-  
+
   // Format date in a consistent way to avoid hydration mismatches
   const formatDate = (date: Date) => {
     const day = String(date.getDate()).padStart(2, '0')
@@ -162,8 +174,8 @@ export function Timeline({
                     <p className="text-xs text-muted-foreground">—</p>
                   ) : (
                     entries.map((entry) => {
-                      console.log(entries,"entries");
-                      
+                      console.log(entries, "entries");
+
                       // More reliable way to distinguish between Focus and Decision
                       const isFocusEntry = 'mood' in entry && !('reason' in entry);
                       const isDecisionEntry = 'reason' in entry && 'category' in entry;
@@ -180,11 +192,10 @@ export function Timeline({
                               setSelectedFocus(null);
                             }
                           }}
-                          className={`text-xs p-2 rounded-md truncate font-medium transition-smooth hover:shadow-sm cursor-pointer ${
-                            isFocusEntry 
+                          className={`text-xs p-2 rounded-md truncate font-medium transition-smooth hover:shadow-sm cursor-pointer ${isFocusEntry
                               ? "bg-chart-1/20 text-chart-1 hover:bg-chart-1/30"
                               : "bg-chart-2/20 text-chart-2 hover:bg-chart-2/30"
-                          }`}
+                            }`}
                           title={entry.title}
                         >
                           {isFocusEntry ? "📌" : "⚡"} {entry.title}
@@ -230,9 +241,9 @@ export function Timeline({
         onOpenChange={() => setSelectedDecision(null)}
         title={selectedDecision ? 'View Decision' : ''}
       >
-        <EditDecisionForm 
-          decision={selectedDecision!} 
-          onSuccess={() => setSelectedDecision(null)} 
+        <EditDecisionForm
+          decision={selectedDecision!}
+          onSuccess={() => setSelectedDecision(null)}
           onCancel={() => setSelectedDecision(null)}
           viewOnly={true}
         />
@@ -243,9 +254,9 @@ export function Timeline({
         onOpenChange={() => setSelectedFocus(null)}
         title={selectedFocus ? 'View Focus' : ''}
       >
-        <EditFocusForm 
-          focus={selectedFocus!} 
-          onSuccess={() => setSelectedFocus(null)} 
+        <EditFocusForm
+          focus={selectedFocus!}
+          onSuccess={() => setSelectedFocus(null)}
           onCancel={() => setSelectedFocus(null)}
           viewOnly={true}
         />

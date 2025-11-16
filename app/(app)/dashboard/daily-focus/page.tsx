@@ -1,7 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import DailyFocusPage from "../../../_components/DailyFocus";
-import { getRecentFocus } from "@/actions";
+import {getTodaysFocus } from "@/actions";
 import { generatePageMetadata } from "@/lib/metadata";
 
 export const dynamic = 'force-dynamic';
@@ -15,7 +15,7 @@ export const metadata: Metadata = generatePageMetadata({
 });
 
 async function page() {
-  const { data, error } = await getRecentFocus();
+  const { data, error } = await getTodaysFocus();
 
   return <DailyFocusPage recentFocus={data} />;
 }

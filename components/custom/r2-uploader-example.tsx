@@ -37,7 +37,7 @@ export function R2UploaderExample() {
             </CardHeader>
             <CardContent>
               <R2FileUploader
-                prefix="single-uploads"
+                prefix="all"
                 multiple={false}
                 onUploadComplete={(files) => {
                   if (files[0]?.url) {
@@ -66,7 +66,7 @@ export function R2UploaderExample() {
             </CardHeader>
             <CardContent>
               <R2FileUploader
-                prefix="multi-uploads"
+                prefix="all"
                 multiple={true}
                 onUploadComplete={(files) => {
                   const urls = files.map(f => f.url).filter(Boolean) as string[];

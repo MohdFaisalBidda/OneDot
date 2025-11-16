@@ -1,11 +1,11 @@
-import { getRecentDecisions, getRecentFocus } from '@/actions'
+import { getAllDecisions, getAllFocus } from '@/actions'
 import { Timeline } from '@/app/_components/Timeline'
 import React from 'react'
 
 async function page() {
   const [focusEntries, decisionEntries] = await Promise.all([
-    getRecentFocus(),
-    getRecentDecisions(),
+    getAllFocus(),
+    getAllDecisions(),
   ])
 
   return (

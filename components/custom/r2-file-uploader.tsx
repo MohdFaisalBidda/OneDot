@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback, forwardRef, useImperativeHandle, type DragEvent, type ChangeEvent } from 'react';
-import { useR2Upload } from '@/hooks/use-r2-upload';
+import { FileSource, useR2Upload } from '@/hooks/use-r2-upload';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import {
@@ -26,7 +26,7 @@ export interface FileWithPreview {
 }
 
 interface R2FileUploaderProps {
-  prefix?: string;
+  prefix?: FileSource;
   multiple?: boolean;
   maxFileSize?: number;
   acceptedTypes?: string[];
@@ -47,7 +47,7 @@ export interface R2FileUploaderRef {
 export const R2FileUploader = forwardRef<R2FileUploaderRef, R2FileUploaderProps>(
   (props, ref) => {
     const {
-      prefix = 'uploads',
+      prefix = 'all',
       multiple = false,
       maxFileSize = MAX_FILE_SIZE,
       acceptedTypes = ACCEPTED_IMAGE_TYPES,

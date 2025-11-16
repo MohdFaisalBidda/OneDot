@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getRecentDecisions } from "@/actions";
+import { getTodaysDecisions } from "@/actions";
 import DecisionsTrackerPage from "@/app/_components/DecisionTracker";
 import React from "react";
 import { generatePageMetadata } from "@/lib/metadata";
@@ -15,7 +15,7 @@ export const metadata: Metadata = generatePageMetadata({
 });
 
 async function page() {
-  const { data, error } = await getRecentDecisions();
+  const { data, error } = await getTodaysDecisions();
   return <DecisionsTrackerPage decisions={data} />;
 }
 
