@@ -65,7 +65,7 @@ export function InsightsPage({
             {/* Header Section */}
             <div className="border-b border-border">
                 <div className="">
-                    <h1 className="text-4xl font-serif font-bold text-foreground mb-2">Your Clarity Story</h1>
+                    <h1 className="text-4xl font-serif font-bold text-foreground mb-2">Your Insights</h1>
                     <p className="text-muted-foreground">Data-backed insights into your thinking patterns and growth</p>
 
                     {/* Clarity Score & AI Highlight */}
@@ -89,12 +89,12 @@ export function InsightsPage({
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     <div className="text-center">
                                         <div className="text-2xl font-serif font-bold text-foreground">{clarityScore}</div>
-                                        <div className="text-xs text-muted-foreground">clarity</div>
+                                        <div className="text-xs text-muted-foreground">Score</div>
                                     </div>
                                 </div>
                             </div>
                             <div className="flex-1">
-                                <p className="text-sm font-medium text-foreground mb-1">Weekly Clarity Score</p>
+                                <p className="text-sm font-medium text-foreground mb-1">Weekly Insights Score</p>
                                 <p className="text-sm text-muted-foreground max-w-xs">
                                     You've maintained strong focus consistency with {focusEntries.length} entries this week
                                 </p>

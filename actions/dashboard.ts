@@ -61,9 +61,9 @@ export const getDashboardStats = async (): Promise<{ data?: DashboardStats, erro
     const todaysFocus = await prisma.focus.findFirst({
       where: {
         userId: user.id,
-        date: { gte: startOfToday }
+        createdAt: { gte: startOfToday }
       },
-      orderBy: { date: 'desc' },
+      orderBy: { createdAt: 'desc' },
       select: { title: true }
     })
 
@@ -71,7 +71,7 @@ export const getDashboardStats = async (): Promise<{ data?: DashboardStats, erro
     const recentDecisionsCount = await prisma.decision.count({
       where: {
         userId: user.id,
-        date: { gte: startOfWeek }
+        createdAt: { gte: startOfWeek }
       }
     })
 
@@ -83,13 +83,13 @@ export const getDashboardStats = async (): Promise<{ data?: DashboardStats, erro
       prisma.focus.count({
         where: {
           userId: user.id,
-          date: { gte: thirtyDaysAgo }
+          createdAt: { gte: thirtyDaysAgo }
         }
       }),
       prisma.focus.count({
         where: {
           userId: user.id,
-          date: { gte: thirtyDaysAgo },
+          createdAt: { gte: thirtyDaysAgo },
           status: FocusStatus.ACHIEVED
         }
       })
@@ -104,27 +104,27 @@ export const getDashboardStats = async (): Promise<{ data?: DashboardStats, erro
       prisma.focus.count({
         where: {
           userId: user.id,
-          date: { gte: startOfWeek },
+          createdAt: { gte: startOfWeek },
           status: FocusStatus.ACHIEVED
         }
       }),
       prisma.focus.count({
         where: {
           userId: user.id,
-          date: { gte: startOfLastWeek, lt: startOfWeek },
+          createdAt: { gte: startOfLastWeek, lt: startOfWeek },
           status: FocusStatus.ACHIEVED
         }
       }),
       prisma.focus.count({
         where: {
           userId: user.id,
-          date: { gte: startOfWeek }
+          createdAt: { gte: startOfWeek }
         }
       }),
       prisma.focus.count({
         where: {
           userId: user.id,
-          date: { gte: startOfLastWeek, lt: startOfWeek }
+          createdAt: { gte: startOfLastWeek, lt: startOfWeek }
         }
       })
     ])
@@ -137,23 +137,23 @@ export const getDashboardStats = async (): Promise<{ data?: DashboardStats, erro
     const [recentFocuses, recentDecisions] = await Promise.all([
       prisma.focus.findMany({
         where: { userId: user.id },
-        orderBy: { date: 'desc' },
+        orderBy: { createdAt: 'desc' },
         take: 5,
         select: {
           id: true,
           title: true,
-          date: true,
+          createdAt: true,
           status: true
         }
       }),
       prisma.decision.findMany({
         where: { userId: user.id },
-        orderBy: { date: 'desc' },
+        orderBy: { createdAt: 'desc' },
         take: 5,
         select: {
           id: true,
           title: true,
-          date: true,
+          createdAt: true,
           category: true
         }
       })
@@ -165,14 +165,14 @@ export const getDashboardStats = async (): Promise<{ data?: DashboardStats, erro
         id: f.id,
         type: 'focus' as const,
         title: f.title,
-        timestamp: f.date,
+        timestamp: f.createdAt,
         status: f.status
       })),
       ...recentDecisions.map(d => ({
         id: d.id,
         type: 'decision' as const,
         title: d.title,
-        timestamp: d.date,
+        timestamp: d.createdAt,
         category: d.category
       }))
     ]
@@ -191,8 +191,8 @@ export const getDashboardStats = async (): Promise<{ data?: DashboardStats, erro
     // Calculate streaks (consecutive days with at least one entry)
     const allFocuses = await prisma.focus.findMany({
       where: { userId: user.id },
-      orderBy: { date: 'desc' },
-      select: { date: true }
+      orderBy: { createdAt: 'desc' },
+      select: { createdAt: true }
     })
 
     let currentStreak = 0
@@ -200,7 +200,7 @@ export const getDashboardStats = async (): Promise<{ data?: DashboardStats, erro
     let tempStreak = 0
     let lastDate: Date | null = null
 
-    const uniqueDates = [...new Set(allFocuses.map(f => f.date.toDateString()))]
+    const uniqueDates = [...new Set(allFocuses.map(f => f.createdAt.toDateString()))]
     
     for (let i = 0; i < uniqueDates.length; i++) {
       const currentDate = new Date(uniqueDates[i])
@@ -270,13 +270,13 @@ export const getDashboardStats = async (): Promise<{ data?: DashboardStats, erro
         prisma.focus.count({
           where: {
             userId: user.id,
-            date: { gte: date, lt: nextDate }
+            createdAt: { gte: date, lt: nextDate }
           }
         }),
         prisma.decision.count({
           where: {
             userId: user.id,
-            date: { gte: date, lt: nextDate }
+            createdAt: { gte: date, lt: nextDate }
           }
         })
       ])
@@ -294,13 +294,13 @@ export const getDashboardStats = async (): Promise<{ data?: DashboardStats, erro
       prisma.focus.count({
         where: {
           userId: user.id,
-          date: { gte: startOfMonth }
+          createdAt: { gte: startOfMonth }
         }
       }),
       prisma.focus.count({
         where: {
           userId: user.id,
-          date: { gte: startOfMonth },
+          createdAt: { gte: startOfMonth },
           status: FocusStatus.ACHIEVED
         }
       })
