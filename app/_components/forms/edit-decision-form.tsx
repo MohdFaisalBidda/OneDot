@@ -290,7 +290,7 @@ export function EditDecisionForm({ decision, onSuccess, onCancel, viewOnly = fal
                 </Select>
             </div>
 
-            {!viewOnly && (
+            {(decision?.image || !viewOnly) && (
                 <div className="space-y-2">
                     <Label htmlFor="edit-image">Reference Image (Optional)</Label>
                     <R2FileUploader

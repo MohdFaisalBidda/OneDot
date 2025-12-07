@@ -1,4 +1,4 @@
-import prisma from '@/lib/prismaClient';
+import prisma from '../lib/prismaClient';
 import { hash } from 'bcryptjs';
 
 // Sample data for today's entries

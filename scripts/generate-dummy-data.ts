@@ -1,5 +1,5 @@
 import { DecisionCategory, FocusStatus } from '@/lib/generated/prisma';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/lib/generated/prisma';
 import { randomInt, randomUUID } from 'crypto';
 
 const prisma = new PrismaClient();

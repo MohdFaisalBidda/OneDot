@@ -110,8 +110,8 @@ async function createTestUser(): Promise<User> {
 
   if (existingUser) {
     // Delete existing data
-    await prisma.focus.deleteMany({ where: { userId: existingUser.id } });
-    await prisma.decision.deleteMany({ where: { userId: existingUser.id } });
+    // await prisma.focus.deleteMany({ where: { userId: existingUser.id } });
+    // await prisma.decision.deleteMany({ where: { userId: existingUser.id } });
     return existingUser;
   }
 

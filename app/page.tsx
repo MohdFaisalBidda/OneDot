@@ -25,40 +25,49 @@ import { AuthDialogProvider, useAuthDialog } from "@/components/custom/AuthDialo
 export default function LandingPage() {
   const [activeCard, setActiveCard] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [loadedFlags, setLoadedFlags] = useState<[boolean, boolean, boolean]>([false, false, false]);
+  // Durations in ms: [add-focus, add-decision, timeline]
+  const durations = useRef<[number, number, number]>([13000, 15000, 9000]);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const router = useRouter();
-  const {openSignup} = useAuthDialog();
+  const { openSignup } = useAuthDialog();
   const { data: session } = useSession();
 
   useEffect(() => {
-    const progressInterval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 98) { // Trigger slightly before 100 to avoid timing issues
-          return 100;
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+
+    setProgress(0);
+
+    // Wait for the active GIF to load before starting timer
+    if (!loadedFlags[activeCard]) return;
+
+    const duration = durations.current[activeCard];
+    const start = Date.now();
+
+    intervalRef.current = setInterval(() => {
+      const elapsed = Date.now() - start;
+      const pct = Math.min(100, Math.round((elapsed / duration) * 100));
+      setProgress(pct);
+
+      if (elapsed >= duration) {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
         }
-        return prev + 2; // 2% every 100ms = 5 seconds total
-      });
+        setActiveCard((current) => (current + 1) % 3);
+      }
     }, 100);
 
     return () => {
-      clearInterval(progressInterval);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     };
-  }, []);
-
-  // Separate effect to handle card transitions
-  useEffect(() => {
-    if (progress >= 100) {
-      const timer = setTimeout(() => {
-        setActiveCard((current) => {
-          const nextCard = (current + 1) % 3;
-          console.log(`Card transition: ${current} -> ${nextCard}`);
-          return nextCard;
-        });
-        setProgress(0);
-      }, 100);
-
-      return () => clearTimeout(timer);
-    }
-  }, [progress]);
+  }, [activeCard, loadedFlags]);
 
   const handleCardClick = (index: number) => {
     setActiveCard(index);
@@ -120,7 +129,7 @@ export default function LandingPage() {
               </div>
 
               <div className="w-full max-w-[960px] lg:w-[768px] pt-2 sm:pt-4 pb-6 sm:pb-8 md:pb-10 px-2 sm:px-4 md:px-6 lg:px-11 flex flex-col justify-center items-center gap-2 relative z-5 my-8 sm:my-12 md:my-16 lg:my-16 mb-0 lg:pb-0">
-                <div className="w-full max-w-[960px] lg:w-[768px] h-[200px] sm:h-[280px] md:h-[450px] lg:h-[620px] bg-white shadow-[0px_0px_0px_0.9056603908538818px_rgba(0,0,0,0.08)] overflow-hidden rounded-[6px] sm:rounded-[8px] lg:rounded-[9.06px] flex flex-col justify-start items-start">
+                <div className="w-full max-w-[960px] lg:w-[700px] h-[340px] bg-white shadow-[0px_0px_0px_0.9056603908538818px_rgba(0,0,0,0.08)] overflow-hidden rounded-[6px] sm:rounded-[8px] lg:rounded-[9.06px] flex flex-col justify-start items-start">
 
                   <div className="self-stretch flex-1 flex justify-start items-start">
                     {/* Main Content */}
@@ -134,12 +143,15 @@ export default function LandingPage() {
                             }`}
                         >
                           <Image
-                            src="/focus.png"
+                            src="/add-focus.gif"
                             alt="Daily focus and priority tracking dashboard showing customer subscription management interface"
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 960px"
                             className="object-contain"
                             priority={activeCard === 0}
+                            onLoadingComplete={() =>
+                              setLoadedFlags((prev) => [true, prev[1], prev[2]])
+                            }
                           />
                         </div>
 
@@ -151,12 +163,15 @@ export default function LandingPage() {
                             }`}
                         >
                           <Image
-                            src="/decision.png"
+                            src="/add-decision.gif"
                             alt="Analytics dashboard with real-time insights, charts, graphs, and data visualization"
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 960px"
                             className="object-contain"
                             priority={activeCard === 1}
+                            onLoadingComplete={() =>
+                              setLoadedFlags((prev) => [prev[0], true, prev[2]])
+                            }
                           />
                         </div>
 
@@ -168,12 +183,15 @@ export default function LandingPage() {
                             }`}
                         >
                           <Image
-                            src="/history.png"
+                            src="/timeline.gif"
                             alt="Interactive data visualization dashboard with charts, metrics, and decision tracking"
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 960px"
                             className="object-contain"
                             priority={activeCard === 2}
+                            onLoadingComplete={() =>
+                              setLoadedFlags((prev) => [prev[0], prev[1], true])
+                            }
                           />
                         </div>
                       </div>
@@ -212,8 +230,8 @@ export default function LandingPage() {
                     onClick={() => handleCardClick(1)}
                   />
                   <FeatureCard
-                    title="Track insights with clarity"
-                    description="Visualize patterns, analyze trends, and discover what drives your best decisions."
+                    title="Track timeline with clarity"
+                    description="Visualize every day per week or month for both focus and decisions"
                     isActive={activeCard === 2}
                     progress={activeCard === 2 ? progress : 0}
                     onClick={() => handleCardClick(2)}

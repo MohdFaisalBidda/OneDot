@@ -144,7 +144,7 @@ To test the implementation:
 
 - `next` - App framework
 - `react` - UI library
-- `@prisma/client` - Database ORM
+- `@/lib/generated/prisma` - Database ORM
 - `date-fns` - Date formatting
 - `lucide-react` - Icons
 - `@radix-ui/react-*` - UI primitives

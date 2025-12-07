@@ -212,7 +212,7 @@ export function EditFocusForm({ focus, onSuccess, onCancel, viewOnly = false }: 
         />
       </div>
 
-      {!viewOnly && (
+      {(focus?.image || !viewOnly) && (
         <div className="space-y-2">
           <Label htmlFor="edit-image">Reference Image (Optional)</Label>
           <R2FileUploader
